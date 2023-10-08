@@ -8,36 +8,27 @@ jobs:
   homeassistant:
     runs-on: ubuntu-latest
     name: Verify Home Assistant Configuration
-    env:
-      DATA_PATH: tmp
     strategy:
       max-parallel: 4
       matrix:
         python-version: ["3.11"]
+        home-assistant-version:
+          - stable
+          - beta
+          - dev
 
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements-test.txt
-
       - name: Prepare data
         run: |
-          mkdir tmp
-          cp -rf configuration/* tmp/
-          cp .ci/secrets.yaml tmp/secrets.yaml
-          # TODO: work-around for 'hass --script check_config'
-          sed -i -e 's/^mobile_app:$/#mobile_app:/g' tmp/configuration.yaml
-          ./lifecycle/prepare.sh tmp
+          ./lifecycle/prepare.sh configuration
 
-      - run: |
-          hass -c tmp/ --script check_config --info all
+      - name: Check Home Assistant Configuration
+        uses: frenck/action-home-assistant@v1
+        with:
+          path: configuration
+          secrets: .ci/secrets.yaml
+          version: "${{ matrix.home-assistant-version }}"

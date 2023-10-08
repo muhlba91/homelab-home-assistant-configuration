@@ -17,8 +17,6 @@ homeassistant:
       initial_state: 'on'
   auth_providers:
     - type: homeassistant
-  allowlist_external_dirs:
-    - !env_var DATA_PATH
 
 http:
   server_port: 8123

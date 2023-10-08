@@ -11,12 +11,18 @@
         "main"
     ],
     "enabledManagers": [
-        "github-actions"
+        "github-actions",
+        "pip_requirements"
     ],
     "github-actions": {
         "fileMatch": [
             "^(workflow-templates|\\.github/workflows)/[^/]+\\.ya?ml$",
             "(^|/)action\\.ya?ml$"
+        ]
+    },
+    "pip_requirements": {
+        "fileMatch": [
+            "(^|/)[\\w-]*requirements(-\\w+)?\\.(txt|pip)$"
         ]
     }
 }
