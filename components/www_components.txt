@@ -7,7 +7,7 @@ https://github.com/custom-cards/button-card/releases/download@v4.1.2@button-card
 # renovate: datasource=github-releases packageName=kinghat/tabbed-card
 https://github.com/kinghat/tabbed-card/releases/download@v0.3.2@tabbed-card.js@community/tabbed-card
 # renovate: datasource=github-releases packageName=MindFreeze/ha-sankey-chart
-https://github.com/MindFreeze/ha-sankey-chart/releases/download@v3.2.2@ha-sankey-chart.js@community/ha-sankey-chart
+https://github.com/MindFreeze/ha-sankey-chart/releases/download@v3.2.3@ha-sankey-chart.js@community/ha-sankey-chart
 # renovate: datasource=github-releases packageName=piitaya/lovelace-mushroom
 https://github.com/piitaya/lovelace-mushroom/releases/download@v3.6.4@mushroom.js@community/mushroom
 # renovate: datasource=github-releases packageName=alexarch21/history-explorer-card
