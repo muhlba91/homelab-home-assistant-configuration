@@ -15,6 +15,6 @@ https://github.com/alexarch21/history-explorer-card/releases/download@v1.0.51@hi
 # renovate: datasource=github-releases packageName=RomRider/apexcharts-card
 https://github.com/RomRider/apexcharts-card/releases/download@v2.1.2@apexcharts-card.js@community/apexcharts-card
 # renovate: datasource=github-tags packageName=Clooos/Bubble-Card
-https://raw.githubusercontent.com/Clooos/Bubble-Card@v2.2.1@dist/bubble-card.js@community/bubble-card
+https://raw.githubusercontent.com/Clooos/Bubble-Card@v2.2.2@dist/bubble-card.js@community/bubble-card
 # renovate: datasource=github-tags packageName=Clooos/Bubble-Card
-https://raw.githubusercontent.com/Clooos/Bubble-Card@v2.2.1@dist/bubble-pop-up-fix.js@community/bubble-card
+https://raw.githubusercontent.com/Clooos/Bubble-Card@v2.2.2@dist/bubble-pop-up-fix.js@community/bubble-card
