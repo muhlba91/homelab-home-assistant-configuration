@@ -9,7 +9,7 @@ https://github.com/kinghat/tabbed-card/releases/download@v0.3.2@tabbed-card.js@c
 # renovate: datasource=github-releases packageName=MindFreeze/ha-sankey-chart
 https://github.com/MindFreeze/ha-sankey-chart/releases/download@v3.2.4@ha-sankey-chart.js@community/ha-sankey-chart
 # renovate: datasource=github-releases packageName=piitaya/lovelace-mushroom
-https://github.com/piitaya/lovelace-mushroom/releases/download@v4.0.5@mushroom.js@community/mushroom
+https://github.com/piitaya/lovelace-mushroom/releases/download@v4.0.6@mushroom.js@community/mushroom
 # renovate: datasource=github-releases packageName=alexarch21/history-explorer-card
 https://github.com/alexarch21/history-explorer-card/releases/download@v1.0.51@history-explorer-card.js@community/history-explorer-card
 # renovate: datasource=github-releases packageName=RomRider/apexcharts-card
