@@ -1,5 +1,5 @@
 # renovate: datasource=github-tags packageName=ollo69/ha-smartthinq-sensors
-https://github.com/ollo69/ha-smartthinq-sensors.git@v0.40.0
+https://github.com/ollo69/ha-smartthinq-sensors.git@v0.40.1
 # renovate: datasource=github-tags packageName=sockless-coding/panasonic_cc
 https://github.com/sockless-coding/panasonic_cc.git@2024.10.0
 # renovate: datasource=github-tags packageName=slashback100/presence_simulation
