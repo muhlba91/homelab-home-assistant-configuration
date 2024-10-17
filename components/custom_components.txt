@@ -9,4 +9,4 @@ https://github.com/acon96/home-llm.git@v0.3.6
 # renovate: datasource=github-tags packageName=zachowj/hass-node-red
 https://github.com/zachowj/hass-node-red.git@v4.1.1
 # renovate: datasource=github-tags packageName=muhlba91/onyx-homeassistant-integration
-https://github.com/muhlba91/onyx-homeassistant-integration.git@v10.2.0
+https://github.com/muhlba91/onyx-homeassistant-integration.git@v10.2.1
