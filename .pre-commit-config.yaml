@@ -1,14 +1,15 @@
 ---
 repos:
   - repo: https://github.com/talos-systems/conform
-    rev: v0.1.0-alpha.27
+    rev: v0.1.0-alpha.30
     hooks:
       - id: conform
         stages:
           - commit-msg
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v5.0.0
     hooks:
+      - id: trailing-whitespace
       - id: check-json
       - id: check-merge-conflict
       - id: check-symlinks
@@ -27,3 +28,11 @@ repos:
 #            "--branch",
 #            "next"
 #        ]
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.21.1
+    hooks:
+      - id: gitleaks
+  - repo: https://github.com/jumanjihouse/pre-commit-hooks
+    rev: 3.0.0
+    hooks:
+      - id: shellcheck
