@@ -2,6 +2,7 @@
 
 [![](https://img.shields.io/github/license/muhlba91/homelab-home-assistant-configuration?style=for-the-badge)](LICENSE.md)
 [![](https://img.shields.io/github/actions/workflow/status/muhlba91/homelab-home-assistant-configuration/verify.yml?style=for-the-badge)](https://github.com/muhlba91/homelab-home-assistant-configuration/actions/workflows/verify.yml)
+[![](https://api.scorecard.dev/projects/github.com/muhlba91/homelab-home-assistant-configuration/badge?style=for-the-badge)](https://scorecard.dev/viewer/?uri=github.com/muhlba91/homelab-home-assistant-configuration)
 
 This repository contains [Home Assistant](http://home-assistant.io) configuration, and lifecycle scripts.
 
