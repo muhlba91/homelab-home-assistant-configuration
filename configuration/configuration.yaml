@@ -88,6 +88,8 @@ history:
 tts:
   - platform: google_translate
 
+media_source:
+
 automation: !include_dir_merge_list automation
 script: !include_dir_merge_named script
 scene: !include_dir_merge_list scene

@@ -1,0 +1,7 @@
+---
+- alias: clean tts cache
+  trigger:
+    platform: time
+    at: "00:00:10"
+  action:
+    service: tts.clear_cache

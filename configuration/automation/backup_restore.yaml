@@ -2,6 +2,6 @@
 - alias: backup and restore
   trigger:
     platform: time
-    at: "00:00:10"
+    at: "00:01:10"
   action:
     service: shell_command.backup_restore
