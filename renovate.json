@@ -15,7 +15,7 @@
         "github-actions",
         "pre-commit",
         "pip_requirements",
-        "regex"
+        "custom.regex"
     ],
     "github-actions": {
         "fileMatch": [
