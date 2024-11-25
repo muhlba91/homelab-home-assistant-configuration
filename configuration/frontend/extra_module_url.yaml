@@ -3,18 +3,18 @@ extra_module_url:
   # renovate: datasource=github-releases packageName=denysdovhan/vacuum-card
   - /local/community/vacuum-card/vacuum-card.js?v=v2.10.1
   # renovate: datasource=github-releases packageName=rianadon/timer-bar-card
-  - /local/community/timer-bar-card/timer-bar-card.js?v=v1.30.2
+  # - /local/community/timer-bar-card/timer-bar-card.js?v=v1.30.2
   # renovate: datasource=github-releases packageName=custom-cards/button-card
-  - /local/community/button-card/button-card.js?v=v4.1.2
+  # - /local/community/button-card/button-card.js?v=v4.1.2
   # renovate: datasource=github-releases packageName=kinghat/tabbed-card
-  - /local/community/tabbed-card/tabbed-card.js?v=v0.3.2
+  # - /local/community/tabbed-card/tabbed-card.js?v=v0.3.2
   # renovate: datasource=github-releases packageName=MindFreeze/ha-sankey-chart
-  - /local/community/ha-sankey-chart/ha-sankey-chart.js?v=v3.5.0
+  # - /local/community/ha-sankey-chart/ha-sankey-chart.js?v=v3.5.0
   # renovate: datasource=github-releases packageName=piitaya/lovelace-mushroom
-  - /local/community/mushroom/mushroom.js?v=v4.2.0
+  # - /local/community/mushroom/mushroom.js?v=v4.2.0
   # renovate: datasource=github-releases packageName=RomRider/apexcharts-card
-  - /local/community/apexcharts-card/apexcharts-card.js?v=2.1.2
+  # - /local/community/apexcharts-card/apexcharts-card.js?v=2.1.2
   # renovate: datasource=github-tags packageName=Clooos/Bubble-Card
-  - /local/community/bubble-card/bubble-card.js?v=v2.2.4
+  # - /local/community/bubble-card/bubble-card.js?v=v2.2.4
   # renovate: datasource=github-tags packageName=elchininet/custom-sidebar
-  - /local/community/custom-sidebar/custom-sidebar-yaml.js?v=v7.0.0
+  # - /local/community/custom-sidebar/custom-sidebar-yaml.js?v=v7.0.0
