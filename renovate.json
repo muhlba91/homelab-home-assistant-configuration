@@ -50,6 +50,15 @@
                 "(^|/|\\.)www_components\\.txt$"
             ],
             "matchStrings": [
+                "# renovate: datasource=(?<datasource>[a-z-]+) packageName=(?<packageName>.+)\\s+-.+v=(?<currentValue>.+)"
+            ]
+        },
+        {
+            "customType": "regex",
+            "fileMatch": [
+                "(^|/|\\.)configuration/frontend/extra_module_url\\.yaml$"
+            ],
+            "matchStrings": [
                 "# renovate: datasource=(?<datasource>[a-z-]+) packageName=(?<packageName>.+)\\s+https.+@(?<currentValue>.+)@.+@.+"
             ]
         }
