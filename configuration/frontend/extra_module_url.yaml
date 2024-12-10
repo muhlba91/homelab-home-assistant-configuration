@@ -9,7 +9,7 @@ extra_module_url:
   # renovate: datasource=github-releases packageName=kinghat/tabbed-card
   - /local/community/tabbed-card/tabbed-card.js?v=v0.3.2
   # renovate: datasource=github-releases packageName=MindFreeze/ha-sankey-chart
-  - /local/community/ha-sankey-chart/ha-sankey-chart.js?v=v3.5.0
+  - /local/community/ha-sankey-chart/ha-sankey-chart.js?v=v3.6.0
   # renovate: datasource=github-releases packageName=piitaya/lovelace-mushroom
   - /local/community/mushroom/mushroom.js?v=v4.2.1
   # renovate: datasource=github-releases packageName=RomRider/apexcharts-card
