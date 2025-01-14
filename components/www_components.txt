@@ -17,5 +17,5 @@ https://raw.githubusercontent.com/Clooos/Bubble-Card@v2.3.3@dist/bubble-card.js@
 # renovate: datasource=github-tags packageName=Clooos/Bubble-Card
 https://raw.githubusercontent.com/Clooos/Bubble-Card@v2.3.3@dist/bubble-pop-up-fix.js@community/bubble-card
 # renovate: datasource=github-tags packageName=elchininet/custom-sidebar
-https://github.com/elchininet/custom-sidebar/releases/download@v8.2.0@custom-sidebar-yaml.js@community/custom-sidebar
+https://github.com/elchininet/custom-sidebar/releases/download@v8.3.0@custom-sidebar-yaml.js@community/custom-sidebar
 
