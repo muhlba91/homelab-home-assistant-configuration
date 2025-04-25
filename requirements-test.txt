@@ -1,1 +1,1 @@
-homeassistant==2025.4.3
+homeassistant==2025.4.4
