@@ -5,7 +5,7 @@ https://github.com/rianadon/timer-bar-card/releases/download@v1.31.0@timer-bar-c
 # renovate: datasource=github-releases packageName=custom-cards/button-card
 https://github.com/custom-cards/button-card/releases/download@v4.1.2@button-card.js@community/button-card
 # renovate: datasource=github-releases packageName=kinghat/tabbed-card
-https://github.com/kinghat/tabbed-card/releases/download@v0.3.2@tabbed-card.js@community/tabbed-card
+https://github.com/kinghat/tabbed-card/releases/download@v0.3.3@tabbed-card.js@community/tabbed-card
 # renovate: datasource=github-releases packageName=MindFreeze/ha-sankey-chart
 https://github.com/MindFreeze/ha-sankey-chart/releases/download@v3.8.1@ha-sankey-chart.js@community/ha-sankey-chart
 # renovate: datasource=github-releases packageName=piitaya/lovelace-mushroom
