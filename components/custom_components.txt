@@ -13,7 +13,7 @@ https://github.com/muhlba91/onyx-homeassistant-integration.git@v11.0.0
 # renovate: datasource=github-tags packageName=beecho01/material-symbols
 https://github.com/beecho01/material-symbols.git@2024.11.23
 # renovate: datasource=github-tags packageName=JeffSteinbok/hass-dreo
-https://github.com/JeffSteinbok/hass-dreo.git@v1.2.5
+https://github.com/JeffSteinbok/hass-dreo.git@v1.2.6
 # renovate: datasource=github-tags packageName=chatziko/ha-google-cloud-stt
 https://github.com/chatziko/ha-google-cloud-stt@v0.3.1
 
