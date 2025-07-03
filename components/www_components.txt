@@ -19,4 +19,4 @@ https://raw.githubusercontent.com/Clooos/Bubble-Card@v2.4.0@dist/bubble-pop-up-f
 # renovate: datasource=github-tags packageName=elchininet/custom-sidebar
 https://github.com/elchininet/custom-sidebar/releases/download@v10.3.0@custom-sidebar-yaml.js@community/custom-sidebar
 # renovate: datasource=github-tags packageName=selvalt7/modern-circular-gauge
-https://github.com/selvalt7/modern-circular-gauge/releases/download@v0.9.0@modern-circular-gauge.js@community/modern-circular-gauge
+https://github.com/selvalt7/modern-circular-gauge/releases/download@v0.10.0@modern-circular-gauge.js@community/modern-circular-gauge
