@@ -18,27 +18,27 @@
         "custom.regex"
     ],
     "github-actions": {
-        "fileMatch": [
-            "^(workflow-templates|\\.github/workflows)/[^/]+\\.ya?ml$",
-            "(^|/)action\\.ya?ml$"
+        "managerFilePatterns": [
+            "/^(workflow-templates|\\.github/workflows)/[^/]+\\.ya?ml$/",
+            "/(^|/)action\\.ya?ml$/"
         ]
     },
     "pre-commit": {
         "enabled": true,
-        "fileMatch": [
-            "(^|/)\\.pre-commit-config\\.ya?ml$"
+        "managerFilePatterns": [
+            "/(^|/)\\.pre-commit-config\\.ya?ml$/"
         ]
     },
     "pip_requirements": {
-        "fileMatch": [
-            "(^|/)[\\w-]*requirements(-\\w+)?\\.(txt|pip)$"
+        "managerFilePatterns": [
+            "/(^|/)[\\w-]*requirements(-\\w+)?\\.(txt|pip)$/"
         ]
     },
     "customManagers": [
         {
             "customType": "regex",
-            "fileMatch": [
-                "(^|/|\\.)custom_components\\.txt$"
+            "managerFilePatterns": [
+                "/(^|/|\\.)custom_components\\.txt$/"
             ],
             "matchStrings": [
                 "# renovate: datasource=(?<datasource>[a-z-]+) packageName=(?<packageName>.+)\\s+https.+@(?<currentValue>.+)"
@@ -46,8 +46,8 @@
         },
         {
             "customType": "regex",
-            "fileMatch": [
-                "(^|/|\\.)www_components\\.txt$"
+            "managerFilePatterns": [
+                "/(^|/|\\.)www_components\\.txt$/"
             ],
             "matchStrings": [
                 "# renovate: datasource=(?<datasource>[a-z-]+) packageName=(?<packageName>.+)\\s+https.+@(?<currentValue>.+)@.+@.+"
@@ -55,8 +55,8 @@
         },
         {
             "customType": "regex",
-            "fileMatch": [
-                "(^|/|\\.)configuration/frontend/extra_module_url\\.yaml$"
+            "managerFilePatterns": [
+                "/(^|/|\\.)configuration/frontend/extra_module_url\\.yaml$/"
             ],
             "matchStrings": [
                 "# renovate: datasource=(?<datasource>[a-z-]+) packageName=(?<packageName>.+)\\s+-.+v=(?<currentValue>.+)"
