@@ -6,7 +6,7 @@ COPY_CONFIG=${2:-false}
 SOURCE_PATH=${3:-.}
 
 #region global configuration
-S3_ASSETS_BUCKET_PATH="${S3_ASSETS_BUCKET}/home-assistant"
+S3_ASSETS_BUCKET_BACKUP_PATH="${S3_ASSETS_BUCKET}/${S3_ASSETS_BUCKET_PATH}/home-assistant"
 #endregion
 
 #region functions
@@ -25,7 +25,7 @@ function backup() {
   # uploading backup from S3
   echo "uploading storage..."
   # TODO: we cannot pass '--delete-removed' due to https://github.com/s3tools/s3cmd/issues/1222
-  s3cmd --access_key=${GCS_ACCESS_KEY_ID} --secret_key="${GCS_SECRET_ACCESS_KEY}" --host="https://storage.googleapis.com" --host-bucket="https://storage.googleapis.com" --recursive --force --exclude-from .s3ignore sync ${DATA_PATH}/.storage/ s3://${S3_ASSETS_BUCKET_PATH}/
+  s3cmd --access_key=${GCS_ACCESS_KEY_ID} --secret_key="${GCS_SECRET_ACCESS_KEY}" --host="https://storage.googleapis.com" --host-bucket="https://storage.googleapis.com" --recursive --force --exclude-from .s3ignore sync ${DATA_PATH}/.storage/ s3://${S3_ASSETS_BUCKET_BACKUP_PATH}/
 
   if [[ "${COPY_CONFIG}" == "true" ]]; then
     copy_configuration
@@ -41,7 +41,7 @@ function restore() {
 
   # download backup from S3
   echo "downloading and restoring storage..."
-  s3cmd --access_key=${GCS_ACCESS_KEY_ID} --secret_key="${GCS_SECRET_ACCESS_KEY}" --host="https://storage.googleapis.com" --host-bucket="https://storage.googleapis.com" --recursive --force sync s3://${S3_ASSETS_BUCKET_PATH}/ ${DATA_PATH}/.storage/
+  s3cmd --access_key=${GCS_ACCESS_KEY_ID} --secret_key="${GCS_SECRET_ACCESS_KEY}" --host="https://storage.googleapis.com" --host-bucket="https://storage.googleapis.com" --recursive --force sync s3://${S3_ASSETS_BUCKET_BACKUP_PATH}/ ${DATA_PATH}/.storage/
 
   copy_configuration
 }
@@ -59,7 +59,7 @@ function copy_configuration() {
 #endregion
 
 #region log configuration
-echo "using S3 bucket and path: ${S3_ASSETS_BUCKET_PATH}"
+echo "using S3 bucket and path: ${S3_ASSETS_BUCKET_BACKUP_PATH}"
 #endregion
 
 #region data check
