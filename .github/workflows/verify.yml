@@ -21,6 +21,8 @@ jobs:
           - stable
           - beta
           - dev
+        site:
+          - vie
 
     steps:
       - uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
@@ -33,12 +35,15 @@ jobs:
 
       - name: Prepare data
         run: |
-          ./lifecycle/prepare.sh configuration
+          mkdir tmp
+          cp -rf common/configuration/* tmp/
+          cp -rf sites/${{ matrix.site }}/configuration/* tmp/
+          ./lifecycle/prepare.sh tmp
 
       - name: Check Home Assistant Configuration
         uses: frenck/action-home-assistant@941d5d917f4c1c7a7e7d4087526daf90d53f4437 # v1.4.1
         with:
-          path: configuration
+          path: tmp
           secrets: .ci/secrets.yaml
           env_file: .ci/env
           version: "${{ matrix.home-assistant-version }}"

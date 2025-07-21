@@ -17,7 +17,7 @@ while read -r component; do
     cp -rf /tmp/component/custom_components/* ${DATA_PATH}/custom_components/
     rm -rf /tmp/component
   fi
-done < ${SOURCE_PATH}/components/custom_components.txt
+done < ${SOURCE_PATH}/common/components/custom_components.txt
 
 rm ${DATA_PATH}/custom_components/__init__.py
 #endregion
@@ -36,5 +36,5 @@ while read -r component; do
     mkdir -p ${DATA_PATH}/www/${data[3]} || true
     wget -P ${DATA_PATH}/www/${data[3]} ${data[0]}/${data[1]}/${data[2]} &> /dev/null
   fi
-done < ${SOURCE_PATH}/components/www_components.txt
+done < ${SOURCE_PATH}/common/components/www_components.txt
 #endregion
