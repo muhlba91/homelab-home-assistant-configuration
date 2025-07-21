@@ -4,6 +4,7 @@ set -euo pipefail
 DATA_PATH=${1}
 COPY_CONFIG=${2:-false}
 SOURCE_PATH=${3:-.}
+SITE=${4:-vie}
 
 #region global configuration
 S3_ASSETS_BUCKET_BACKUP_PATH="${S3_ASSETS_BUCKET}/${S3_ASSETS_BUCKET_PATH}/home-assistant"
@@ -48,13 +49,18 @@ function restore() {
 
 function copy_configuration() {
   echo "wiping current configuration data..."
-  files=$(find ${SOURCE_PATH}/configuration -maxdepth 1 -exec basename -a {} +)
+  files=$(find ${SOURCE_PATH}/common/configuration -maxdepth 1 -exec basename -a {} +)
+  for file in ${files[@]}; do
+    rm -rf ${DATA_PATH}/${file}
+  done
+  files=$(find ${SOURCE_PATH}/sites/${SITE}/configuration -maxdepth 1 -exec basename -a {} +)
   for file in ${files[@]}; do
     rm -rf ${DATA_PATH}/${file}
   done
 
   echo "copying configuration..."
-  cp -rf ${SOURCE_PATH}/configuration/* ${DATA_PATH}/
+  cp -rf ${SOURCE_PATH}/common/configuration/* ${DATA_PATH}/
+  cp -rf ${SOURCE_PATH}/sites/${SITE}/configuration/* ${DATA_PATH}/
 }
 #endregion
 
@@ -70,7 +76,8 @@ check
 # if check returns true, we need to perform a backup
 # otherwise, we have a new (empty) setup and can restore
 if [[ "${DATA_EXISTS}" == "true" ]]; then
-  backup
+  # backup
+  echo bak
 else
   restore
 fi

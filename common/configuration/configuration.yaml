@@ -4,8 +4,8 @@ homeassistant:
   latitude: !secret homeassistant_latitude
   longitude: !secret homeassistant_longitude
   elevation: !secret homeassistant_elevation
-  country: AT
-  time_zone: Europe/Vienna
+  country: !secret homeassistant_country
+  time_zone: !secret homeassistant_time_zone
   unit_system: metric
   temperature_unit: C
   currency: EUR
