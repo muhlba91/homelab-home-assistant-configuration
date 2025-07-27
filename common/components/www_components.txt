@@ -17,6 +17,6 @@ https://raw.githubusercontent.com/Clooos/Bubble-Card@v3.0.0@dist/bubble-card.js@
 # renovate: datasource=github-tags packageName=Clooos/Bubble-Card
 https://raw.githubusercontent.com/Clooos/Bubble-Card@v3.0.0@dist/bubble-pop-up-fix.js@community/bubble-card
 # renovate: datasource=github-tags packageName=elchininet/custom-sidebar
-https://github.com/elchininet/custom-sidebar/releases/download@v10.4.1@custom-sidebar-yaml.js@community/custom-sidebar
+https://github.com/elchininet/custom-sidebar/releases/download@v10.5.0@custom-sidebar-yaml.js@community/custom-sidebar
 # renovate: datasource=github-tags packageName=selvalt7/modern-circular-gauge
 https://github.com/selvalt7/modern-circular-gauge/releases/download@v0.11.1@modern-circular-gauge.js@community/modern-circular-gauge
