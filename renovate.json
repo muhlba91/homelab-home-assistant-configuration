@@ -1,48 +1,9 @@
 {
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
     "extends": [
-        "config:recommended",
-        "helpers:pinGitHubActionDigests",
-        ":dependencyDashboard",
-        ":semanticCommitTypeAll(chore)"
-    ],
-    "prHourlyLimit": 0,
-    "prConcurrentLimit": 0,
-    "configMigration": true,
-    "assignAutomerge": true,
-    "automergeStrategy": "rebase",
-    "automergeType": "pr-comment",
-    "platformAutomerge": true,
-    "baseBranchPatterns": [
-        "main"
-    ],
-    "labels": [
-        "dependencies"
-    ],
-    "packageRules": [
-        {
-            "matchUpdateTypes": [
-                "minor",
-                "patch",
-                "digest"
-            ],
-            "labels": [
-                "dependencies",
-                "renovate-minor-patch",
-                "renovate-automerge"
-            ],
-            "automerge": true,
-            "automergeComment": "Renovate `minor` and `patch` version bumps are merged automatically."
-        },
-        {
-            "matchUpdateTypes": [
-                "major"
-            ],
-            "labels": [
-                "dependencies",
-                "renovate-major"
-            ]
-        }
+        "github>muhlba91/renovate-config",
+        "github>muhlba91/renovate-config:automerge(patch)",
+        "github>muhlba91/renovate-config:automerge(minor)"
     ],
     "enabledManagers": [
         "github-actions",
@@ -50,23 +11,6 @@
         "pip_requirements",
         "custom.regex"
     ],
-    "github-actions": {
-        "managerFilePatterns": [
-            "/^(workflow-templates|\\.github/workflows)/[^/]+\\.ya?ml$/",
-            "/(^|/)action\\.ya?ml$/"
-        ]
-    },
-    "pre-commit": {
-        "enabled": true,
-        "managerFilePatterns": [
-            "/(^|/)\\.pre-commit-config\\.ya?ml$/"
-        ]
-    },
-    "pip_requirements": {
-        "managerFilePatterns": [
-            "/(^|/)[\\w-]*requirements(-\\w+)?\\.(txt|pip)$/"
-        ]
-    },
     "customManagers": [
         {
             "customType": "regex",
