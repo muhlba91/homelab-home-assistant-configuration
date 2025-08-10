@@ -76,8 +76,7 @@ check
 # if check returns true, we need to perform a backup
 # otherwise, we have a new (empty) setup and can restore
 if [[ "${DATA_EXISTS}" == "true" ]]; then
-  # backup
-  echo bak
+  backup
 else
   restore
 fi
