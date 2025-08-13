@@ -15,7 +15,7 @@ extra_module_url:
   # renovate: datasource=github-releases packageName=RomRider/apexcharts-card
   - /local/community/apexcharts-card/apexcharts-card.js?v=2.1.2
   # renovate: datasource=github-tags packageName=Clooos/Bubble-Card
-  - /local/community/bubble-card/bubble-card.js?v=v3.0.2
+  - /local/community/bubble-card/bubble-card.js?v=v3.0.3
   # renovate: datasource=github-tags packageName=elchininet/custom-sidebar
   # - /local/community/custom-sidebar/custom-sidebar-yaml.js?v=v7.0.0
   # renovate: datasource=github-tags packageName=selvalt7/modern-circular-gauge
