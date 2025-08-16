@@ -5,8 +5,8 @@ ignore: |
   lib/
   .sops.yaml
   .pre-commit-config.yaml
-  configuration/secrets.yaml
-  configuration/secrets.enc.yaml
+  sites/**/configuration/secrets.yaml
+  sites/**/configuration/secrets.enc.yaml
 
 rules:
   comments-indentation: false
