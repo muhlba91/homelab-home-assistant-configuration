@@ -88,6 +88,8 @@ history:
 tts:
   - platform: google_translate
 
+assist_pipeline:
+
 media_source:
 
 automation: !include_dir_merge_list automation
