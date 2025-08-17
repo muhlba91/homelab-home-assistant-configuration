@@ -43,62 +43,26 @@ influxdb: !include influxdb/configuration.yaml
 prometheus:
   namespace: homeassistant
 
-backup:
-
-config:
+default_config:
 
 network:
 
 system_health:
 
-dhcp:
-
-go2rtc:
-
-homeassistant_alerts:
-
-zeroconf:
-
-webhook:
-
-my:
-
-energy:
-
 frontend: !include_dir_merge_named frontend
-
-sun:
 
 counter:
 
-mobile_app:
-
 person:
-
-ssdp:
 
 tag:
 
 timer:
 
-usb:
-
 zone:
-
-logbook:
-
-history:
 
 tts:
   - platform: google_translate
-
-conversation:
-
-assist_pipeline:
-
-stream:
-
-media_source:
 
 automation: !include_dir_merge_list automation
 script: !include_dir_merge_named script
