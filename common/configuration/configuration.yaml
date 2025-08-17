@@ -53,6 +53,10 @@ system_health:
 
 dhcp:
 
+go2rtc:
+
+homeassistant_alerts:
+
 zeroconf:
 
 webhook:
@@ -88,7 +92,11 @@ history:
 tts:
   - platform: google_translate
 
+conversation:
+
 assist_pipeline:
+
+stream:
 
 media_source:
 
