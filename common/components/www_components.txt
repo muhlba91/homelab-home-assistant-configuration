@@ -11,7 +11,7 @@ https://github.com/MindFreeze/ha-sankey-chart/releases/download@v3.9.4@ha-sankey
 # renovate: datasource=github-releases packageName=piitaya/lovelace-mushroom
 https://github.com/piitaya/lovelace-mushroom/releases/download@v4.5.0@mushroom.js@community/mushroom
 # renovate: datasource=github-releases packageName=RomRider/apexcharts-card
-https://github.com/RomRider/apexcharts-card/releases/download@v2.1.2@apexcharts-card.js@community/apexcharts-card
+https://github.com/RomRider/apexcharts-card/releases/download@v2.2.0@apexcharts-card.js@community/apexcharts-card
 # renovate: datasource=github-tags packageName=Clooos/Bubble-Card
 https://raw.githubusercontent.com/Clooos/Bubble-Card@v3.0.3@dist/bubble-card.js@community/bubble-card
 # renovate: datasource=github-tags packageName=Clooos/Bubble-Card
