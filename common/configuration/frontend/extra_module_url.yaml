@@ -13,7 +13,7 @@ extra_module_url:
   # renovate: datasource=github-releases packageName=piitaya/lovelace-mushroom
   - /local/community/mushroom/mushroom.js?v=v4.5.0
   # renovate: datasource=github-releases packageName=RomRider/apexcharts-card
-  - /local/community/apexcharts-card/apexcharts-card.js?v=2.2.0
+  - /local/community/apexcharts-card/apexcharts-card.js?v=2.2.3
   # renovate: datasource=github-tags packageName=Clooos/Bubble-Card
   - /local/community/bubble-card/bubble-card.js?v=v3.0.3
   # renovate: datasource=github-tags packageName=elchininet/custom-sidebar
