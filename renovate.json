@@ -27,7 +27,7 @@
                 "/(^|/|\\.)www_components\\.txt$/"
             ],
             "matchStrings": [
-                "# renovate: datasource=(?<datasource>[a-z-]+) packageName=(?<packageName>.+)\\s+https.+@(?<currentValue>.+)@.+@.+"
+                "# renovate: datasource=(?<datasource>[a-z-]+) packageName=(?<packageName>.+)\\s+https.+@(?<currentValue>.+)@.+@.+@.+"
             ]
         },
         {

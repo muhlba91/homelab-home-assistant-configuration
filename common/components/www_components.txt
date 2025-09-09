@@ -1,22 +1,24 @@
 # renovate: datasource=github-releases packageName=denysdovhan/vacuum-card
-https://github.com/denysdovhan/vacuum-card/releases/download@v2.11.0@vacuum-card.js@community/vacuum-card
+https://github.com/denysdovhan/vacuum-card/releases/download@v2.11.0@vacuum-card.js@community/vacuum-card@file
 # renovate: datasource=github-releases packageName=rianadon/timer-bar-card
-https://github.com/rianadon/timer-bar-card/releases/download@v1.31.1@timer-bar-card.js@community/timer-bar-card
+https://github.com/rianadon/timer-bar-card/releases/download@v1.31.1@timer-bar-card.js@community/timer-bar-card@file
 # renovate: datasource=github-releases packageName=custom-cards/button-card
-https://github.com/custom-cards/button-card/releases/download@v4.3.0@button-card.js@community/button-card
+https://github.com/custom-cards/button-card/releases/download@v4.3.0@button-card.js@community/button-card@file
 # renovate: datasource=github-releases packageName=kinghat/tabbed-card
-https://github.com/kinghat/tabbed-card/releases/download@v0.3.3@tabbed-card.js@community/tabbed-card
+https://github.com/kinghat/tabbed-card/releases/download@v0.3.3@tabbed-card.js@community/tabbed-card@file
 # renovate: datasource=github-releases packageName=MindFreeze/ha-sankey-chart
-https://github.com/MindFreeze/ha-sankey-chart/releases/download@v3.9.4@ha-sankey-chart.js@community/ha-sankey-chart
+https://github.com/MindFreeze/ha-sankey-chart/releases/download@v3.9.4@ha-sankey-chart.js@community/ha-sankey-chart@file
 # renovate: datasource=github-releases packageName=piitaya/lovelace-mushroom
-https://github.com/piitaya/lovelace-mushroom/releases/download@v4.5.0@mushroom.js@community/mushroom
+https://github.com/piitaya/lovelace-mushroom/releases/download@v4.5.0@mushroom.js@community/mushroom@file
 # renovate: datasource=github-releases packageName=RomRider/apexcharts-card
-https://github.com/RomRider/apexcharts-card/releases/download@v2.2.3@apexcharts-card.js@community/apexcharts-card
+https://github.com/RomRider/apexcharts-card/releases/download@v2.2.3@apexcharts-card.js@community/apexcharts-card@file
 # renovate: datasource=github-tags packageName=Clooos/Bubble-Card
-https://raw.githubusercontent.com/Clooos/Bubble-Card@v3.0.3@dist/bubble-card.js@community/bubble-card
+https://raw.githubusercontent.com/Clooos/Bubble-Card@v3.0.3@dist/bubble-card.js@community/bubble-card@file
 # renovate: datasource=github-tags packageName=Clooos/Bubble-Card
-https://raw.githubusercontent.com/Clooos/Bubble-Card@v3.0.3@dist/bubble-pop-up-fix.js@community/bubble-card
+https://raw.githubusercontent.com/Clooos/Bubble-Card@v3.0.3@dist/bubble-pop-up-fix.js@community/bubble-card@file
 # renovate: datasource=github-tags packageName=elchininet/custom-sidebar
-https://github.com/elchininet/custom-sidebar/releases/download@v10.5.2@custom-sidebar-yaml.js@community/custom-sidebar
+https://github.com/elchininet/custom-sidebar/releases/download@v10.5.2@custom-sidebar-yaml.js@community/custom-sidebar@file
 # renovate: datasource=github-tags packageName=selvalt7/modern-circular-gauge
-https://github.com/selvalt7/modern-circular-gauge/releases/download@v0.12.1@modern-circular-gauge.js@community/modern-circular-gauge
+https://github.com/selvalt7/modern-circular-gauge/releases/download@v0.12.1@modern-circular-gauge.js@community/modern-circular-gauge@file
+# renovate: datasource=github-tags packageName=dermotduffy/advanced-camera-card
+https://github.com/dermotduffy/advanced-camera-card/releases/download@v7.17.0@advanced-camera-card.zip@community/advanced-camera-card@zip

@@ -34,7 +34,13 @@ while read -r component; do
     IFS='@' read -ra data <<< "${component}"
     echo "[www_components] processing ${data[0]}/${data[1]}/${data[2]} to ${data[3]}"
     mkdir -p ${DATA_PATH}/www/${data[3]} || true
-    wget -P ${DATA_PATH}/www/${data[3]} ${data[0]}/${data[1]}/${data[2]} &> /dev/null
+    if [ "${data[4]:-}" = "file" ]; then
+      wget -P ${DATA_PATH}/www/${data[3]} ${data[0]}/${data[1]}/${data[2]} &> /dev/null
+    elif [ "${data[4]:-}" = "zip" ]; then
+      wget -qO- ${data[0]}/${data[1]}/${data[2]} | bsdtar -xvf- -C ${DATA_PATH}/www/${data[3]} &> /dev/null
+    else
+      wget -qO- ${data[0]}/${data[1]}/${data[2]} | tar xz -C ${DATA_PATH}/www/${data[3]} &> /dev/null
+    fi
   fi
 done < ${SOURCE_PATH}/common/components/www_components.txt
 #endregion
