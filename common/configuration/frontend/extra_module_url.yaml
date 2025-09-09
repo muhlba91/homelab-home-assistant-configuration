@@ -20,3 +20,5 @@ extra_module_url:
   # - /local/community/custom-sidebar/custom-sidebar-yaml.js?v=v7.0.0
   # renovate: datasource=github-tags packageName=selvalt7/modern-circular-gauge
   - /local/community/modern-circular-gauge/modern-circular-gauge.js?v=v0.12.1
+  # renovate: datasource=github-tags packageName=dermotduffy/advanced-camera-card
+  - /local/community/advanced-camera-card/dist/advanced-camera-card.js?v7.17.0
