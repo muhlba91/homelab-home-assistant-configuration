@@ -11,7 +11,7 @@ extra_module_url:
   # renovate: datasource=github-releases packageName=MindFreeze/ha-sankey-chart
   - /local/community/ha-sankey-chart/ha-sankey-chart.js?v=v3.9.4
   # renovate: datasource=github-releases packageName=piitaya/lovelace-mushroom
-  - /local/community/mushroom/mushroom.js?v=v5.0.5
+  - /local/community/mushroom/mushroom.js?v=v5.0.6
   # renovate: datasource=github-releases packageName=RomRider/apexcharts-card
   - /local/community/apexcharts-card/apexcharts-card.js?v=2.2.3
   # renovate: datasource=github-tags packageName=Clooos/Bubble-Card
