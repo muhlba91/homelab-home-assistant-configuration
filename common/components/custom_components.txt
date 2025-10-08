@@ -17,4 +17,4 @@ https://github.com/JeffSteinbok/hass-dreo.git@v1.3.3
 # renovate: datasource=github-tags packageName=chatziko/ha-google-cloud-stt
 https://github.com/chatziko/ha-google-cloud-stt@v0.3.1
 # renovate: datasource=github-tags packageName=blakeblackshear/frigate-hass-integration
-https://github.com/blakeblackshear/frigate-hass-integration.git@v5.9.4
+https://github.com/blakeblackshear/frigate-hass-integration.git@v5.10.0
