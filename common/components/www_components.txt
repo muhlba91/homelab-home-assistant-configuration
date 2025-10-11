@@ -7,7 +7,7 @@ https://github.com/custom-cards/button-card/releases/download@v5.0.2@button-card
 # renovate: datasource=github-releases packageName=kinghat/tabbed-card
 https://github.com/kinghat/tabbed-card/releases/download@v0.3.3@tabbed-card.js@community/tabbed-card@file
 # renovate: datasource=github-releases packageName=MindFreeze/ha-sankey-chart
-https://github.com/MindFreeze/ha-sankey-chart/releases/download@v3.9.4@ha-sankey-chart.js@community/ha-sankey-chart@file
+https://github.com/MindFreeze/ha-sankey-chart/releases/download@v3.10.0@ha-sankey-chart.js@community/ha-sankey-chart@file
 # renovate: datasource=github-releases packageName=piitaya/lovelace-mushroom
 https://github.com/piitaya/lovelace-mushroom/releases/download@v5.0.8@mushroom.js@community/mushroom@file
 # renovate: datasource=github-releases packageName=RomRider/apexcharts-card
