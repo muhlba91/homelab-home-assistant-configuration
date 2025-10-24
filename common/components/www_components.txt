@@ -3,7 +3,7 @@ https://github.com/denysdovhan/vacuum-card/releases/download@v2.11.0@vacuum-card
 # renovate: datasource=github-releases packageName=rianadon/timer-bar-card
 https://github.com/rianadon/timer-bar-card/releases/download@v1.31.1@timer-bar-card.js@community/timer-bar-card@file
 # renovate: datasource=github-releases packageName=custom-cards/button-card
-https://github.com/custom-cards/button-card/releases/download@v5.0.2@button-card.js@community/button-card@file
+https://github.com/custom-cards/button-card/releases/download@v6.0.0@button-card.js@community/button-card@file
 # renovate: datasource=github-releases packageName=kinghat/tabbed-card
 https://github.com/kinghat/tabbed-card/releases/download@v0.3.3@tabbed-card.js@community/tabbed-card@file
 # renovate: datasource=github-releases packageName=MindFreeze/ha-sankey-chart
