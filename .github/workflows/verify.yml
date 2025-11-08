@@ -48,7 +48,7 @@ jobs:
       - name: Check Home Assistant Configuration
         uses: frenck/action-home-assistant@941d5d917f4c1c7a7e7d4087526daf90d53f4437 # v1.4.1
         with:
-          path: tmp
+          path: ./tmp
           secrets: .ci/secrets.yaml
           env_file: .ci/env
           version: "${{ matrix.home-assistant-version }}"
