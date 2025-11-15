@@ -9,7 +9,7 @@ https://github.com/acon96/home-llm.git@v0.4.3
 # renovate: datasource=github-tags packageName=zachowj/hass-node-red
 https://github.com/zachowj/hass-node-red.git@v4.1.3
 # renovate: datasource=github-tags packageName=muhlba91/onyx-homeassistant-integration
-https://github.com/muhlba91/onyx-homeassistant-integration.git@v11.1.0
+https://github.com/muhlba91/onyx-homeassistant-integration.git@v12.0.0
 # renovate: datasource=github-tags packageName=beecho01/material-symbols
 https://github.com/beecho01/material-symbols.git@2024.11.23
 # renovate: datasource=github-tags packageName=JeffSteinbok/hass-dreo
