@@ -7,7 +7,7 @@ https://github.com/slashback100/presence_simulation.git@v5.1
 # renovate: datasource=github-tags packageName=acon96/home-llm
 https://github.com/acon96/home-llm.git@v0.4.4
 # renovate: datasource=github-tags packageName=zachowj/hass-node-red
-https://github.com/zachowj/hass-node-red.git@v4.1.4
+https://github.com/zachowj/hass-node-red.git@v4.1.5
 # renovate: datasource=github-tags packageName=muhlba91/onyx-homeassistant-integration
 https://github.com/muhlba91/onyx-homeassistant-integration.git@v12.0.1
 # renovate: datasource=github-tags packageName=beecho01/material-symbols
