@@ -21,4 +21,4 @@ https://github.com/elchininet/custom-sidebar/releases/download@v11.1.0@custom-si
 # renovate: datasource=github-tags packageName=selvalt7/modern-circular-gauge
 https://github.com/selvalt7/modern-circular-gauge/releases/download@v0.13.1@modern-circular-gauge.js@community/modern-circular-gauge@file
 # renovate: datasource=github-tags packageName=dermotduffy/advanced-camera-card
-https://github.com/dermotduffy/advanced-camera-card/releases/download@v7.25.4@advanced-camera-card.zip@community/advanced-camera-card@zip
+https://github.com/dermotduffy/advanced-camera-card/releases/download@v7.26.0@advanced-camera-card.zip@community/advanced-camera-card@zip
