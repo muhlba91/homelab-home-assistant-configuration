@@ -19,6 +19,6 @@ extra_module_url:
   # renovate: datasource=github-tags packageName=elchininet/custom-sidebar
   # - /local/community/custom-sidebar/custom-sidebar-yaml.js?v=v7.0.0
   # renovate: datasource=github-tags packageName=selvalt7/modern-circular-gauge
-  - /local/community/modern-circular-gauge/modern-circular-gauge.js?v=v0.13.1
+  - /local/community/modern-circular-gauge/modern-circular-gauge.js?v=v0.13.3
   # renovate: datasource=github-tags packageName=dermotduffy/advanced-camera-card
   - /local/community/advanced-camera-card/dist/advanced-camera-card.js?v7.17.0
