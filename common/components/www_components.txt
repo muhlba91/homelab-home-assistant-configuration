@@ -1,5 +1,5 @@
 # renovate: datasource=github-releases packageName=denysdovhan/vacuum-card
-https://github.com/denysdovhan/vacuum-card/releases/download@v2.11.0@vacuum-card.js@community/vacuum-card@file
+https://github.com/denysdovhan/vacuum-card/releases/download@v2.11.6@vacuum-card.js@community/vacuum-card@file
 # renovate: datasource=github-releases packageName=rianadon/timer-bar-card
 https://github.com/rianadon/timer-bar-card/releases/download@v1.31.1@timer-bar-card.js@community/timer-bar-card@file
 # renovate: datasource=github-releases packageName=custom-cards/button-card
