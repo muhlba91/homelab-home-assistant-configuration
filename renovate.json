@@ -33,7 +33,7 @@
         {
             "customType": "regex",
             "managerFilePatterns": [
-                "/(^|/|\\.)configuration/frontend/extra_module_url\\.yaml$/"
+                "/(^|/|\\.)extra_module_url\\.yaml$/"
             ],
             "matchStrings": [
                 "# renovate: datasource=(?<datasource>[a-z-]+) packageName=(?<packageName>.+)\\s+-.+v=(?<currentValue>.+)"
