@@ -1,7 +1,0 @@
----
-domains:
-  - zone
-  - automation
-  - group
-  - script
-  - image

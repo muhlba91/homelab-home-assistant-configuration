@@ -38,8 +38,6 @@ recorder:
   db_max_retries: 15
   db_retry_wait: 3
 
-influxdb: !include influxdb/configuration.yaml
-
 prometheus:
   namespace: homeassistant
 
