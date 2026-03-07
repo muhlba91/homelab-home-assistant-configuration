@@ -17,7 +17,7 @@ extra_module_url:
   # renovate: datasource=github-tags packageName=Clooos/Bubble-Card
   - /local/community/bubble-card/bubble-card.js?v=v3.1.4
   # renovate: datasource=github-tags packageName=elchininet/custom-sidebar
-  # - /local/community/custom-sidebar/custom-sidebar-yaml.js?v=v7.0.0
+  # - /local/community/custom-sidebar/custom-sidebar-plugin.js?v=v13.0.1@
   # renovate: datasource=github-tags packageName=selvalt7/modern-circular-gauge
   - /local/community/modern-circular-gauge/modern-circular-gauge.js?v=v0.13.3
   # renovate: datasource=github-tags packageName=dermotduffy/advanced-camera-card
