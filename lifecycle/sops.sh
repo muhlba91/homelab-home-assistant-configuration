@@ -3,7 +3,6 @@ set -euo pipefail
 
 FILES=(
   "sites/vie/configuration/secrets.yaml"
-  "sites/muc/configuration/secrets.yaml"
 )
 
 COMMAND=${1}
