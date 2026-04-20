@@ -19,4 +19,4 @@ https://github.com/chatziko/ha-google-cloud-stt@v0.3.1
 # renovate: datasource=github-tags packageName=blakeblackshear/frigate-hass-integration
 https://github.com/blakeblackshear/frigate-hass-integration.git@v5.15.2
 # renovate: datasource=github-tags packageName=mike-nott/mcp-assist
-https://github.com/mike-nott/mcp-assist.git@v0.16.0
+https://github.com/mike-nott/mcp-assist.git@v0.16.1
