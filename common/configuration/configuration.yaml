@@ -18,15 +18,6 @@ homeassistant:
   auth_providers:
     - type: homeassistant
 
-http:
-  server_port: 8123
-  ip_ban_enabled: false
-  login_attempts_threshold: 10
-  use_x_forwarded_for: true
-  trusted_proxies:
-    - 10.0.0.0/8
-    - fc00::/7
-
 api:
 
 recorder:
