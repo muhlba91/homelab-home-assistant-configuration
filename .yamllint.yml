@@ -2,6 +2,7 @@
 extends: default
 
 ignore: |
+  tmp/
   lib/
   .sops.yaml
   .pre-commit-config.yaml

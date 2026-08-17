@@ -26,6 +26,23 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
+  shellcheck:
+    runs-on: ubuntu-latest
+    name: Shellcheck
+
+    steps:
+      - uses: step-security/harden-runner@05e31511f85b41b11d1cf0ef85d0992719546e2c # v2.21.0
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+
+      - uses: ludeeus/action-shellcheck@00cae500b08a931fb5698e11e79bfbd38e612a38 # 2.0.0
+        with:
+          scandir: ./lifecycle
+
   yaml:
     runs-on: ubuntu-latest
     name: Lint YAML

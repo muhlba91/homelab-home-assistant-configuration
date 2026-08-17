@@ -10,7 +10,13 @@ This repository contains [Home Assistant](http://home-assistant.io) configuratio
 
 ## Configuration
 
-The main configuration is located in [`configuration/configuration.yaml`](configuration/configuration.yaml) with secrets being stored in [`configuration/secrets.yaml`](configuration/secrets.yaml).
+The repository is split into two layers:
+
+- **Common** ([`common/configuration/`](common/configuration/)): shared configuration, automations, blueprints, and component lists applied to every site.
+- **Sites** ([`sites/`](sites/)): site-specific configuration, automations, and encrypted secrets. Each subdirectory (e.g. [`sites/vie/`](sites/vie/)) represents one Home Assistant instance.
+
+The main configuration entry point is [`common/configuration/configuration.yaml`](common/configuration/configuration.yaml).
+Site secrets are stored per-site in `sites/<site>/configuration/secrets.enc.yaml` (e.g. [`sites/vie/configuration/secrets.enc.yaml`](sites/vie/configuration/secrets.enc.yaml)).
 
 ### Secrets Encryption
 
@@ -20,6 +26,8 @@ All secrets are encrypted with [sops](https://github.com/mozilla/sops) and [Goog
 
 The directory [`lifecycle`](lifecycle/) contains all lifecycle scripts:
 
-- `prepare.sh`: installs all custom and www components defined in [`components/custom_components.txt`](components/custom_components.txt) and [`components/www_components.txt`](components/www_components.txt)
-- `sops.sh`: encrypts or decrypts all necessary files (pass `e` for encryption, and `d` for decryption)
-- `backup_restore.sh`: checks if data exists and either backups or restores the configuration
+- [`prepare.sh`](lifecycle/prepare.sh): installs all custom and www components defined in [`common/components/custom_components.txt`](common/components/custom_components.txt) and [`common/components/www_components.txt`](common/components/www_components.txt).
+  Downloads are staged into a temporary directory first; the live destination is only replaced once all downloads succeed.
+  If a download fails, an error is printed, the affected block is skipped, and the script continues with exit code 0.
+- [`sops.sh`](lifecycle/sops.sh): encrypts or decrypts all necessary secret files (pass `e` for encryption, `d` for decryption)
+- [`backup_restore.sh`](lifecycle/backup_restore.sh): checks if data exists and either backs up or restores the configuration from S3
