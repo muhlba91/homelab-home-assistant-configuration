@@ -390,5 +390,6 @@ pip-selfcheck.json
 local.env
 gcp-*-key.json
 tmp/
+tmp_state/
 share/
 .python-version
