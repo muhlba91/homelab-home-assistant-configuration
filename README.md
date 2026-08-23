@@ -34,10 +34,97 @@ All versions are kept up-to-date automatically via [Renovate](https://docs.renov
 
 ## Lifecycle Scripts
 
-The directory [`lifecycle`](lifecycle/) contains all lifecycle scripts:
+The directory [`lifecycle/`](lifecycle/) contains all executable lifecycle scripts.
+All scripts are idempotent and designed to run repeatedly (e.g. via a sidecar or cron).
 
-- [`prepare.sh`](lifecycle/prepare.sh): installs all custom and www components defined in [`common/components/custom_components.txt`](common/components/custom_components.txt) and [`common/components/www_components.txt`](common/components/www_components.txt).
-  Downloads for each component type are staged into a temporary directory first; the live destination is only replaced once **all** downloads for that type succeed.
-  If any download within a component type fails, a warning is printed, that entire type is skipped, and the script continues with exit code 0.
-- [`sops.sh`](lifecycle/sops.sh): encrypts or decrypts all necessary secret files (pass `e` for encryption, `d` for decryption).
-- [`backup_restore.sh`](lifecycle/backup_restore.sh): checks if data exists and either backs up or restores the Home Assistant `.storage/` directory to/from [Scaleway Object Storage](https://www.scaleway.com/en/object-storage/) (S3-compatible). Optionally copies the repository configuration into the data directory when `COPY_CONFIG=true`.
+### Exit code convention
+
+Scripts that perform change detection share a common exit code contract:
+
+| Code | Meaning |
+| --- | --- |
+| `0` | Nothing changed — all workflows skipped |
+| `1` | At least one workflow applied changes |
+| `2` | At least one workflow encountered an error |
+
+---
+
+### [`prepare.sh`](lifecycle/prepare.sh)
+
+Installs custom integrations and Lovelace (www) components. Each component type is change-detected by SHA-256 hashing its manifest file — the installation only runs when the manifest has changed since the last successful run.
+Downloads are staged in a temporary directory; the live destination is replaced only once **all** downloads for that type succeed.
+
+```sh
+./lifecycle/prepare.sh <DATA_PATH> [SOURCE_PATH] [STATE_PATH]
+```
+
+| Argument | Default | Description |
+| --- | --- | --- |
+| `DATA_PATH` | — | Home Assistant data directory |
+| `SOURCE_PATH` | `.` | Root of this repository |
+| `STATE_PATH` | `mktemp -d` | Directory to persist SHA-256 state between runs |
+| `IGNORE_RETURN_VALUES` | `false` | Set to `true` to always exit `0`; echo output still reflects actual state |
+
+No environment variables required.
+
+---
+
+### [`configuration.sh`](lifecycle/configuration.sh)
+
+Copies common and site-specific configuration from the repository into the HA data directory.
+Change detection compares SHA-256 digests of both source trees; the copy only runs when content has changed.
+
+```sh
+./lifecycle/configuration.sh <DATA_PATH> [SOURCE_PATH] [SITE] [STATE_PATH] [IGNORE_RETURN_VALUES]
+```
+
+| Argument | Default | Description |
+| --- | --- | --- |
+| `DATA_PATH` | — | Home Assistant data directory |
+| `SOURCE_PATH` | `.` | Root of this repository |
+| `SITE` | `vie` | Site subdirectory under `sites/` |
+| `STATE_PATH` | `mktemp -d` | Directory to persist SHA-256 state between runs |
+| `IGNORE_RETURN_VALUES` | `false` | Set to `true` to always exit `0`; echo output still reflects actual state |
+
+No environment variables required.
+
+---
+
+### [`sops.sh`](lifecycle/sops.sh)
+
+Encrypts or decrypts all site secret files using [sops](https://github.com/mozilla/sops) and Google Cloud KMS.
+
+```sh
+./lifecycle/sops.sh <COMMAND> [SOURCE_PATH]
+```
+
+| Argument | Default | Description |
+| --- | --- | --- |
+| `COMMAND` | — | `d` to decrypt, `e` to encrypt |
+| `SOURCE_PATH` | `.` | Root of this repository |
+
+Requires GCP credentials accessible to `sops` (e.g. `GOOGLE_APPLICATION_CREDENTIALS` or Workload Identity).
+
+---
+
+### [`backup_restore.sh`](lifecycle/backup_restore.sh)
+
+Checks whether an existing HA installation is present in `DATA_PATH` (via `secrets.yaml`).
+If data exists, uploads `.storage/` to Scaleway Object Storage (backup).
+If no data exists, wipes `DATA_PATH` and restores `.storage/` from Scaleway (restore).
+
+```sh
+./lifecycle/backup_restore.sh <DATA_PATH>
+```
+
+| Argument | Default | Description |
+| --- | --- | --- |
+| `DATA_PATH` | — | Home Assistant data directory |
+
+| Environment variable | Description |
+| --- | --- |
+| `SCW_ACCESS_KEY` | Scaleway access key |
+| `SCW_SECRET_KEY` | Scaleway secret key |
+| `SCW_DEFAULT_REGION` | Scaleway region (e.g. `fr-par`) |
+| `S3_ASSETS_BUCKET` | S3 bucket name |
+| `S3_ASSETS_BUCKET_PATH` | Key prefix within the bucket |

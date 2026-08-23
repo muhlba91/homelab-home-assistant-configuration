@@ -1,0 +1,14 @@
+---
+- alias: sync configuration
+  trigger:
+    platform: time
+    at: "00:01:10"
+  action:
+    - service: shell_command.sync_configuration
+      response_variable: sync_result
+    - choose:
+        - conditions:
+            - condition: template
+              value_template: "{{ sync_result.return_code == 1 }}"
+          sequence:
+            - service: homeassistant.restart
