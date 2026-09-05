@@ -33,20 +33,16 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install dependencies
-        run: |
+      - run: |
           sudo apt-get update
           sudo apt-get install -y libarchive-tools
 
-      - name: Prepare data
-        run: |
+      - run: |
           mkdir tmp
-          cp -rf common/configuration/* tmp/
-          cp -rf sites/${{ matrix.site }}/configuration/* tmp/
-          ./lifecycle/prepare.sh tmp
+          ./lifecycle/configuration.sh tmp . ${{ matrix.site }} "" true true
+          ./lifecycle/prepare.sh tmp . "" true
 
-      - name: Check Home Assistant Configuration
-        uses: frenck/action-home-assistant@941d5d917f4c1c7a7e7d4087526daf90d53f4437 # v1.4.1
+      - uses: frenck/action-home-assistant@941d5d917f4c1c7a7e7d4087526daf90d53f4437 # v1.4.1
         with:
           path: ./tmp
           secrets: .ci/secrets.yaml

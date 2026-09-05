@@ -2,79 +2,46 @@
 set -euo pipefail
 
 DATA_PATH=${1}
-COPY_CONFIG=${2:-false}
-SOURCE_PATH=${3:-.}
-SITE=${4:-vie}
 
 #region global configuration
 S3_ASSETS_BUCKET_BACKUP_PATH="${S3_ASSETS_BUCKET}/${S3_ASSETS_BUCKET_PATH}/home-assistant"
 #endregion
 
 #region functions
-function check() {
-  DATA_EXISTS="true"
-
-  test_file='secrets.yaml'
-  if ! test -f "${DATA_PATH}/${test_file}"; then
-    DATA_EXISTS="false"
-  fi
+# Check whether an existing HA data installation is present.
+# Returns: 0 if secrets.yaml exists in DATA_PATH; 1 otherwise
+function data_exists() {
+  test -f "${DATA_PATH}/secrets.yaml"
 }
 
+# Upload the current .storage directory to S3.
 function backup() {
-  echo "backing up..."
+  echo "[backup_restore] backing up..."
 
-  # uploading backup from S3
-  echo "uploading storage..."
+  echo "[backup_restore] uploading storage..."
   s3cmd --access_key="${SCW_ACCESS_KEY}" --secret_key="${SCW_SECRET_KEY}" --host="https://s3.${SCW_DEFAULT_REGION}.scw.cloud" --host-bucket="https://%(bucket)s.s3.${SCW_DEFAULT_REGION}.scw.cloud" --recursive --delete-removed --force --exclude-from .s3ignore sync "${DATA_PATH}/.storage/" "s3://${S3_ASSETS_BUCKET_BACKUP_PATH}/"
-
-  if [[ "${COPY_CONFIG}" == "true" ]]; then
-    copy_configuration
-  fi
 }
 
+# Wipe DATA_PATH and restore .storage from S3.
 function restore() {
-  echo "restoring..."
+  echo "[backup_restore] restoring..."
 
-  echo "wiping data..."
+  echo "[backup_restore] wiping data..."
   rm -rf "${DATA_PATH:?}/"*
   mkdir -p "${DATA_PATH}/.storage"
 
-  # download backup from S3
-  echo "downloading and restoring storage..."
+  echo "[backup_restore] downloading and restoring storage..."
   s3cmd --access_key="${SCW_ACCESS_KEY}" --secret_key="${SCW_SECRET_KEY}" --host="https://s3.${SCW_DEFAULT_REGION}.scw.cloud" --host-bucket="https://%(bucket)s.s3.${SCW_DEFAULT_REGION}.scw.cloud" --recursive --force sync "s3://${S3_ASSETS_BUCKET_BACKUP_PATH}/" "${DATA_PATH}/.storage/"
-
-  copy_configuration
-}
-
-function copy_configuration() {
-  echo "wiping current configuration data..."
-  files=$(find "${SOURCE_PATH}/common/configuration" -maxdepth 1 -exec basename -a {} +)
-  for file in "${files[@]}"; do
-    rm -rf "${DATA_PATH:?}/${file}"
-  done
-  files=$(find "${SOURCE_PATH}/sites/${SITE}/configuration" -maxdepth 1 -exec basename -a {} +)
-  for file in "${files[@]}"; do
-    rm -rf "${DATA_PATH:?}/${file}"
-  done
-
-  echo "copying configuration..."
-  cp -rf "${SOURCE_PATH}/common/configuration/"* "${DATA_PATH}/"
-  cp -rf "${SOURCE_PATH}/sites/${SITE}/configuration/"* "${DATA_PATH}/"
 }
 #endregion
 
 #region log configuration
-echo "using S3 bucket and path: ${S3_ASSETS_BUCKET_BACKUP_PATH}"
-#endregion
-
-#region data check
-check
+echo "[backup_restore] using S3 bucket and path: ${S3_ASSETS_BUCKET_BACKUP_PATH}"
 #endregion
 
 #region backup or restore
-# if check returns true, we need to perform a backup
-# otherwise, we have a new (empty) setup and can restore
-if [[ "${DATA_EXISTS}" == "true" ]]; then
+# if data exists we perform a backup; otherwise restore to a fresh setup
+if data_exists; then
   backup
 else
   restore
