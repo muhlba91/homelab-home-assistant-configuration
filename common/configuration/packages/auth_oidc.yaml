@@ -1,0 +1,21 @@
+---
+auth_oidc:
+  client_id: !env_var OIDC_CLIENT_ID
+  client_secret: !env_var OIDC_CLIENT_SECRET
+  discovery_url: !env_var OIDC_WELL_KNOWN_URL
+
+  display_name: Login with SSO
+
+  features:
+    require_existing_user: true
+    automatic_user_linking: true
+    include_groups_scope: false
+
+  claims:
+    username: preferred_username
+    display_name: name
+    groups: grants
+
+  roles:
+    admin: admin
+    user: user
