@@ -7,7 +7,8 @@ auth_oidc:
   display_name: Login with SSO
 
   features:
-    require_existing_user: true
+    # FIXME: wait until 1.3.0 is released to enable this feature
+    # require_existing_user: true
     automatic_user_linking: true
     include_groups_scope: false
 
