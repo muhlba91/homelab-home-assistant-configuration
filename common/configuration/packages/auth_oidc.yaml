@@ -4,13 +4,14 @@ auth_oidc:
   client_secret: !env_var OIDC_CLIENT_SECRET
   discovery_url: !env_var OIDC_WELL_KNOWN_URL
 
-  display_name: Login with SSO
+  display_name: SSO
 
   features:
     # FIXME: wait until 1.3.0 is released to enable this feature
     # require_existing_user: true
     automatic_user_linking: true
     include_groups_scope: false
+    # default_redirect: true
 
   claims:
     username: preferred_username
