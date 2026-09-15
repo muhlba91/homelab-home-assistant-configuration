@@ -26,7 +26,7 @@ All secrets are encrypted with [sops](https://github.com/mozilla/sops) and [Goog
 
 Custom integration and frontend (www) component versions are pinned in:
 
-- [`common/components/custom_components.txt`](common/components/custom_components.txt): HACS-style custom integrations, cloned from GitHub at the specified tag.
+- [`common/components/custom_components.txt`](common/components/custom_components.txt): HACS-style custom integrations, either cloned from GitHub at the specified tag, or (for repos without a `custom_components/` wrapper) downloaded and extracted from a GitHub release zip asset.
 - [`common/components/www_components.txt`](common/components/www_components.txt): Lovelace frontend resources, downloaded from GitHub releases.
 - [`common/configuration/frontend/extra_module_url.yaml`](common/configuration/frontend/extra_module_url.yaml): additional frontend module URLs loaded by Home Assistant.
 

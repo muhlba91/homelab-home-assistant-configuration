@@ -1,5 +1,5 @@
-# renovate: datasource=github-tags packageName=christiaangoossens/hass-oidc-auth
-https://github.com/christiaangoossens/hass-oidc-auth@v1.2.1
+# renovate: datasource=github-releases packageName=christiaangoossens/hass-oidc-auth
+https://github.com/christiaangoossens/hass-oidc-auth/releases/download@v1.2.1@hass-oidc-auth.zip@auth_oidc@zip
 # renovate: datasource=github-tags packageName=ollo69/ha-smartthinq-sensors
 https://github.com/ollo69/ha-smartthinq-sensors.git@v0.43.0
 # renovate: datasource=github-tags packageName=sockless-coding/panasonic_cc

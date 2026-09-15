@@ -36,15 +36,28 @@ function install_custom_components() {
   while read -r component; do
     if [[ -n "${component//[[:space:]]/}" && "${component:0:1}" != "#" ]]; then
       IFS='@' read -ra data <<< "${component}"
-      echo "[custom_components] cloning ${data[0]} at version ${data[1]}..."
-      local clone_err
-      clone_err=$(git clone --quiet --depth 1 --branch "${data[1]}" "${data[0]}" "${tmp}/component" 2>&1) \
-        || { echo "[custom_components] ERROR: git clone failed for ${data[0]}: ${clone_err}"; return 2; }
-      cp -rf "${tmp}/component/custom_components/." "${tmp}/" \
-        || { echo "[custom_components] ERROR: cp failed for ${data[0]} (repo layout may differ)"; return 2; }
-      rm -rf "${tmp}/component" \
-        || { echo "[custom_components] ERROR: failed to remove ${tmp}/component"; return 2; }
-      echo "[custom_components] cloned: ${data[0]}"
+      if [ "${data[4]:-}" = "zip" ]; then
+        # HACS-style repo without a custom_components/ wrapper: download the release
+        # zip asset (data[2]) at version (data[1]) and extract it directly into the
+        # component directory named data[3] (typically the integration's domain).
+        echo "[custom_components] downloading ${data[0]}/${data[1]}/${data[2]} → ${data[3]}..."
+        mkdir -p "${tmp}/${data[3]}" \
+          || { echo "[custom_components] ERROR: failed to create ${tmp}/${data[3]}"; return 2; }
+        local dl_err
+        dl_err=$({ wget -qO- "${data[0]}/${data[1]}/${data[2]}" | bsdtar -xf- -C "${tmp}/${data[3]}"; } 2>&1) \
+          || { echo "[custom_components] ERROR: download/extract failed for ${data[2]}: ${dl_err}"; return 2; }
+        echo "[custom_components] downloaded: ${data[0]}"
+      else
+        echo "[custom_components] cloning ${data[0]} at version ${data[1]}..."
+        local clone_err
+        clone_err=$(git clone --quiet --depth 1 --branch "${data[1]}" "${data[0]}" "${tmp}/component" 2>&1) \
+          || { echo "[custom_components] ERROR: git clone failed for ${data[0]}: ${clone_err}"; return 2; }
+        cp -rf "${tmp}/component/custom_components/." "${tmp}/" \
+          || { echo "[custom_components] ERROR: cp failed for ${data[0]} (repo layout may differ)"; return 2; }
+        rm -rf "${tmp}/component" \
+          || { echo "[custom_components] ERROR: failed to remove ${tmp}/component"; return 2; }
+        echo "[custom_components] cloned: ${data[0]}"
+      fi
     fi
   done < "${manifest}"
 
