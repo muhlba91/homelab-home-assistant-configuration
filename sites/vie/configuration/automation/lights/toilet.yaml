@@ -1,0 +1,9 @@
+---
+- alias: "Lights: Toilet"
+  use_blueprint:
+    path: lights/motion_lux_light.yaml
+    input:
+      motion_sensor: binary_sensor.fms1_home_security_motion_detection
+      luminance_sensor: sensor.fms1_illuminance
+      light_switch: switch.fs1_1
+      wait_time: 180

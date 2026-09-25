@@ -1,0 +1,10 @@
+---
+- alias: "Lights: Entrance Room"
+  use_blueprint:
+    path: lights/motion_lux.yaml
+    input:
+      motion_sensor: binary_sensor.fms2_home_security_motion_detection
+      luminance_sensor: sensor.fms2_illuminance
+      light_switch: switch.fs2_1
+      luminance_threshold: 60
+      wait_time: 30

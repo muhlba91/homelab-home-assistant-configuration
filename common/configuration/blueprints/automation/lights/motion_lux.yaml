@@ -1,0 +1,73 @@
+---
+blueprint:
+  name: Motion-Activated Light with Lux Threshold
+  domain: automation
+  input:
+    motion_sensor:
+      name: Motion sensor
+      selector:
+        entity:
+          domain: binary_sensor
+          device_class: motion
+    luminance_sensor:
+      name: Illuminance sensor
+      selector:
+        entity:
+          domain: sensor
+          device_class: illuminance
+    light_switch:
+      name: Light switch
+      selector:
+        entity:
+          domain: switch
+    luminance_threshold:
+      name: Illuminance threshold (lx)
+      default: 1000
+      selector:
+        number:
+          min: 0
+          max: 100000
+          unit_of_measurement: lx
+    wait_time:
+      name: Wait time after motion clears (seconds)
+      selector:
+        number:
+          min: 0
+          max: 3600
+          unit_of_measurement: s
+
+variables:
+  luminance_sensor: !input luminance_sensor
+  luminance_threshold: !input luminance_threshold
+
+trigger:
+  - trigger: state
+    entity_id: !input motion_sensor
+    to: "on"
+    id: motion_on
+  - trigger: state
+    entity_id: !input motion_sensor
+    to: "off"
+    for:
+      seconds: !input wait_time
+    id: motion_off
+condition: []
+action:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: motion_on
+          - condition: template
+            value_template: "{{ states(luminance_sensor) | float(9999) <= luminance_threshold }}"
+        sequence:
+          - action: switch.turn_on
+            target:
+              entity_id: !input light_switch
+      - conditions:
+          - condition: trigger
+            id: motion_off
+        sequence:
+          - action: switch.turn_off
+            target:
+              entity_id: !input light_switch
+mode: single
