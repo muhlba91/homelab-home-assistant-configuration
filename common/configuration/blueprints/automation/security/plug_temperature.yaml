@@ -81,6 +81,7 @@ trigger:
         type: above
         value:
           number: !input temperature_threshold
+          unit_of_measurement: °C
       behavior: each
     id: alert
   - trigger: temperature.crossed_threshold
@@ -90,6 +91,7 @@ trigger:
         type: below
         value:
           number: !input temperature_threshold
+          unit_of_measurement: °C
       behavior: each
     id: cleared
 condition: []
