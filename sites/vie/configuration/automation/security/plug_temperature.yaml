@@ -1,0 +1,11 @@
+---
+- alias: "Security: Plug Temperature - Office"
+  use_blueprint:
+    path: security/plug_temperature.yaml
+    input:
+      sensor_target:
+        entity_id:
+          - sensor.office_plug_desk_daniel_temperature
+          - sensor.office_plug_desk_kasia_temperature
+          - sensor.tech_hub_plug_temperature
+      temperature_threshold: 60
