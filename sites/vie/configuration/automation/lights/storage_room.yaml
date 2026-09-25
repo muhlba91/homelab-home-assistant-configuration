@@ -1,7 +1,7 @@
 ---
 - alias: "Lights: Storage Room"
   use_blueprint:
-    path: lights/motion_lux_light.yaml
+    path: lights/motion_lux.yaml
     input:
       motion_sensor: binary_sensor.fms3_home_security_motion_detection
       luminance_sensor: sensor.fms3_illuminance
