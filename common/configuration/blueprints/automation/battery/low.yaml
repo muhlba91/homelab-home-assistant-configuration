@@ -1,0 +1,63 @@
+---
+blueprint:
+  name: Battery Low Alert
+  domain: automation
+  input:
+    sensor_target:
+      name: Battery sensor to watch
+      selector:
+        target:
+          entity:
+            domain: sensor
+            device_class: battery
+    battery_threshold:
+      name: Battery threshold (%)
+      default: 20
+      selector:
+        number:
+          min: 0
+          max: 100
+          unit_of_measurement: "%"
+
+variables:
+  battery_threshold: !input battery_threshold
+
+trigger:
+  - trigger: battery.level_crossed_threshold
+    target: !input sensor_target
+    options:
+      threshold:
+        type: below
+        value:
+          number: !input battery_threshold
+    id: alert
+  - trigger: battery.level_crossed_threshold
+    target: !input sensor_target
+    options:
+      threshold:
+        type: above
+        value:
+          number: !input battery_threshold
+    id: cleared
+condition: []
+action:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: alert
+        sequence:
+          - action: persistent_notification.create
+            data:
+              notification_id: "battery_low_{{ trigger.entity_id }}"
+              title: Battery Low
+              message: >-
+                {{ trigger.to_state.attributes.friendly_name }} is at
+                {{ trigger.to_state.state }}% (threshold: {{ battery_threshold }}%).
+      - conditions:
+          - condition: trigger
+            id: cleared
+        sequence:
+          - action: persistent_notification.dismiss
+            data:
+              notification_id: "battery_low_{{ trigger.entity_id }}"
+mode: parallel
