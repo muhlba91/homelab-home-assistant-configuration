@@ -1,0 +1,8 @@
+---
+- alias: "Security: Flood Detection"
+  use_blueprint:
+    path: security/flood.yaml
+    input:
+      sensor_target:
+        entity_id:
+          - binary_sensor.ffs1_water_alarm_water_leak_detected

@@ -1,0 +1,14 @@
+---
+- alias: "Security: Smoke Detection"
+  use_blueprint:
+    path: security/smoke.yaml
+    input:
+      sensor_target:
+        entity_id:
+          - binary_sensor.ass1_smoke_detected
+          - binary_sensor.ass2_smoke_detected
+          - binary_sensor.ass3_smoke_detected
+          - binary_sensor.ass4_smoke_detected
+          - binary_sensor.ass5_smoke_detected
+          - binary_sensor.ass6_smoke_detected
+          - binary_sensor.ass7_smoke_detected

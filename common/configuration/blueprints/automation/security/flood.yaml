@@ -1,0 +1,109 @@
+---
+blueprint:
+  name: Flood Alarm
+  domain: automation
+  input:
+    sensor_target:
+      name: Sensors to watch
+      selector:
+        target:
+          entity:
+            domain: binary_sensor
+    ntfy_topic:
+      name: Topic to send notifications to
+      default: tuxnet-home-security
+      selector:
+        text:
+    alert_title:
+      name: Alert title
+      default: FLOOD ALARM
+      selector:
+        text:
+    alert_tags:
+      name: Alert tags
+      default:
+        - potable_water
+        - rotating_light
+      selector:
+        object:
+    alert_priority:
+      name: Alert priority
+      default: max
+      selector:
+        select:
+          options:
+            - min
+            - low
+            - default
+            - high
+            - max
+    cleared_title:
+      name: Cleared title
+      default: FLOOD ALARM CLEARED
+      selector:
+        text:
+    cleared_tags:
+      name: Cleared tags
+      default:
+        - potable_water
+        - green_circle
+      selector:
+        object:
+    cleared_priority:
+      name: Cleared priority
+      default: high
+      selector:
+        select:
+          options:
+            - min
+            - low
+            - default
+            - high
+            - max
+
+trigger:
+  - trigger: moisture.detected
+    target: !input sensor_target
+    options:
+      behavior: each
+    id: alert
+  - trigger: moisture.cleared
+    target: !input sensor_target
+    options:
+      behavior: each
+    id: cleared
+condition: []
+action:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: alert
+        sequence:
+          - action: rest_command.ntfy_notify
+            data:
+              topic: !input ntfy_topic
+              title: !input alert_title
+              tags: !input alert_tags
+              priority: !input alert_priority
+              markdown: false
+              message: |-
+                Name: {{ trigger.to_state.attributes.friendly_name }}
+                Started: {{ as_local(trigger.to_state.last_changed).strftime('%Y-%m-%d %H:%M:%S') }}
+                Entity ID: {{ trigger.entity_id }}
+      - conditions:
+          - condition: trigger
+            id: cleared
+        sequence:
+          - action: rest_command.ntfy_notify
+            data:
+              topic: !input ntfy_topic
+              title: !input cleared_title
+              tags: !input cleared_tags
+              priority: !input cleared_priority
+              markdown: false
+              message: |-
+                Name: {{ trigger.to_state.attributes.friendly_name }}
+                Started: {{ as_local(trigger.from_state.last_changed).strftime('%Y-%m-%d %H:%M:%S') }}
+                Ended: {{ as_local(trigger.to_state.last_changed).strftime('%Y-%m-%d %H:%M:%S') }}
+                Entity ID: {{ trigger.entity_id }}
+mode: parallel
