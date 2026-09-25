@@ -11,23 +11,23 @@
     default_tilt: 88
   actions:
     - parallel:
-        - action: script.cover_position_then_tilt
+        - action: script.cover_position_tilt
           data:
             cover_entity: cover.garden_door
             tilt_position: "{{ default_tilt }}"
-        - action: script.cover_position_then_tilt
+        - action: script.cover_position_tilt
           data:
             cover_entity: cover.living_room_kitchen
             tilt_position: "{{ default_tilt }}"
-        - action: script.cover_position_then_tilt
+        - action: script.cover_position_tilt
           data:
             cover_entity: cover.living_room_tv
             tilt_position: "{{ default_tilt }}"
-        - action: script.cover_position_then_tilt
+        - action: script.cover_position_tilt
           data:
             cover_entity: cover.office
             tilt_position: "{{ default_tilt }}"
-        - action: script.cover_position_then_tilt
+        - action: script.cover_position_tilt
           data:
             cover_entity: cover.tea_room
             tilt_position: 77
