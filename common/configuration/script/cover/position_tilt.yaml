@@ -1,0 +1,59 @@
+---
+cover_position_tilt:
+  alias: "Cover: Set Position and Tilt"
+  fields:
+    cover_entity:
+      name: Cover
+      required: true
+      selector:
+        entity:
+          domain: cover
+    position:
+      name: Target position
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 100
+          unit_of_measurement: "%"
+    tilt_position:
+      name: Target tilt
+      default: 100
+      selector:
+        number:
+          min: 0
+          max: 100
+          unit_of_measurement: "%"
+    position_tolerance:
+      name: Position tolerance
+      default: 5
+      selector:
+        number:
+          min: 0
+          max: 10
+          unit_of_measurement: "%"
+    position_timeout:
+      name: Timeout waiting for position
+      default: 120
+      selector:
+        number:
+          min: 10
+          max: 600
+          unit_of_measurement: "s"
+  sequence:
+    - action: cover.set_cover_position
+      target:
+        entity_id: "{{ cover_entity }}"
+      data:
+        position: "{{ position | default(0) }}"
+    - wait_template: >-
+        {{ (state_attr(cover_entity, 'current_position') | float(-999) - (position | default(0) | float)) | abs <= (position_tolerance | default(5) | float) }}
+      timeout:
+        seconds: "{{ position_timeout | default(120) }}"
+      continue_on_timeout: false
+    - action: cover.set_cover_tilt_position
+      target:
+        entity_id: "{{ cover_entity }}"
+      data:
+        tilt_position: "{{ tilt_position }}"
+  mode: parallel

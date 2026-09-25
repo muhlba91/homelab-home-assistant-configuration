@@ -393,3 +393,4 @@ tmp/
 tmp_state/
 share/
 .python-version
+!cover/
