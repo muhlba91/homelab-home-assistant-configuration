@@ -1,0 +1,44 @@
+---
+- alias: "Utility Room: Washing Machine: Started"
+  triggers:
+    - trigger: state
+      entity_id: sensor.washing_machine_run_state
+      to: "Washing"
+  conditions: []
+  actions:
+    - delay:
+        seconds: 60
+    - action: rest_command.ntfy_notify
+      data:
+        topic: tuxnet-home
+        title: Washing Machine STARTED
+        tags:
+          - womans_clothes
+          - arrows_counterclockwise
+        markdown: false
+        message: |-
+          Started: {{ as_local(trigger.to_state.last_changed).strftime('%Y-%m-%d %H:%M:%S') }}
+          Estimated Time: {{ states('sensor.washing_machine_initial_time') }}
+          Course: {{ states('sensor.washing_machine_current_course') }}
+          Water Temperature: {{ states('sensor.washing_machine_water_temp') }}
+          Spin Speed: {{ states('sensor.washing_machine_spin_speed') }}
+  mode: single
+
+- alias: "Utility Room: Washing Machine: Completed"
+  triggers:
+    - trigger: state
+      entity_id: binary_sensor.washing_machine_wash_completed
+      to: "on"
+  conditions: []
+  actions:
+    - action: rest_command.ntfy_notify
+      data:
+        topic: tuxnet-home
+        title: Washing Machine COMPLETED
+        tags:
+          - womans_clothes
+          - white_check_mark
+        markdown: false
+        message: |-
+          Completed: {{ as_local(trigger.to_state.last_changed).strftime('%Y-%m-%d %H:%M:%S') }}
+  mode: single
