@@ -1,0 +1,11 @@
+---
+- alias: "Switch Passthrough: Garden Switch 1 to Outlet"
+  triggers:
+    - trigger: state
+      entity_id: switch.fds3_2
+  conditions: []
+  actions:
+    - action: "switch.turn_{{ trigger.to_state.state }}"
+      target:
+        entity_id: switch.fds4_2
+  mode: single

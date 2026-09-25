@@ -1,0 +1,9 @@
+---
+- alias: "System: Backup and Restore"
+  triggers:
+    - trigger: time
+      at: "00:02:10"
+  conditions: []
+  actions:
+    - action: shell_command.backup_restore
+  mode: single

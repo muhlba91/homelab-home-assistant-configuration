@@ -1,0 +1,14 @@
+---
+- alias: "House: Keep The Entrance Door Camera On"
+  triggers:
+    - trigger: state
+      entity_id: switch.fs11_1
+      to: "off"
+      for:
+        minutes: 1
+  conditions: []
+  actions:
+    - action: switch.turn_on
+      target:
+        entity_id: switch.fs11_1
+  mode: single

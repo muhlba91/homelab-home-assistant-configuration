@@ -1,0 +1,16 @@
+---
+- alias: "System: Sync Configuration"
+  triggers:
+    - trigger: time
+      at: "00:01:10"
+  conditions: []
+  actions:
+    - action: shell_command.sync_configuration
+      response_variable: sync_result
+    - choose:
+        - conditions:
+            - condition: template
+              value_template: "{{ sync_result['returncode'] == 1 }}"
+          sequence:
+            - action: homeassistant.restart
+  mode: single

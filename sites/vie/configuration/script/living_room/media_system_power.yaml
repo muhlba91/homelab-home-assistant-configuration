@@ -5,13 +5,12 @@ living_room_media_system_power_off:
     - repeat:
         count: 2
         sequence:
-          - delay: 2
-          - service: remote.turn_off
-            data: {}
+          - delay:
+              seconds: 2
+          - action: remote.turn_off
             target:
               entity_id: remote.living_room_projector
-    - service: media_player.turn_off
-      data: {}
+    - action: media_player.turn_off
       target:
         entity_id: media_player.denon_avr_x1500h
   mode: single

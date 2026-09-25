@@ -1,0 +1,9 @@
+---
+- alias: "System: Clear TTS Cache"
+  triggers:
+    - trigger: time
+      at: "00:00:10"
+  conditions: []
+  actions:
+    - action: tts.clear_cache
+  mode: single

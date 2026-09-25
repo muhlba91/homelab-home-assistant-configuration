@@ -4,6 +4,7 @@ ntfy_notify:
   method: POST
   headers:
     Authorization: !env_var NTFY_AUTH_TOKEN
+    X-Markdown: "{{ 'yes' if markdown | default(false) else 'no' }}"
   content_type: "application/json"
   payload: >-
     {
@@ -11,6 +12,6 @@ ntfy_notify:
       "title": "{{ title }}",
       "message": {{ message | tojson }},
       "tags": {{ tags | default([]) | tojson }},
-      "priority": "{{ priority | default('default') }}",
+      "priority": {{ ({'min': 1, 'low': 2, 'default': 3, 'high': 4, 'max': 5}[priority | default('default')]) }},
       "markdown": {{ markdown | default(false) | tojson }}
     }

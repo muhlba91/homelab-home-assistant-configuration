@@ -1,0 +1,11 @@
+---
+- alias: "Switch Passthrough: Kitchen Switch to Light"
+  triggers:
+    - trigger: state
+      entity_id: switch.fs9_1
+  conditions: []
+  actions:
+    - action: "switch.turn_{{ trigger.to_state.state }}"
+      target:
+        entity_id: switch.fs12_1
+  mode: single
