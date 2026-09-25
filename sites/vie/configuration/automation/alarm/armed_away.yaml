@@ -1,0 +1,12 @@
+---
+- alias: "House: Alarm: Armed Away"
+  triggers:
+    - trigger: state
+      entity_id: alarm_control_panel.ring_control_panel
+      to: "armed_away"
+  conditions: []
+  actions:
+    - action: lock.lock
+      target:
+        entity_id: lock.entrance_door_lock
+  mode: single
