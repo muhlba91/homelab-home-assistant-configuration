@@ -1,0 +1,16 @@
+---
+ntfy_notify:
+  url: !secret ntfy_url
+  method: POST
+  headers:
+    Authorization: !env_var NTFY_AUTH_TOKEN
+  content_type: "application/json"
+  payload: >-
+    {
+      "topic": "{{ topic | default('tuxnet-test') }}",
+      "title": "{{ title }}",
+      "message": {{ message | tojson }},
+      "tags": {{ tags | default([]) | tojson }},
+      "priority": "{{ priority | default('default') }}",
+      "markdown": {{ markdown | default(false) | tojson }}
+    }
