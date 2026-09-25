@@ -1,5 +1,5 @@
 ---
-- alias: "Lights: Storage Room"
+- alias: "Storage Room: Lights"
   use_blueprint:
     path: lights/motion_lux.yaml
     input:

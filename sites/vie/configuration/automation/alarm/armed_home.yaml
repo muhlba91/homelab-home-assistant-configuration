@@ -1,0 +1,21 @@
+---
+- alias: "House: Alarm: Armed Home"
+  triggers:
+    - trigger: state
+      entity_id: alarm_control_panel.ring_control_panel
+      to: "armed_home"
+  conditions: []
+  actions:
+    - action: lock.lock
+      target:
+        entity_id: lock.entrance_door_lock
+    - action: cover.close_cover
+      target:
+        entity_id:
+          - cover.bedroom
+          - cover.office
+          - cover.tea_room
+          - cover.living_room_tv
+          - cover.garden_door
+          - cover.living_room_kitchen
+  mode: single

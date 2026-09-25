@@ -1,5 +1,5 @@
 ---
-- alias: "Lights: Entrance Room"
+- alias: "Entrance Room: Lights"
   use_blueprint:
     path: lights/motion_lux.yaml
     input:
