@@ -1,0 +1,34 @@
+---
+- alias: "Battery: Security-Related Devices"
+  use_blueprint:
+    path: battery/low.yaml
+    input:
+      sensor_target:
+        entity_id:
+          - sensor.ass1_battery
+          - sensor.ass2_battery
+          - sensor.ass3_battery
+          - sensor.ass4_battery
+          - sensor.ass5_battery
+          - sensor.ass6_battery
+          - sensor.ass7_battery
+          - sensor.ffs1_battery_level
+          - sensor.ffs2_battery_level
+          - sensor.ring_rms1_entrance_room_battery
+          - sensor.living_room_ring_motion_sensor_battery
+      battery_threshold: 30
+
+- alias: "Battery: Other Devices"
+  use_blueprint:
+    path: battery/low.yaml
+    input:
+      sensor_target:
+        entity_id:
+          - sensor.fms1_battery_level
+          - sensor.fms2_battery_level
+          - sensor.fms3_battery_level
+          - sensor.entrance_room_entrance_door_lock_battery
+          - sensor.tea_room_tea_room_temperature_humidity_battery
+          - sensor.bedroom_bedroom_temperature_humidity_battery
+          - sensor.office_office_temperature_humidity_battery
+          - sensor.living_room_living_room_temperature_humidity_battery
