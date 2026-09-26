@@ -16,6 +16,9 @@
           - sensor.ffs2_battery_level
           - sensor.ring_rms1_entrance_room_battery
           - sensor.living_room_ring_motion_sensor_battery
+          - sensor.ring_rcs1_front_door_battery
+          - sensor.ring_rcs2_front_window_battery
+          - sensor.ring_rcs3_garden_door_battery
       battery_threshold: 30
 
 - alias: "Battery: Other Devices"
