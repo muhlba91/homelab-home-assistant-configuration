@@ -25,16 +25,20 @@ cards:
         cards:
           - type: custom:mushroom-title-card
             title: Lighting
-          - type: custom:mushroom-switch-card
+          - type: custom:mushroom-entity-card
             entity: switch.fds1_1
             name: Living Room
             icon: mdi:lightbulb
             icon_color: amber
-          - type: custom:mushroom-switch-card
+            tap_action:
+              action: toggle
+          - type: custom:mushroom-entity-card
             entity: switch.fs12_1
             name: Kitchen
             icon: mdi:lightbulb
             icon_color: amber
+            tap_action:
+              action: toggle
   - type: vertical-stack
     cards:
       - type: custom:mushroom-title-card
@@ -51,7 +55,7 @@ cards:
         card_type: cover
         entity: cover.living_room_tv
         name: TV Shutter
-  - type: custom:mushroom-switch-card
+  - type: custom:mushroom-entity-card
     entity: switch.living_room_media_system
     name: Media System
     icon: mdi:power
@@ -59,6 +63,8 @@ cards:
     layout: horizontal
     secondary_info: >-
       {{ 'Denon AVR · projector syncs automatically' }}
+    tap_action:
+      action: toggle
   - type: vertical-stack
     cards:
       - type: custom:mushroom-title-card

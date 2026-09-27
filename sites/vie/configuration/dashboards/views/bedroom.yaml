@@ -21,11 +21,13 @@ cards:
           show_gauge: outer
           min: 30
           max: 70
-      - type: custom:mushroom-switch-card
+      - type: custom:mushroom-entity-card
         entity: switch.fs6_1
         name: Bedroom Light
         icon: mdi:lightbulb
         icon_color: amber
+        tap_action:
+          action: toggle
   - type: vertical-stack
     cards:
       - type: custom:mushroom-title-card

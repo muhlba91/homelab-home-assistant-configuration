@@ -7,11 +7,13 @@ cards:
     columns: 3
     square: false
     cards:
-      - type: custom:mushroom-switch-card
+      - type: custom:mushroom-entity-card
         entity: switch.fds4_2
         name: Pergola Light
         icon: mdi:lightbulb
         icon_color: amber
+        tap_action:
+          action: toggle
       - type: custom:modern-circular-gauge
         entity: sensor.ecowitt_temp1
         name: South

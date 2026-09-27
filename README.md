@@ -128,3 +128,16 @@ If no data exists, wipes `DATA_PATH` and restores `.storage/` from Scaleway (res
 | `SCW_DEFAULT_REGION` | Scaleway region (e.g. `fr-par`) |
 | `S3_ASSETS_BUCKET` | S3 bucket name |
 | `S3_ASSETS_BUCKET_PATH` | Key prefix within the bucket |
+
+---
+
+## Continuous Integration
+
+The [`verify.yml`](.github/workflows/verify.yml) workflow assembles a full HA configuration (via `configuration.sh` and `prepare.sh`) and boots it against the `stable`, `beta`, and `dev` Home Assistant releases using [`frenck/action-home-assistant`](https://github.com/frenck/action-home-assistant).
+
+Since the real configuration references site secrets and integrations that don't exist in CI (e.g. GPS coordinates, OIDC, a Postgres recorder database), the workflow swaps in fixtures from [`.ci/`](.ci/):
+
+- [`.ci/secrets.yaml`](.ci/secrets.yaml): stand-in values for `secrets.yaml`, e.g. `homeassistant_latitude`/`longitude`/`elevation`, `homeassistant_external_url`, `ntfy_url`.
+- [`.ci/env`](.ci/env): stand-in environment variables referenced from configuration via `!env_var`, e.g. `POSTGRESQL_URI`, `OIDC_CLIENT_ID`/`OIDC_CLIENT_SECRET`/`OIDC_WELL_KNOWN_URL`, `NTFY_AUTH_TOKEN`.
+
+Neither file needs to hold real values — only enough shape for Home Assistant to load the configuration and pass `hass --script check_config`. Add a new fixture entry whenever the configuration starts referencing a secret or env var that isn't already covered.

@@ -11,21 +11,27 @@ cards:
         cards:
           - type: custom:mushroom-title-card
             title: Lighting
-          - type: custom:mushroom-switch-card
+          - type: custom:mushroom-entity-card
             entity: switch.fs4_1
             name: Hallway Light
             icon: mdi:lightbulb
             icon_color: amber
-          - type: custom:mushroom-switch-card
+            tap_action:
+              action: toggle
+          - type: custom:mushroom-entity-card
             entity: switch.fds1_2
             name: Hallway Light 2
             icon: mdi:lightbulb
             icon_color: amber
-          - type: custom:mushroom-switch-card
+            tap_action:
+              action: toggle
+          - type: custom:mushroom-entity-card
             entity: switch.fs2_1
             name: Entrance Room Light
             icon: mdi:lightbulb
             icon_color: amber
+            tap_action:
+              action: toggle
       - type: vertical-stack
         cards:
           - type: custom:mushroom-title-card
@@ -33,10 +39,12 @@ cards:
           - type: custom:mushroom-lock-card
             entity: lock.entrance_door_lock
             icon_color: green
-          - type: custom:mushroom-switch-card
+          - type: custom:mushroom-entity-card
             entity: switch.alarm_keypad_chirps
             name: Ring Keypad Chirps
             icon: mdi:bell-ring
+            tap_action:
+              action: toggle
   - type: vertical-stack
     cards:
       - type: custom:mushroom-title-card

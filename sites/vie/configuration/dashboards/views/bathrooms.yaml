@@ -11,21 +11,27 @@ cards:
         cards:
           - type: custom:mushroom-title-card
             title: Lighting
-          - type: custom:mushroom-switch-card
+          - type: custom:mushroom-entity-card
             entity: switch.fds2_2
             name: Bathroom Light
             icon: mdi:lightbulb
             icon_color: amber
-          - type: custom:mushroom-switch-card
+            tap_action:
+              action: toggle
+          - type: custom:mushroom-entity-card
             entity: switch.fds2_1
             name: Bathroom Mirror Light
             icon: mdi:lightbulb
             icon_color: amber
-          - type: custom:mushroom-switch-card
+            tap_action:
+              action: toggle
+          - type: custom:mushroom-entity-card
             entity: switch.fs1_1
             name: Toilet Light
             icon: mdi:lightbulb
             icon_color: amber
+            tap_action:
+              action: toggle
       - type: vertical-stack
         cards:
           - type: custom:mushroom-title-card

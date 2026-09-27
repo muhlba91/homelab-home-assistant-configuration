@@ -11,16 +11,20 @@ cards:
         cards:
           - type: custom:mushroom-title-card
             title: Lighting
-          - type: custom:mushroom-switch-card
+          - type: custom:mushroom-entity-card
             entity: switch.fs10_1
             name: Utility Room Light
             icon: mdi:lightbulb
             icon_color: amber
-          - type: custom:mushroom-switch-card
+            tap_action:
+              action: toggle
+          - type: custom:mushroom-entity-card
             entity: switch.fs3_1
             name: Storage Room Light
             icon: mdi:lightbulb
             icon_color: amber
+            tap_action:
+              action: toggle
       - type: vertical-stack
         cards:
           - type: custom:mushroom-title-card
