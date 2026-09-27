@@ -49,6 +49,8 @@ sections:
         features:
           - type: climate-hvac-modes
             style: icons
+          - type: climate-fan-modes
+            style: dropdown
           - type: target-temperature
         grid_options:
           columns: full

@@ -87,22 +87,35 @@ sections:
       - type: heading
         heading: OUTDOOR (FORECAST)
         heading_style: subtitle
-      - type: tile
-        entity: weather.home
-        name: Now
-        state_content:
-          - state
-          - temperature
         grid_options:
           columns: full
-      - type: tile
+          rows: 1
+      - type: custom:mushroom-template-card
         entity: weather.home
-        name: Humidity · Pressure · Wind
+        primary: >-
+          {{ state_translated('weather.home') }} · {{ state_attr('weather.home', 'temperature') }}
+          {{ state_attr('weather.home', 'temperature_unit') }}
+        secondary: Now
+        icon: >-
+          {% set map = {'clear-night': 'weather-night', 'partlycloudy': 'weather-partly-cloudy',
+          'exceptional': 'alert-circle-outline'} %}
+          mdi:{{ map.get(states('weather.home'), 'weather-' ~ states('weather.home')) }}
+        icon_color: blue
+        tap_action:
+          action: more-info
+        grid_options:
+          columns: full
+      - type: custom:mushroom-template-card
+        entity: weather.home
+        primary: >-
+          {{ state_attr('weather.home', 'humidity') }} % ·
+          {{ state_attr('weather.home', 'pressure') }} {{ state_attr('weather.home', 'pressure_unit') }} ·
+          {{ state_attr('weather.home', 'wind_speed') }} {{ state_attr('weather.home', 'wind_speed_unit') }}
+        secondary: Humidity · Pressure · Wind
         icon: mdi:weather-windy
-        state_content:
-          - humidity
-          - pressure
-          - wind_speed
+        icon_color: grey
+        tap_action:
+          action: more-info
         grid_options:
           columns: full
 
@@ -120,14 +133,14 @@ sections:
         min: 15
         max: 28
         gauge_foreground_style:
-          color: "#5b83c0"
+          color: "var(--blue-color)"
         secondary:
           entity: sensor.living_room_living_room_temperature_humidity_humidity
           show_gauge: outer
           min: 30
           max: 70
           gauge_foreground_style:
-            color: "#6aa87a"
+            color: "var(--green-color)"
         grid_options:
           columns: 6
           rows: 3
@@ -137,14 +150,14 @@ sections:
         min: 15
         max: 28
         gauge_foreground_style:
-          color: "#5b83c0"
+          color: "var(--blue-color)"
         secondary:
           entity: sensor.bedroom_bedroom_temperature_humidity_humidity
           show_gauge: outer
           min: 30
           max: 70
           gauge_foreground_style:
-            color: "#6aa87a"
+            color: "var(--green-color)"
         grid_options:
           columns: 6
           rows: 3
@@ -154,14 +167,14 @@ sections:
         min: 15
         max: 28
         gauge_foreground_style:
-          color: "#5b83c0"
+          color: "var(--blue-color)"
         secondary:
           entity: sensor.office_office_temperature_humidity_humidity
           show_gauge: outer
           min: 30
           max: 70
           gauge_foreground_style:
-            color: "#6aa87a"
+            color: "var(--green-color)"
         grid_options:
           columns: 6
           rows: 3
@@ -171,14 +184,14 @@ sections:
         min: 15
         max: 28
         gauge_foreground_style:
-          color: "#5b83c0"
+          color: "var(--blue-color)"
         secondary:
           entity: sensor.tea_room_tea_room_temperature_humidity_humidity
           show_gauge: outer
           min: 30
           max: 70
           gauge_foreground_style:
-            color: "#6aa87a"
+            color: "var(--green-color)"
         grid_options:
           columns: 6
           rows: 3
@@ -242,14 +255,14 @@ sections:
         min: 5
         max: 35
         gauge_foreground_style:
-          color: "#5b83c0"
+          color: "var(--blue-color)"
         secondary:
           entity: sensor.ecowitt_humidity1
           show_gauge: outer
           min: 20
           max: 80
           gauge_foreground_style:
-            color: "#6aa87a"
+            color: "var(--green-color)"
         grid_options:
           columns: 6
           rows: 3
@@ -259,14 +272,14 @@ sections:
         min: 5
         max: 35
         gauge_foreground_style:
-          color: "#5b83c0"
+          color: "var(--blue-color)"
         secondary:
           entity: sensor.ecowitt_humidity2
           show_gauge: outer
           min: 20
           max: 80
           gauge_foreground_style:
-            color: "#6aa87a"
+            color: "var(--green-color)"
         grid_options:
           columns: 6
           rows: 3
@@ -299,7 +312,7 @@ sections:
         min: 0
         max: 5000
         gauge_foreground_style:
-          color: "#d9a441"
+          color: "var(--amber-color)"
         grid_options:
           columns: 12
           rows: 3
@@ -321,6 +334,7 @@ sections:
         entity: sensor.energy_meter_p
         name: Importing from grid
         icon: mdi:transmission-tower-import
+        color: red
         grid_options:
           columns: 24
 
@@ -339,18 +353,20 @@ sections:
           - id: sensor.pv_power_photovoltaics_fronius_power_flow
             section: 0
             name: Solar
-            color: var(--warning-color)
+            color: var(--amber-color)
           - id: sensor.energy_meter_p
             section: 0
             name: Grid import
+            color: var(--red-color)
           - id: sensor.energy_meter_po
             section: 1
             name: Grid export
-            color: var(--success-color)
+            color: var(--green-color)
           - id: house_consumption
             entity_id: sensor.pv_power_photovoltaics_fronius_power_flow
             section: 1
             name: House
+            color: var(--blue-color)
             add_entities:
               - sensor.energy_meter_p
             subtract_entities:
