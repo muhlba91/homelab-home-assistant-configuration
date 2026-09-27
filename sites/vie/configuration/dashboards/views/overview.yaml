@@ -7,6 +7,7 @@ type: sections
 max_columns: 3
 sections:
   - type: grid
+    theme: family_dashboard_chips
     background:
       opacity: 100
     column_span: 2
@@ -14,26 +15,12 @@ sections:
       - type: heading
         heading: SECURITY & SAFETY
         heading_style: subtitle
-      - type: custom:mushroom-template-card
-        primary: >-
-          {% set alarms = (['binary_sensor.ass1_smoke_detected', 'binary_sensor.ass2_smoke_detected', 'binary_sensor.ass3_smoke_detected', 'binary_sensor.ass4_smoke_detected', 'binary_sensor.ass5_smoke_detected', 'binary_sensor.ass6_smoke_detected', 'binary_sensor.ass7_smoke_detected', 'binary_sensor.ffs1_water_alarm_water_leak_detected', 'binary_sensor.ffs2_water_leak_detected']) | select('is_state', 'on') | list | count %}
-          {% set open = ['binary_sensor.ring_rcs1', 'binary_sensor.ring_rcs2', 'binary_sensor.ring_rcs3'] | select('is_state', 'on') | list | count %}
-          {% if is_state('alarm_control_panel.ring_control_panel', 'triggered') %}Alarm triggered!
-          {% elif alarms > 0 %}{{ alarms }} safety alert(s)!
-          {% elif open > 0 %}{{ open }} door/window open
-          {% else %}All clear{% endif %}
-        icon: >-
-          {% set alarms = (['binary_sensor.ass1_smoke_detected', 'binary_sensor.ass2_smoke_detected', 'binary_sensor.ass3_smoke_detected', 'binary_sensor.ass4_smoke_detected', 'binary_sensor.ass5_smoke_detected', 'binary_sensor.ass6_smoke_detected', 'binary_sensor.ass7_smoke_detected', 'binary_sensor.ffs1_water_alarm_water_leak_detected', 'binary_sensor.ffs2_water_leak_detected']) | select('is_state', 'on') | list | count %}
-          {% set open = ['binary_sensor.ring_rcs1', 'binary_sensor.ring_rcs2', 'binary_sensor.ring_rcs3'] | select('is_state', 'on') | list | count %}
-          {% if is_state('alarm_control_panel.ring_control_panel', 'triggered') or alarms > 0 %}mdi:alert
-          {% elif open > 0 %}mdi:door-open{% else %}mdi:shield-check{% endif %}
-        icon_color: >-
-          {% set alarms = (['binary_sensor.ass1_smoke_detected', 'binary_sensor.ass2_smoke_detected', 'binary_sensor.ass3_smoke_detected', 'binary_sensor.ass4_smoke_detected', 'binary_sensor.ass5_smoke_detected', 'binary_sensor.ass6_smoke_detected', 'binary_sensor.ass7_smoke_detected', 'binary_sensor.ffs1_water_alarm_water_leak_detected', 'binary_sensor.ffs2_water_leak_detected']) | select('is_state', 'on') | list | count %}
-          {% set open = ['binary_sensor.ring_rcs1', 'binary_sensor.ring_rcs2', 'binary_sensor.ring_rcs3'] | select('is_state', 'on') | list | count %}
-          {% if is_state('alarm_control_panel.ring_control_panel', 'triggered') or alarms > 0 %}red
-          {% elif open > 0 %}amber{% else %}green{% endif %}
-        grid_options:
-          columns: full
+        badges:
+          - type: entity
+            entity: binary_sensor.house_safety_status
+            show_state: true
+            state_content: summary
+            color: state
       - type: tile
         entity: alarm_control_panel.ring_control_panel
         name: Alarm
@@ -82,6 +69,7 @@ sections:
           columns: 8
 
   - type: grid
+    theme: family_dashboard_chips
     background:
       opacity: 100
     column_span: 1
@@ -89,17 +77,18 @@ sections:
       - type: heading
         heading: OUTDOOR (FORECAST)
         heading_style: subtitle
-      - type: weather-forecast
+      - type: tile
         entity: weather.home
-        show_current: true
-        show_forecast: false
+        name: Outdoor
+        state_content:
+          - state
+          - temperature
         grid_options:
           columns: full
       - type: tile
         entity: weather.home
         name: Humidity
         icon: mdi:water-percent
-        vertical: true
         state_content: humidity
         grid_options:
           columns: 4
@@ -107,7 +96,6 @@ sections:
         entity: weather.home
         name: Pressure
         icon: mdi:gauge
-        vertical: true
         state_content: pressure
         grid_options:
           columns: 4
@@ -115,7 +103,6 @@ sections:
         entity: weather.home
         name: Wind
         icon: mdi:weather-windy
-        vertical: true
         state_content: wind_speed
         grid_options:
           columns: 4
@@ -142,6 +129,7 @@ sections:
           entity: climate.living_room_air_conditioner
           state_text: "{{ 'AC ' ~ (states('climate.living_room_air_conditioner') | replace('_', ' ') | title) }}"
           show_unit: false
+          state_font_size: 8
         grid_options:
           columns: 6
           rows: 3
@@ -159,6 +147,7 @@ sections:
           entity: climate.bedroom_air_conditioner
           state_text: "{{ 'AC ' ~ (states('climate.bedroom_air_conditioner') | replace('_', ' ') | title) }}"
           show_unit: false
+          state_font_size: 8
         grid_options:
           columns: 6
           rows: 3
@@ -176,6 +165,7 @@ sections:
           entity: climate.office_air_conditioner
           state_text: "{{ 'AC ' ~ (states('climate.office_air_conditioner') | replace('_', ' ') | title) }}"
           show_unit: false
+          state_font_size: 8
         grid_options:
           columns: 6
           rows: 3
