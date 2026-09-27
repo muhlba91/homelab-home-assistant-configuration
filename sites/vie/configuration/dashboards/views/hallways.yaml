@@ -1,0 +1,93 @@
+---
+title: Hallways
+path: hallways
+icon: mdi:door
+cards:
+  - type: grid
+    columns: 2
+    square: false
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: custom:mushroom-title-card
+            title: Lighting
+          - type: custom:mushroom-switch-card
+            entity: switch.fs4_1
+            name: Hallway Light
+            icon: mdi:lightbulb
+            icon_color: amber
+          - type: custom:mushroom-switch-card
+            entity: switch.fds1_2
+            name: Hallway Light 2
+            icon: mdi:lightbulb
+            icon_color: amber
+          - type: custom:mushroom-switch-card
+            entity: switch.fs2_1
+            name: Entrance Room Light
+            icon: mdi:lightbulb
+            icon_color: amber
+      - type: vertical-stack
+        cards:
+          - type: custom:mushroom-title-card
+            title: Front Door
+          - type: custom:mushroom-lock-card
+            entity: lock.entrance_door_lock
+            icon_color: green
+          - type: custom:mushroom-switch-card
+            entity: switch.alarm_keypad_chirps
+            name: Ring Keypad Chirps
+            icon: mdi:bell-ring
+  - type: vertical-stack
+    cards:
+      - type: custom:mushroom-title-card
+        title: Safety
+      - type: grid
+        columns: 2
+        square: false
+        cards:
+          - type: custom:mushroom-entity-card
+            entity: binary_sensor.ass7_smoke_detected
+            name: Hallway smoke
+            icon: mdi:smoke-detector
+            icon_color: >-
+              {{ 'red' if is_state('binary_sensor.ass7_smoke_detected', 'on') else 'green' }}
+          - type: custom:mushroom-entity-card
+            entity: binary_sensor.ass4_smoke_detected
+            name: Entrance smoke
+            icon: mdi:smoke-detector
+            icon_color: >-
+              {{ 'red' if is_state('binary_sensor.ass4_smoke_detected', 'on') else 'green' }}
+          - type: custom:mushroom-entity-card
+            entity: binary_sensor.ring_rms1
+            name: Entrance motion (Ring)
+            icon: mdi:motion-sensor
+          - type: custom:mushroom-entity-card
+            entity: binary_sensor.fms2_home_security_motion_detection
+            name: Entrance motion (Fibaro)
+            icon: mdi:motion-sensor
+  - type: vertical-stack
+    cards:
+      - type: custom:mushroom-title-card
+        title: Battery Levels
+      - type: grid
+        columns: 3
+        square: false
+        cards:
+          - type: custom:mushroom-entity-card
+            entity: sensor.ass7_battery
+            name: Hallway Smoke
+          - type: custom:mushroom-entity-card
+            entity: sensor.ass4_battery
+            name: Entrance Smoke
+          - type: custom:mushroom-entity-card
+            entity: sensor.ring_rms1_entrance_room_battery
+            name: Entrance Motion (Ring)
+          - type: custom:mushroom-entity-card
+            entity: sensor.fms2_battery_level
+            name: Entrance Motion (Fibaro)
+          - type: custom:mushroom-entity-card
+            entity: sensor.ring_keypad_battery
+            name: Ring Keypad
+          - type: custom:mushroom-entity-card
+            entity: sensor.entrance_room_entrance_door_lock_battery
+            name: Door Lock

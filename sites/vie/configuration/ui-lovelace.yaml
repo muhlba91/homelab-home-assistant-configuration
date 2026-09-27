@@ -1,0 +1,13 @@
+---
+title: Home
+theme: home_dashboard
+views:
+  - !include dashboards/views/overview.yaml
+  - !include dashboards/views/living_room.yaml
+  - !include dashboards/views/office.yaml
+  - !include dashboards/views/tea_room.yaml
+  - !include dashboards/views/bedroom.yaml
+  - !include dashboards/views/bathrooms.yaml
+  - !include dashboards/views/hallways.yaml
+  - !include dashboards/views/garden.yaml
+  - !include dashboards/views/utility.yaml

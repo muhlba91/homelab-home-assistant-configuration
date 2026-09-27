@@ -1,0 +1,47 @@
+---
+title: Bathrooms
+path: bathrooms
+icon: mdi:shower
+cards:
+  - type: grid
+    columns: 2
+    square: false
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: custom:mushroom-title-card
+            title: Lighting
+          - type: custom:mushroom-switch-card
+            entity: switch.fds2_2
+            name: Bathroom Light
+            icon: mdi:lightbulb
+            icon_color: amber
+          - type: custom:mushroom-switch-card
+            entity: switch.fds2_1
+            name: Bathroom Mirror Light
+            icon: mdi:lightbulb
+            icon_color: amber
+          - type: custom:mushroom-switch-card
+            entity: switch.fs1_1
+            name: Toilet Light
+            icon: mdi:lightbulb
+            icon_color: amber
+      - type: vertical-stack
+        cards:
+          - type: custom:mushroom-title-card
+            title: Shutter
+          - type: custom:bubble-card
+            card_type: cover
+            entity: cover.bathroom
+            name: Bathroom Shutter
+  - type: custom:mushroom-entity-card
+    entity: binary_sensor.fms1_home_security_motion_detection
+    name: Toilet motion
+    icon: mdi:motion-sensor
+  - type: vertical-stack
+    cards:
+      - type: custom:mushroom-title-card
+        title: Battery Levels
+      - type: custom:mushroom-entity-card
+        entity: sensor.fms1_battery_level
+        name: Toilet Motion Sensor
