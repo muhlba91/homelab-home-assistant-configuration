@@ -1,8 +1,8 @@
 ---
-# dashboards:
-#   home-dashboard:
-#     mode: yaml
-#     filename: ui-lovelace.yaml
-#     title: Home
-#     icon: mdi:home-heart
-#     show_in_sidebar: true
+dashboards:
+  home-dashboard:
+    mode: yaml
+    filename: ui-lovelace.yaml
+    title: Home
+    icon: mdi:home-heart
+    show_in_sidebar: true
