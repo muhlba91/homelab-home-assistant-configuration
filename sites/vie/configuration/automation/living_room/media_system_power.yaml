@@ -1,16 +1,4 @@
 ---
-- alias: "Living Room: Media System: Projector On -> Denon On"
-  triggers:
-    - trigger: state
-      entity_id: remote.living_room_projector
-      to: "on"
-  conditions: []
-  actions:
-    - action: media_player.turn_on
-      target:
-        entity_id: media_player.denon_avr_x1500h
-  mode: single
-
 - alias: "Living Room: Media System: Denon Off -> Projector Off"
   triggers:
     - trigger: state
@@ -18,5 +6,12 @@
       to: "off"
   conditions: []
   actions:
-    - action: script.living_room_media_system_power_off
+    - action: remote.turn_on
+      target:
+        entity_id: remote.living_room_projector
+    - delay:
+        seconds: 1
+    - action: script.turn_on
+      target:
+        entity_id: script.living_room_media_system_power_off
   mode: single
