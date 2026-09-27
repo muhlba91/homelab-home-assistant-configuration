@@ -4,8 +4,6 @@ https://github.com/denysdovhan/vacuum-card/releases/download@v2.12.0@vacuum-card
 https://github.com/rianadon/timer-bar-card/releases/download@v1.31.1@timer-bar-card.js@community/timer-bar-card@file
 # renovate: datasource=github-releases packageName=custom-cards/button-card
 https://github.com/custom-cards/button-card/releases/download@v7.0.1@button-card.js@community/button-card@file
-# renovate: datasource=github-releases packageName=kinghat/tabbed-card
-https://github.com/kinghat/tabbed-card/releases/download@v0.3.3@tabbed-card.js@community/tabbed-card@file
 # renovate: datasource=github-releases packageName=MindFreeze/ha-sankey-chart
 https://github.com/MindFreeze/ha-sankey-chart/releases/download@v6.4.0@ha-sankey-chart.js@community/ha-sankey-chart@file
 # renovate: datasource=github-releases packageName=piitaya/lovelace-mushroom
@@ -16,8 +14,6 @@ https://github.com/RomRider/apexcharts-card/releases/download@v2.2.3@apexcharts-
 https://raw.githubusercontent.com/Clooos/Bubble-Card@v3.4.1@dist/bubble-card.js@community/bubble-card@file
 # renovate: datasource=github-tags packageName=Clooos/Bubble-Card
 https://raw.githubusercontent.com/Clooos/Bubble-Card@v3.4.1@dist/bubble-pop-up-fix.js@community/bubble-card@file
-# renovate: datasource=github-tags packageName=elchininet/custom-sidebar
-https://github.com/elchininet/custom-sidebar/releases/download@v17.2.0@custom-sidebar-plugin.js@community/custom-sidebar@file
 # renovate: datasource=github-tags packageName=selvalt7/modern-circular-gauge
 https://github.com/selvalt7/modern-circular-gauge/releases/download@v0.15.0@modern-circular-gauge.js@community/modern-circular-gauge@file
 # renovate: datasource=github-tags packageName=dermotduffy/advanced-camera-card

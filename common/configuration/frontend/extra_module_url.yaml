@@ -6,8 +6,6 @@ extra_module_url:
   - /local/community/timer-bar-card/timer-bar-card.js?v=v1.31.1
   # renovate: datasource=github-releases packageName=custom-cards/button-card
   - /local/community/button-card/button-card.js?v=v7.0.1
-  # renovate: datasource=github-releases packageName=kinghat/tabbed-card
-  - /local/community/tabbed-card/tabbed-card.js?v=v0.3.3
   # renovate: datasource=github-releases packageName=MindFreeze/ha-sankey-chart
   - /local/community/ha-sankey-chart/ha-sankey-chart.js?v=v6.4.0
   # renovate: datasource=github-releases packageName=piitaya/lovelace-mushroom
@@ -16,9 +14,7 @@ extra_module_url:
   - /local/community/apexcharts-card/apexcharts-card.js?v=2.2.3
   # renovate: datasource=github-tags packageName=Clooos/Bubble-Card
   - /local/community/bubble-card/bubble-card.js?v=v3.4.1
-  # renovate: datasource=github-tags packageName=elchininet/custom-sidebar
-  # - /local/community/custom-sidebar/custom-sidebar-plugin.js?v=v13.0.1@
   # renovate: datasource=github-tags packageName=selvalt7/modern-circular-gauge
   - /local/community/modern-circular-gauge/modern-circular-gauge.js?v=v0.15.0
   # renovate: datasource=github-tags packageName=dermotduffy/advanced-camera-card
-  - /local/community/advanced-camera-card/dist/advanced-camera-card.js?v7.17.0
+  - /local/community/advanced-camera-card/dist/advanced-camera-card.js?v=v8.1.0
