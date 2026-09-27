@@ -49,8 +49,7 @@ plain, hand-editable YAML that follows the patterns described below.
 | ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
 | `common/configuration/configuration.yaml`             | Loads `lovelace: !include_dir_merge_named lovelace` and `template: !include_dir_merge_list template` |
 | `common/configuration/frontend/themes.yaml`           | Themes `family_dashboard` and `family_dashboard_chips` (light and dark)                              |
-| `sites/vie/configuration/lovelace/dashboards.yaml`    | Stage 1: registers the dashboard as an additional dashboard                                          |
-| `sites/vie/configuration/lovelace/mode.yaml`          | Stage 2 (optional): `mode: yaml`, makes it the default dashboard                                     |
+| `sites/vie/configuration/lovelace/dashboards.yaml`    | Registers the dashboard under the key `lovelace`: it replaces the built-in Overview                  |
 | `sites/vie/configuration/ui-lovelace.yaml`            | Dashboard root: title and the ordered `!include` list of views                                       |
 | `sites/vie/configuration/dashboards/views/*.yaml`     | One file per tab (view)                                                                              |
 | `sites/vie/configuration/template/safety_status.yaml` | Template binary sensors behind the safety pills                                                      |
@@ -64,16 +63,25 @@ directory at deploy time by `lifecycle/configuration.sh`.
 merged into the `lovelace:` key. View files must therefore **never** live
 below `lovelace/`, which is why they are in `dashboards/views/`.
 
-The default dashboard (`mode: yaml`) always reads `ui-lovelace.yaml` from the
-configuration root; it has no `filename` option. That is why
-`ui-lovelace.yaml` stays at the root in both stages, so promotion is a pure
-file swap.
+### Registration and default dashboard
 
-### Promotion from additional to default dashboard
+The dashboard is registered in `lovelace/dashboards.yaml` as a YAML dashboard
+under the key `lovelace`. That key is reserved for the built-in Overview and
+is allowed for backward compatibility, so this dashboard **replaces** the
+Overview at `/lovelace`. The old storage-mode Overview is not deleted: its
+configuration stays in `.storage/lovelace` and returns if the key is renamed.
 
-1. Add `sites/vie/configuration/lovelace/mode.yaml` containing `mode: yaml`.
-2. Delete `sites/vie/configuration/lovelace/dashboards.yaml`.
-3. Restart Home Assistant.
+Do not use the top-level `lovelace: mode: yaml`. It was removed in Home
+Assistant 2026.8; YAML dashboards are only defined under `dashboards:`.
+
+Which dashboard opens first is a UI setting, not YAML:
+
+1. Settings, Dashboards, open the menu of this dashboard, **Set as default**.
+   This sets the default for all users.
+2. Each user can still choose a personal default in their profile.
+
+The built-in Home dashboard only appears in the sidebar while it is the
+default, so it disappears once this dashboard is set as default.
 
 ### Template include format
 

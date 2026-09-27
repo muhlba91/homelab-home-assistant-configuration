@@ -1,6 +1,6 @@
 ---
 dashboards:
-  home-dashboard:
+  lovelace:
     mode: yaml
     filename: ui-lovelace.yaml
     title: Home

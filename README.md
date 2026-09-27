@@ -38,7 +38,7 @@ The Home Dashboard is a YAML-mode Lovelace dashboard with one tab per room:
 
 - **Root**: [`sites/vie/configuration/ui-lovelace.yaml`](sites/vie/configuration/ui-lovelace.yaml) (title and ordered list of views).
 - **Views**: [`sites/vie/configuration/dashboards/views/`](sites/vie/configuration/dashboards/views/) (one file per tab).
-- **Registration**: [`sites/vie/configuration/lovelace/`](sites/vie/configuration/lovelace/) (additional dashboard, or default via `mode: yaml`).
+- **Registration**: [`sites/vie/configuration/lovelace/`](sites/vie/configuration/lovelace/) (registered under the key `lovelace`, replacing the built-in Overview; set it as default in Settings > Dashboards).
 - **Themes**: [`common/configuration/frontend/themes.yaml`](common/configuration/frontend/themes.yaml) (light and dark palette).
 - **Safety status sensors**: [`sites/vie/configuration/template/safety_status.yaml`](sites/vie/configuration/template/safety_status.yaml) (template entities behind the status pills).
 
