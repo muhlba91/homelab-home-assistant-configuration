@@ -1,0 +1,40 @@
+---
+- binary_sensor:
+    - unique_id: 7cdb286b-e59f-4b23-9d4c-a2021288fae3
+      name: "House: Safety Status"
+      default_entity_id: binary_sensor.house_safety_status
+      device_class: safety
+      state: >-
+        {{ is_state('alarm_control_panel.ring_control_panel', 'triggered') or (['binary_sensor.ass1_smoke_detected', 'binary_sensor.ass2_smoke_detected', 'binary_sensor.ass3_smoke_detected', 'binary_sensor.ass4_smoke_detected', 'binary_sensor.ass5_smoke_detected', 'binary_sensor.ass6_smoke_detected', 'binary_sensor.ass7_smoke_detected', 'binary_sensor.ffs1_water_alarm_water_leak_detected', 'binary_sensor.ffs2_water_leak_detected'] | select('is_state', 'on') | list | count > 0) }}
+      icon: >-
+        {% if is_state('alarm_control_panel.ring_control_panel', 'triggered')
+        or (['binary_sensor.ass1_smoke_detected', 'binary_sensor.ass2_smoke_detected', 'binary_sensor.ass3_smoke_detected', 'binary_sensor.ass4_smoke_detected', 'binary_sensor.ass5_smoke_detected', 'binary_sensor.ass6_smoke_detected', 'binary_sensor.ass7_smoke_detected', 'binary_sensor.ffs1_water_alarm_water_leak_detected', 'binary_sensor.ffs2_water_leak_detected'] | select('is_state', 'on') | list | count > 0) %}mdi:alert
+        {% elif ['binary_sensor.ring_rcs1', 'binary_sensor.ring_rcs2', 'binary_sensor.ring_rcs3'] | select('is_state', 'on') | list | count > 0 %}mdi:door-open
+        {% else %}mdi:shield-check{% endif %}
+      attributes:
+        summary: >-
+          {% set smoke = ['binary_sensor.ass1_smoke_detected', 'binary_sensor.ass2_smoke_detected', 'binary_sensor.ass3_smoke_detected', 'binary_sensor.ass4_smoke_detected', 'binary_sensor.ass5_smoke_detected', 'binary_sensor.ass6_smoke_detected', 'binary_sensor.ass7_smoke_detected'] | select('is_state', 'on') | list | count %}
+          {% set leak = ['binary_sensor.ffs1_water_alarm_water_leak_detected', 'binary_sensor.ffs2_water_leak_detected'] | select('is_state', 'on') | list | count %}
+          {% set open = ['binary_sensor.ring_rcs1', 'binary_sensor.ring_rcs2', 'binary_sensor.ring_rcs3'] | select('is_state', 'on') | list | count %}
+          {% if is_state('alarm_control_panel.ring_control_panel', 'triggered') %}Alarm triggered
+          {% elif smoke > 0 %}Smoke detected
+          {% elif leak > 0 %}Water leak
+          {% elif open > 0 %}{{ open }} door/window open
+          {% else %}All clear{% endif %}
+    - unique_id: 2cff670b-7153-4bfe-94b7-70fec563ff31
+      name: "Living Room: Safety Status"
+      default_entity_id: binary_sensor.living_room_safety_status
+      device_class: safety
+      state: >-
+        {{ is_state('binary_sensor.ass3_smoke_detected', 'on') or is_state('binary_sensor.ffs1_water_alarm_water_leak_detected', 'on') }}
+      icon: >-
+        {% if is_state('binary_sensor.ass3_smoke_detected', 'on')
+        or is_state('binary_sensor.ffs1_water_alarm_water_leak_detected', 'on') %}mdi:alert
+        {% elif is_state('binary_sensor.ring_rcs3', 'on') %}mdi:door-open
+        {% else %}mdi:shield-check{% endif %}
+      attributes:
+        summary: >-
+          {% if is_state('binary_sensor.ass3_smoke_detected', 'on') %}Smoke detected
+          {% elif is_state('binary_sensor.ffs1_water_alarm_water_leak_detected', 'on') %}Water leak (kitchen)
+          {% elif is_state('binary_sensor.ring_rcs3', 'on') %}Garden door open
+          {% else %}All clear{% endif %}
