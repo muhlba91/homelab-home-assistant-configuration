@@ -32,6 +32,19 @@ Custom integration and frontend (www) component versions are pinned in:
 
 All versions are kept up-to-date automatically via [Renovate](https://docs.renovatebot.com/) using the custom regex managers defined in [`renovate.json`](renovate.json).
 
+## Dashboard
+
+The Home Dashboard is a YAML-mode Lovelace dashboard with one tab per room:
+
+- **Root**: [`sites/vie/configuration/ui-lovelace.yaml`](sites/vie/configuration/ui-lovelace.yaml) (title and ordered list of views).
+- **Views**: [`sites/vie/configuration/dashboards/views/`](sites/vie/configuration/dashboards/views/) (one file per tab).
+- **Registration**: [`sites/vie/configuration/lovelace/`](sites/vie/configuration/lovelace/) (additional dashboard, or default via `mode: yaml`).
+- **Themes**: [`common/configuration/frontend/themes.yaml`](common/configuration/frontend/themes.yaml) (light and dark palette).
+- **Safety status sensors**: [`sites/vie/configuration/template/safety_status.yaml`](sites/vie/configuration/template/safety_status.yaml) (template entities behind the status pills).
+
+[`DASHBOARD.md`](DASHBOARD.md) is the complete reference: design system, layout rules, copy-paste card patterns, how the safety status sensors work, how to map entities, and step-by-step recipes for adding lights, sensors, or rooms.
+Keep it up to date whenever views or safety sensors change.
+
 ## Lifecycle Scripts
 
 The directory [`lifecycle/`](lifecycle/) contains lifecycle scripts (and shared helpers like `util.sh`).
