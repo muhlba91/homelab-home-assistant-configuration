@@ -6,32 +6,55 @@ theme: family_dashboard
 type: sections
 max_columns: 3
 sections:
+  # ---------- Row 1: Air Conditioner | Climate | Lighting ----------
   - type: grid
-    title: Climate & Lighting
+    title: Air Conditioner
     background: true
-    column_span: 3
+    column_span: 1
     cards:
       - type: tile
         entity: climate.living_room_air_conditioner
-        name: Air Conditioner
+        name: Living Room
         features:
           - type: climate-hvac-modes
             style: icons
           - type: target-temperature
         grid_options:
-          columns: 12
-      - type: custom:modern-circular-gauge
+          columns: full
+
+  - type: grid
+    title: Climate
+    background: true
+    column_span: 1
+    cards:
+      - type: tile
         entity: sensor.living_room_living_room_temperature_humidity_temperature
-        name: Climate
-        min: 15
-        max: 28
-        secondary:
-          entity: sensor.living_room_living_room_temperature_humidity_humidity
-          show_gauge: outer
-          min: 30
-          max: 70
+        name: Temperature
+        icon: mdi:thermometer
+        color: blue
+        features:
+          - type: trend-graph
+            hours_to_show: 24
+            detail: false
         grid_options:
-          columns: 12
+          columns: full
+      - type: tile
+        entity: sensor.living_room_living_room_temperature_humidity_humidity
+        name: Humidity
+        icon: mdi:water-percent
+        color: green
+        features:
+          - type: trend-graph
+            hours_to_show: 24
+            detail: false
+        grid_options:
+          columns: full
+
+  - type: grid
+    title: Lighting
+    background: true
+    column_span: 1
+    cards:
       - type: tile
         entity: switch.fds1_1
         name: Living Room
@@ -41,7 +64,7 @@ sections:
         features:
           - type: toggle
         grid_options:
-          columns: 12
+          columns: full
       - type: tile
         entity: switch.fs12_1
         name: Kitchen
@@ -51,8 +74,9 @@ sections:
         features:
           - type: toggle
         grid_options:
-          columns: 12
+          columns: full
 
+  # ---------- Row 2: Shutters ----------
   - type: grid
     title: Shutters
     background: true
@@ -86,59 +110,85 @@ sections:
         grid_options:
           columns: 12
 
+  # ---------- Row 3: Media System | Safety ----------
   - type: grid
     title: Media System
     background: true
-    column_span: 3
+    column_span: 1
     cards:
       - type: tile
         entity: switch.living_room_media_system
-        name: Media System
-        icon: mdi:power
+        name: Denon + Projector
+        icon: mdi:television-play
         color: purple
         features_position: inline
         features:
           - type: toggle
         grid_options:
-          columns: 12
+          columns: full
 
   - type: grid
     title: Safety
     background: true
-    column_span: 3
+    column_span: 2
     cards:
+      - type: custom:mushroom-template-card
+        primary: >-
+          {% if is_state('binary_sensor.ass3_smoke_detected', 'on') %}Smoke detected!
+          {% elif is_state('binary_sensor.ffs1_water_alarm_water_leak_detected', 'on') %}Water leak in the kitchen!
+          {% elif is_state('binary_sensor.ring_rcs3', 'on') %}Garden door open
+          {% else %}All clear{% endif %}
+        icon: >-
+          {% if is_state('binary_sensor.ass3_smoke_detected', 'on')
+          or is_state('binary_sensor.ffs1_water_alarm_water_leak_detected', 'on') %}mdi:alert
+          {% elif is_state('binary_sensor.ring_rcs3', 'on') %}mdi:door-open
+          {% else %}mdi:shield-check{% endif %}
+        icon_color: >-
+          {% if is_state('binary_sensor.ass3_smoke_detected', 'on')
+          or is_state('binary_sensor.ffs1_water_alarm_water_leak_detected', 'on') %}red
+          {% elif is_state('binary_sensor.ring_rcs3', 'on') %}amber
+          {% else %}green{% endif %}
+        grid_options:
+          columns: full
       - type: tile
         entity: binary_sensor.ass3_smoke_detected
         name: Smoke
         grid_options:
-          columns: 9
+          columns: 6
       - type: tile
         entity: binary_sensor.ffs1_water_alarm_water_leak_detected
         name: Kitchen leak
         grid_options:
-          columns: 9
+          columns: 6
       - type: tile
         entity: binary_sensor.living_room_ring_motion_sensor
         name: Motion
         grid_options:
-          columns: 9
+          columns: 6
       - type: tile
         entity: binary_sensor.ring_rcs3
         name: Garden door
         grid_options:
-          columns: 9
+          columns: 6
 
+  # ---------- Row 4: Camera | Vacuum ----------
   - type: grid
-    title: Camera & Vacuum
+    title: Camera
     background: true
-    column_span: 3
+    column_span: 2
     cards:
       - type: custom:advanced-camera-card
         cameras:
           - camera_entity: camera.living_room_living_room_fluent
         card_id: living_room_camera
         grid_options:
-          columns: 24
+          columns: full
+
+  - type: grid
+    title: Vacuum
+    background: true
+    column_span: 1
+    cards:
       - type: tile
         entity: vacuum.tea_room_roborock
         name: Roborock
@@ -149,8 +199,9 @@ sections:
               - return_home
               - locate
         grid_options:
-          columns: 12
+          columns: full
 
+  # ---------- Row 5: Battery (always last) ----------
   - type: grid
     title: Battery Levels
     background: true
@@ -160,29 +211,29 @@ sections:
         entity: sensor.ass3_battery
         name: Smoke
         grid_options:
-          columns: 9
+          columns: 6
       - type: tile
         entity: sensor.living_room_living_room_temperature_humidity_battery
         name: Climate sensor
         grid_options:
-          columns: 9
+          columns: 6
       - type: tile
         entity: sensor.living_room_ring_motion_sensor_battery
         name: Motion
         grid_options:
-          columns: 9
+          columns: 6
       - type: tile
         entity: sensor.ffs1_battery_level
         name: Kitchen leak
         grid_options:
-          columns: 9
+          columns: 6
       - type: tile
         entity: sensor.ring_rcs3_garden_door_battery
         name: Garden door
         grid_options:
-          columns: 9
+          columns: 6
       - type: tile
         entity: sensor.tea_room_roborock_battery
         name: Roborock
         grid_options:
-          columns: 9
+          columns: 6

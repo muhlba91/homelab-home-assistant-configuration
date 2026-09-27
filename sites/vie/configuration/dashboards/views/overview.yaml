@@ -113,6 +113,7 @@ sections:
           max: 70
         grid_options:
           columns: 6
+          rows: 3
       - type: custom:modern-circular-gauge
         entity: sensor.bedroom_bedroom_temperature_humidity_temperature
         name: Bedroom
@@ -125,6 +126,7 @@ sections:
           max: 70
         grid_options:
           columns: 6
+          rows: 3
       - type: custom:modern-circular-gauge
         entity: sensor.office_office_temperature_humidity_temperature
         name: Office
@@ -137,6 +139,7 @@ sections:
           max: 70
         grid_options:
           columns: 6
+          rows: 3
       - type: custom:modern-circular-gauge
         entity: sensor.tea_room_tea_room_temperature_humidity_temperature
         name: Tea Room
@@ -149,6 +152,7 @@ sections:
           max: 70
         grid_options:
           columns: 6
+          rows: 3
 
   - type: grid
     title: Weather Station
@@ -167,6 +171,7 @@ sections:
           max: 80
         grid_options:
           columns: 6
+          rows: 3
       - type: custom:modern-circular-gauge
         entity: sensor.ecowitt_temp2
         name: North
@@ -179,6 +184,7 @@ sections:
           max: 80
         grid_options:
           columns: 6
+          rows: 3
 
   - type: grid
     title: Solar & Energy
@@ -191,27 +197,28 @@ sections:
         min: 0
         max: 5000
         grid_options:
-          columns: 9
+          columns: 12
+          rows: 3
       - type: tile
         entity: sensor.pv_energy_day_fronius_power_flow
         name: Produced today
         icon: mdi:solar-power
         color: amber
         grid_options:
-          columns: 9
+          columns: 24
       - type: tile
         entity: sensor.energy_meter_po
-        name: Exporting
+        name: Exporting to grid
         icon: mdi:transmission-tower-export
         color: green
         grid_options:
-          columns: 9
+          columns: 24
       - type: tile
         entity: sensor.energy_meter_p
-        name: Importing
+        name: Importing from grid
         icon: mdi:transmission-tower-import
         grid_options:
-          columns: 9
+          columns: 24
 
   - type: grid
     title: Energy Flow
@@ -220,7 +227,7 @@ sections:
     cards:
       - type: custom:sankey-chart
         show_names: true
-        height: 220
+        height: 160
         nodes:
           - id: sensor.pv_power_photovoltaics_fronius_power_flow
             section: 0
@@ -234,9 +241,13 @@ sections:
             name: Grid export
             color: var(--success-color)
           - id: house_consumption
+            entity_id: sensor.pv_power_photovoltaics_fronius_power_flow
             section: 1
-            type: remaining_parent_state
             name: House
+            add_entities:
+              - sensor.energy_meter_p
+            subtract_entities:
+              - sensor.energy_meter_po
         links:
           - source: sensor.pv_power_photovoltaics_fronius_power_flow
             target: sensor.energy_meter_po
