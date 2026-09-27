@@ -88,8 +88,23 @@ sections:
         heading: OUTDOOR (FORECAST)
         heading_style: subtitle
         grid_options:
-          columns: full
-          rows: 1
+          columns: 6
+      - type: custom:mushroom-chips-card
+        alignment: end
+        chips:
+          - type: template
+            entity: sun.sun
+            icon: "{{ 'mdi:weather-sunset-down' if is_state('sun.sun', 'above_horizon') else 'mdi:weather-sunset-up' }}"
+            icon_color: amber
+            content: >-
+              {% if is_state('sun.sun', 'above_horizon') %}Sunset
+              {{ as_timestamp(state_attr('sun.sun', 'next_setting')) | timestamp_custom('%H:%M') }}
+              {% else %}Sunrise
+              {{ as_timestamp(state_attr('sun.sun', 'next_rising')) | timestamp_custom('%H:%M') }}{% endif %}
+            tap_action:
+              action: more-info
+        grid_options:
+          columns: 6
       - type: custom:mushroom-template-card
         entity: weather.home
         primary: >-
@@ -134,6 +149,8 @@ sections:
         max: 28
         gauge_foreground_style:
           color: "var(--blue-color)"
+        gauge_background_style:
+          color: var(--divider-color)
         secondary:
           entity: sensor.living_room_living_room_temperature_humidity_humidity
           show_gauge: outer
@@ -151,6 +168,8 @@ sections:
         max: 28
         gauge_foreground_style:
           color: "var(--blue-color)"
+        gauge_background_style:
+          color: var(--divider-color)
         secondary:
           entity: sensor.bedroom_bedroom_temperature_humidity_humidity
           show_gauge: outer
@@ -168,6 +187,8 @@ sections:
         max: 28
         gauge_foreground_style:
           color: "var(--blue-color)"
+        gauge_background_style:
+          color: var(--divider-color)
         secondary:
           entity: sensor.office_office_temperature_humidity_humidity
           show_gauge: outer
@@ -185,6 +206,8 @@ sections:
         max: 28
         gauge_foreground_style:
           color: "var(--blue-color)"
+        gauge_background_style:
+          color: var(--divider-color)
         secondary:
           entity: sensor.tea_room_tea_room_temperature_humidity_humidity
           show_gauge: outer
@@ -256,6 +279,8 @@ sections:
         max: 35
         gauge_foreground_style:
           color: "var(--blue-color)"
+        gauge_background_style:
+          color: var(--divider-color)
         secondary:
           entity: sensor.ecowitt_humidity1
           show_gauge: outer
@@ -273,6 +298,8 @@ sections:
         max: 35
         gauge_foreground_style:
           color: "var(--blue-color)"
+        gauge_background_style:
+          color: var(--divider-color)
         secondary:
           entity: sensor.ecowitt_humidity2
           show_gauge: outer
@@ -313,6 +340,8 @@ sections:
         max: 5000
         gauge_foreground_style:
           color: "var(--amber-color)"
+        gauge_background_style:
+          color: var(--divider-color)
         grid_options:
           columns: 12
           rows: 3
