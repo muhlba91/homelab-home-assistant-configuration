@@ -97,10 +97,13 @@ sections:
             icon: "{{ 'mdi:weather-sunset-down' if is_state('sun.sun', 'above_horizon') else 'mdi:weather-sunset-up' }}"
             icon_color: amber
             content: >-
-              {% if is_state('sun.sun', 'above_horizon') %}Sunset
-              {{ as_timestamp(state_attr('sun.sun', 'next_setting')) | timestamp_custom('%H:%M') }}
-              {% else %}Sunrise
-              {{ as_timestamp(state_attr('sun.sun', 'next_rising')) | timestamp_custom('%H:%M') }}{% endif %}
+              {% set next = state_attr('sun.sun', 'next_setting') if
+              is_state('sun.sun', 'above_horizon') else
+              state_attr('sun.sun', 'next_rising') %}
+              {% set ts = as_timestamp(next, none) %}
+              {% if ts is none %}Sun times unavailable
+              {% elif is_state('sun.sun', 'above_horizon') %}Sunset {{ ts | timestamp_custom('%H:%M') }}
+              {% else %}Sunrise {{ ts | timestamp_custom('%H:%M') }}{% endif %}
             tap_action:
               action: more-info
         grid_options:
@@ -147,6 +150,7 @@ sections:
         name: Living Room
         min: 15
         max: 28
+        show_icon: false
         gauge_foreground_style:
           color: "var(--blue-color)"
         gauge_background_style:
@@ -166,6 +170,7 @@ sections:
         name: Bedroom
         min: 15
         max: 28
+        show_icon: false
         gauge_foreground_style:
           color: "var(--blue-color)"
         gauge_background_style:
@@ -185,6 +190,7 @@ sections:
         name: Office
         min: 15
         max: 28
+        show_icon: false
         gauge_foreground_style:
           color: "var(--blue-color)"
         gauge_background_style:
@@ -204,6 +210,7 @@ sections:
         name: Tea Room
         min: 15
         max: 28
+        show_icon: false
         gauge_foreground_style:
           color: "var(--blue-color)"
         gauge_background_style:
@@ -277,6 +284,7 @@ sections:
         name: South
         min: 5
         max: 35
+        show_icon: false
         gauge_foreground_style:
           color: "var(--blue-color)"
         gauge_background_style:
@@ -296,6 +304,7 @@ sections:
         name: North
         min: 5
         max: 35
+        show_icon: false
         gauge_foreground_style:
           color: "var(--blue-color)"
         gauge_background_style:
@@ -338,6 +347,7 @@ sections:
         name: Solar power
         min: 0
         max: 5000
+        show_icon: false
         gauge_foreground_style:
           color: "var(--amber-color)"
         gauge_background_style:
