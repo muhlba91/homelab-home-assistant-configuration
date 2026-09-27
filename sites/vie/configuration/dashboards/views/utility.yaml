@@ -7,10 +7,13 @@ type: sections
 max_columns: 3
 sections:
   - type: grid
-    title: Lighting
-    background: true
-    column_span: 3
+    background:
+      opacity: 100
+    column_span: 2
     cards:
+      - type: heading
+        heading: LIGHTING
+        heading_style: subtitle
       - type: tile
         entity: switch.fs10_1
         name: Utility Room
@@ -20,7 +23,7 @@ sections:
         features:
           - type: toggle
         grid_options:
-          columns: 12
+          columns: full
       - type: tile
         entity: switch.fs3_1
         name: Storage Room
@@ -30,13 +33,17 @@ sections:
         features:
           - type: toggle
         grid_options:
-          columns: 12
+          columns: full
 
   - type: grid
-    title: Shutters
-    background: true
-    column_span: 3
+    theme: family_dashboard_chips
+    background:
+      opacity: 100
+    column_span: 1
     cards:
+      - type: heading
+        heading: SHUTTERS
+        heading_style: subtitle
       - type: tile
         entity: cover.storage_room
         name: Storage Room
@@ -48,10 +55,31 @@ sections:
           columns: 12
 
   - type: grid
-    title: Safety
-    background: true
+    theme: family_dashboard_chips
+    background:
+      opacity: 100
     column_span: 3
     cards:
+      - type: heading
+        heading: SAFETY
+        heading_style: subtitle
+        grid_options:
+          columns: 27
+      - type: custom:mushroom-chips-card
+        alignment: end
+        chips:
+          - type: template
+            entity: binary_sensor.utility_safety_status
+            content: "{{ state_attr('binary_sensor.utility_safety_status', 'summary') }}"
+            icon: "{{ state_attr('binary_sensor.utility_safety_status', 'icon') }}"
+            icon_color: >-
+              {% if is_state('binary_sensor.utility_safety_status', 'on') %}red
+              {% elif state_attr('binary_sensor.utility_safety_status', 'summary') != 'All clear' %}orange
+              {% else %}green{% endif %}
+            tap_action:
+              action: more-info
+        grid_options:
+          columns: 9
       - type: tile
         entity: binary_sensor.ass5_smoke_detected
         name: Smoke
@@ -74,27 +102,31 @@ sections:
           columns: 9
 
   - type: grid
-    title: Battery Levels
-    background: true
+    theme: family_dashboard_chips
+    background:
+      opacity: 100
     column_span: 3
     cards:
+      - type: heading
+        heading: BATTERY LEVELS
+        heading_style: subtitle
       - type: tile
         entity: sensor.fms3_battery_level
         name: Storage motion
         grid_options:
-          columns: 9
+          columns: 6
       - type: tile
         entity: sensor.ring_rcs2_front_window_battery
         name: Storage window
         grid_options:
-          columns: 9
+          columns: 6
       - type: tile
         entity: sensor.ffs2_battery_level
         name: Leak
         grid_options:
-          columns: 9
+          columns: 6
       - type: tile
         entity: sensor.ass5_battery
         name: Smoke
         grid_options:
-          columns: 9
+          columns: 6

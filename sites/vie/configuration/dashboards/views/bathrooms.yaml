@@ -7,10 +7,13 @@ type: sections
 max_columns: 3
 sections:
   - type: grid
-    title: Lighting
-    background: true
-    column_span: 3
+    background:
+      opacity: 100
+    column_span: 2
     cards:
+      - type: heading
+        heading: LIGHTING
+        heading_style: subtitle
       - type: tile
         entity: switch.fds2_2
         name: Bathroom
@@ -20,7 +23,7 @@ sections:
         features:
           - type: toggle
         grid_options:
-          columns: 12
+          columns: full
       - type: tile
         entity: switch.fds2_1
         name: Mirror
@@ -30,7 +33,7 @@ sections:
         features:
           - type: toggle
         grid_options:
-          columns: 12
+          columns: full
       - type: tile
         entity: switch.fs1_1
         name: Toilet
@@ -40,13 +43,17 @@ sections:
         features:
           - type: toggle
         grid_options:
-          columns: 12
+          columns: full
 
   - type: grid
-    title: Shutters
-    background: true
-    column_span: 3
+    theme: family_dashboard_chips
+    background:
+      opacity: 100
+    column_span: 1
     cards:
+      - type: heading
+        heading: SHUTTERS
+        heading_style: subtitle
       - type: tile
         entity: cover.bathroom
         name: Bathroom
@@ -58,10 +65,14 @@ sections:
           columns: 12
 
   - type: grid
-    title: Safety
-    background: true
+    theme: family_dashboard_chips
+    background:
+      opacity: 100
     column_span: 3
     cards:
+      - type: heading
+        heading: MOTION
+        heading_style: subtitle
       - type: tile
         entity: binary_sensor.fms1_home_security_motion_detection
         name: Toilet motion
@@ -69,12 +80,16 @@ sections:
           columns: 9
 
   - type: grid
-    title: Battery Levels
-    background: true
+    theme: family_dashboard_chips
+    background:
+      opacity: 100
     column_span: 3
     cards:
+      - type: heading
+        heading: BATTERY LEVELS
+        heading_style: subtitle
       - type: tile
         entity: sensor.fms1_battery_level
         name: Toilet motion
         grid_options:
-          columns: 9
+          columns: 6

@@ -26,15 +26,85 @@
       default_entity_id: binary_sensor.living_room_safety_status
       device_class: safety
       state: >-
-        {{ is_state('binary_sensor.ass3_smoke_detected', 'on') or is_state('binary_sensor.ffs1_water_alarm_water_leak_detected', 'on') }}
+        {{ ['binary_sensor.ass3_smoke_detected', 'binary_sensor.ffs1_water_alarm_water_leak_detected'] | select('is_state', 'on') | list | count > 0 }}
       icon: >-
-        {% if is_state('binary_sensor.ass3_smoke_detected', 'on')
-        or is_state('binary_sensor.ffs1_water_alarm_water_leak_detected', 'on') %}mdi:alert
-        {% elif is_state('binary_sensor.ring_rcs3', 'on') %}mdi:door-open
+        {% if ['binary_sensor.ass3_smoke_detected', 'binary_sensor.ffs1_water_alarm_water_leak_detected'] | select('is_state', 'on') | list | count > 0 %}mdi:alert
+        {% elif ['binary_sensor.ring_rcs3'] | select('is_state', 'on') | list | count > 0 %}mdi:door-open
         {% else %}mdi:shield-check{% endif %}
       attributes:
         summary: >-
           {% if is_state('binary_sensor.ass3_smoke_detected', 'on') %}Smoke detected
           {% elif is_state('binary_sensor.ffs1_water_alarm_water_leak_detected', 'on') %}Water leak (kitchen)
           {% elif is_state('binary_sensor.ring_rcs3', 'on') %}Garden door open
+          {% else %}All clear{% endif %}
+    - unique_id: 5d0e9f0a-3a41-4f7e-9d0b-0f6c1f5e2a11
+      name: "Office: Safety Status"
+      default_entity_id: binary_sensor.office_safety_status
+      device_class: safety
+      state: >-
+        {{ ['binary_sensor.ass1_smoke_detected'] | select('is_state', 'on') | list | count > 0 }}
+      icon: >-
+        {% if ['binary_sensor.ass1_smoke_detected'] | select('is_state', 'on') | list | count > 0 %}mdi:alert
+        {% else %}mdi:shield-check{% endif %}
+      attributes:
+        summary: >-
+          {% if is_state('binary_sensor.ass1_smoke_detected', 'on') %}Smoke detected
+          {% else %}All clear{% endif %}
+    - unique_id: b2a6c0e4-8f1d-4c5a-9e2b-6d7f3a1c9e22
+      name: "Tea Room: Safety Status"
+      default_entity_id: binary_sensor.tea_room_safety_status
+      device_class: safety
+      state: >-
+        {{ ['binary_sensor.ass6_smoke_detected'] | select('is_state', 'on') | list | count > 0 }}
+      icon: >-
+        {% if ['binary_sensor.ass6_smoke_detected'] | select('is_state', 'on') | list | count > 0 %}mdi:alert
+        {% else %}mdi:shield-check{% endif %}
+      attributes:
+        summary: >-
+          {% if is_state('binary_sensor.ass6_smoke_detected', 'on') %}Smoke detected
+          {% else %}All clear{% endif %}
+    - unique_id: e7c3d91b-2b6a-4f0e-8a5c-3f9d1e6b7c33
+      name: "Bedroom: Safety Status"
+      default_entity_id: binary_sensor.bedroom_safety_status
+      device_class: safety
+      state: >-
+        {{ ['binary_sensor.ass2_smoke_detected'] | select('is_state', 'on') | list | count > 0 }}
+      icon: >-
+        {% if ['binary_sensor.ass2_smoke_detected'] | select('is_state', 'on') | list | count > 0 %}mdi:alert
+        {% else %}mdi:shield-check{% endif %}
+      attributes:
+        summary: >-
+          {% if is_state('binary_sensor.ass2_smoke_detected', 'on') %}Smoke detected
+          {% else %}All clear{% endif %}
+    - unique_id: 9a4f2c6e-7d3b-4e1a-b8c5-2e6f0d9a1b44
+      name: "Hallways: Safety Status"
+      default_entity_id: binary_sensor.hallways_safety_status
+      device_class: safety
+      state: >-
+        {{ ['binary_sensor.ass7_smoke_detected', 'binary_sensor.ass4_smoke_detected'] | select('is_state', 'on') | list | count > 0 }}
+      icon: >-
+        {% if ['binary_sensor.ass7_smoke_detected', 'binary_sensor.ass4_smoke_detected'] | select('is_state', 'on') | list | count > 0 %}mdi:alert
+        {% elif ['binary_sensor.ring_rcs1'] | select('is_state', 'on') | list | count > 0 %}mdi:door-open
+        {% else %}mdi:shield-check{% endif %}
+      attributes:
+        summary: >-
+          {% if is_state('binary_sensor.ass7_smoke_detected', 'on') %}Smoke detected (hallway)
+          {% elif is_state('binary_sensor.ass4_smoke_detected', 'on') %}Smoke detected (entrance)
+          {% elif is_state('binary_sensor.ring_rcs1', 'on') %}Front door open
+          {% else %}All clear{% endif %}
+    - unique_id: c1e8b5d2-6f4a-4b9e-a3d7-8e2c5f0b1d55
+      name: "Utility: Safety Status"
+      default_entity_id: binary_sensor.utility_safety_status
+      device_class: safety
+      state: >-
+        {{ ['binary_sensor.ass5_smoke_detected', 'binary_sensor.ffs2_water_leak_detected'] | select('is_state', 'on') | list | count > 0 }}
+      icon: >-
+        {% if ['binary_sensor.ass5_smoke_detected', 'binary_sensor.ffs2_water_leak_detected'] | select('is_state', 'on') | list | count > 0 %}mdi:alert
+        {% elif ['binary_sensor.ring_rcs2'] | select('is_state', 'on') | list | count > 0 %}mdi:door-open
+        {% else %}mdi:shield-check{% endif %}
+      attributes:
+        summary: >-
+          {% if is_state('binary_sensor.ass5_smoke_detected', 'on') %}Smoke detected
+          {% elif is_state('binary_sensor.ffs2_water_leak_detected', 'on') %}Water leak
+          {% elif is_state('binary_sensor.ring_rcs2', 'on') %}Storage window open
           {% else %}All clear{% endif %}

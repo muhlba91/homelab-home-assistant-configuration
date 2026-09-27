@@ -7,10 +7,13 @@ type: sections
 max_columns: 3
 sections:
   - type: grid
-    title: Lighting
-    background: true
-    column_span: 3
+    background:
+      opacity: 100
+    column_span: 2
     cards:
+      - type: heading
+        heading: LIGHTING
+        heading_style: subtitle
       - type: tile
         entity: switch.fs4_1
         name: Hallway
@@ -20,7 +23,7 @@ sections:
         features:
           - type: toggle
         grid_options:
-          columns: 12
+          columns: full
       - type: tile
         entity: switch.fds1_2
         name: Hallway 2
@@ -30,7 +33,7 @@ sections:
         features:
           - type: toggle
         grid_options:
-          columns: 12
+          columns: full
       - type: tile
         entity: switch.fs2_1
         name: Entrance
@@ -40,13 +43,16 @@ sections:
         features:
           - type: toggle
         grid_options:
-          columns: 12
+          columns: full
 
   - type: grid
-    title: Front Door
-    background: true
-    column_span: 3
+    background:
+      opacity: 100
+    column_span: 1
     cards:
+      - type: heading
+        heading: FRONT DOOR
+        heading_style: subtitle
       - type: tile
         entity: lock.entrance_door_lock
         name: Front Door
@@ -54,7 +60,7 @@ sections:
         features:
           - type: lock-commands
         grid_options:
-          columns: 12
+          columns: full
       - type: tile
         entity: switch.alarm_keypad_chirps
         name: Keypad chirps
@@ -64,13 +70,34 @@ sections:
         features:
           - type: toggle
         grid_options:
-          columns: 12
+          columns: full
 
   - type: grid
-    title: Safety
-    background: true
+    theme: family_dashboard_chips
+    background:
+      opacity: 100
     column_span: 3
     cards:
+      - type: heading
+        heading: SAFETY
+        heading_style: subtitle
+        grid_options:
+          columns: 27
+      - type: custom:mushroom-chips-card
+        alignment: end
+        chips:
+          - type: template
+            entity: binary_sensor.hallways_safety_status
+            content: "{{ state_attr('binary_sensor.hallways_safety_status', 'summary') }}"
+            icon: "{{ state_attr('binary_sensor.hallways_safety_status', 'icon') }}"
+            icon_color: >-
+              {% if is_state('binary_sensor.hallways_safety_status', 'on') %}red
+              {% elif state_attr('binary_sensor.hallways_safety_status', 'summary') != 'All clear' %}orange
+              {% else %}green{% endif %}
+            tap_action:
+              action: more-info
+        grid_options:
+          columns: 9
       - type: tile
         entity: binary_sensor.ass7_smoke_detected
         name: Hallway smoke
@@ -79,6 +106,11 @@ sections:
       - type: tile
         entity: binary_sensor.ass4_smoke_detected
         name: Entrance smoke
+        grid_options:
+          columns: 9
+      - type: tile
+        entity: binary_sensor.ring_rcs1
+        name: Front door
         grid_options:
           columns: 9
       - type: tile
@@ -93,37 +125,46 @@ sections:
           columns: 9
 
   - type: grid
-    title: Battery Levels
-    background: true
+    theme: family_dashboard_chips
+    background:
+      opacity: 100
     column_span: 3
     cards:
+      - type: heading
+        heading: BATTERY LEVELS
+        heading_style: subtitle
       - type: tile
         entity: sensor.ass7_battery
         name: Hallway smoke
         grid_options:
-          columns: 9
+          columns: 6
       - type: tile
         entity: sensor.ass4_battery
         name: Entrance smoke
         grid_options:
-          columns: 9
+          columns: 6
+      - type: tile
+        entity: sensor.ring_rcs1_front_door_battery
+        name: Front door
+        grid_options:
+          columns: 6
       - type: tile
         entity: sensor.ring_rms1_entrance_room_battery
         name: Ring motion
         grid_options:
-          columns: 9
+          columns: 6
       - type: tile
         entity: sensor.fms2_battery_level
         name: Fibaro motion
         grid_options:
-          columns: 9
+          columns: 6
       - type: tile
         entity: sensor.ring_keypad_battery
         name: Keypad
         grid_options:
-          columns: 9
+          columns: 6
       - type: tile
         entity: sensor.entrance_room_entrance_door_lock_battery
         name: Door lock
         grid_options:
-          columns: 9
+          columns: 6

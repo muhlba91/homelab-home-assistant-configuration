@@ -7,31 +7,13 @@ type: sections
 max_columns: 3
 sections:
   - type: grid
-    title: Climate & Lighting
-    background: true
-    column_span: 3
+    background:
+      opacity: 100
+    column_span: 1
     cards:
-      - type: tile
-        entity: climate.bedroom_air_conditioner
-        name: Air Conditioner
-        features:
-          - type: climate-hvac-modes
-            style: icons
-          - type: target-temperature
-        grid_options:
-          columns: 12
-      - type: custom:modern-circular-gauge
-        entity: sensor.bedroom_bedroom_temperature_humidity_temperature
-        name: Climate
-        min: 15
-        max: 28
-        secondary:
-          entity: sensor.bedroom_bedroom_temperature_humidity_humidity
-          show_gauge: outer
-          min: 30
-          max: 70
-        grid_options:
-          columns: 12
+      - type: heading
+        heading: LIGHTING
+        heading_style: subtitle
       - type: tile
         entity: switch.fs6_1
         name: Bedroom
@@ -41,13 +23,68 @@ sections:
         features:
           - type: toggle
         grid_options:
-          columns: 12
+          columns: full
 
   - type: grid
-    title: Shutters
-    background: true
-    column_span: 3
+    background:
+      opacity: 100
+    column_span: 1
     cards:
+      - type: heading
+        heading: AIR CONDITIONER
+        heading_style: subtitle
+      - type: tile
+        entity: climate.bedroom_air_conditioner
+        name: Bedroom
+        features:
+          - type: climate-hvac-modes
+            style: icons
+          - type: climate-fan-modes
+            style: dropdown
+          - type: target-temperature
+        grid_options:
+          columns: full
+
+  - type: grid
+    background:
+      opacity: 100
+    column_span: 1
+    cards:
+      - type: heading
+        heading: CLIMATE
+        heading_style: subtitle
+      - type: tile
+        entity: sensor.bedroom_bedroom_temperature_humidity_temperature
+        name: Temperature
+        icon: mdi:thermometer
+        color: blue
+        features:
+          - type: trend-graph
+            hours_to_show: 24
+            detail: false
+        grid_options:
+          columns: full
+      - type: tile
+        entity: sensor.bedroom_bedroom_temperature_humidity_humidity
+        name: Humidity
+        icon: mdi:water-percent
+        color: green
+        features:
+          - type: trend-graph
+            hours_to_show: 24
+            detail: false
+        grid_options:
+          columns: full
+
+  - type: grid
+    theme: family_dashboard_chips
+    background:
+      opacity: 100
+    column_span: 1
+    cards:
+      - type: heading
+        heading: SHUTTERS
+        heading_style: subtitle
       - type: tile
         entity: cover.bedroom
         name: Bedroom
@@ -59,28 +96,53 @@ sections:
           columns: 12
 
   - type: grid
-    title: Safety
-    background: true
-    column_span: 3
+    theme: family_dashboard_chips
+    background:
+      opacity: 100
+    column_span: 2
     cards:
+      - type: heading
+        heading: SAFETY
+        heading_style: subtitle
+        grid_options:
+          columns: 16
+      - type: custom:mushroom-chips-card
+        alignment: end
+        chips:
+          - type: template
+            entity: binary_sensor.bedroom_safety_status
+            content: "{{ state_attr('binary_sensor.bedroom_safety_status', 'summary') }}"
+            icon: "{{ state_attr('binary_sensor.bedroom_safety_status', 'icon') }}"
+            icon_color: >-
+              {% if is_state('binary_sensor.bedroom_safety_status', 'on') %}red
+              {% elif state_attr('binary_sensor.bedroom_safety_status', 'summary') != 'All clear' %}orange
+              {% else %}green{% endif %}
+            tap_action:
+              action: more-info
+        grid_options:
+          columns: 8
       - type: tile
         entity: binary_sensor.ass2_smoke_detected
         name: Smoke
         grid_options:
-          columns: 9
+          columns: 12
 
   - type: grid
-    title: Battery Levels
-    background: true
+    theme: family_dashboard_chips
+    background:
+      opacity: 100
     column_span: 3
     cards:
+      - type: heading
+        heading: BATTERY LEVELS
+        heading_style: subtitle
       - type: tile
         entity: sensor.ass2_battery
         name: Smoke
         grid_options:
-          columns: 9
+          columns: 6
       - type: tile
         entity: sensor.bedroom_bedroom_temperature_humidity_battery
-        name: Climate sensor
+        name: Climate
         grid_options:
-          columns: 9
+          columns: 6

@@ -7,10 +7,13 @@ type: sections
 max_columns: 3
 sections:
   - type: grid
-    title: Lighting
-    background: true
-    column_span: 3
+    background:
+      opacity: 100
+    column_span: 1
     cards:
+      - type: heading
+        heading: LIGHTING
+        heading_style: subtitle
       - type: tile
         entity: switch.fds4_2
         name: Pergola
@@ -20,60 +23,87 @@ sections:
         features:
           - type: toggle
         grid_options:
-          columns: 12
+          columns: full
 
   - type: grid
-    title: Weather Station
-    background: true
-    column_span: 3
+    background:
+      opacity: 100
+    column_span: 2
     cards:
+      - type: heading
+        heading: WEATHER STATION
+        heading_style: subtitle
       - type: custom:modern-circular-gauge
         entity: sensor.ecowitt_temp1
         name: South
         min: 5
         max: 35
+        show_icon: false
+        gauge_foreground_style:
+          color: "var(--blue-color)"
+        gauge_background_style:
+          color: var(--divider-color)
         secondary:
           entity: sensor.ecowitt_humidity1
           show_gauge: outer
           min: 20
           max: 80
+          gauge_foreground_style:
+            color: "var(--green-color)"
         grid_options:
           columns: 12
+          rows: 3
       - type: custom:modern-circular-gauge
         entity: sensor.ecowitt_temp2
         name: North
         min: 5
         max: 35
+        show_icon: false
+        gauge_foreground_style:
+          color: "var(--blue-color)"
+        gauge_background_style:
+          color: var(--divider-color)
         secondary:
           entity: sensor.ecowitt_humidity2
           show_gauge: outer
           min: 20
           max: 80
+          gauge_foreground_style:
+            color: "var(--green-color)"
         grid_options:
           columns: 12
-      - type: custom:mushroom-template-card
-        primary: Difference
-        secondary: >-
-          {% set diff = (states('sensor.ecowitt_temp1') | float(0)) -
-          (states('sensor.ecowitt_temp2') | float(0)) %}
-          {{ 'South +' ~ diff | round(1) ~ ' °C' if diff >= 0
-          else 'North +' ~ (-diff) | round(1) ~ ' °C' }}
-        icon: mdi:thermometer-lines
+          rows: 3
+      - type: custom:mushroom-chips-card
+        alignment: center
+        chips:
+          - type: template
+            icon: mdi:thermometer-lines
+            icon_color: grey
+            content: >-
+              {% set s = states('sensor.ecowitt_temp1') %}
+              {% set n = states('sensor.ecowitt_temp2') %}
+              {% if not (s | is_number and n | is_number) %}Sensors unavailable
+              {% elif s | float >= n | float %}South +{{ (s | float - n | float) | round(1) }} °C
+              {% else %}North +{{ (n | float - s | float) | round(1) }} °C{% endif %}
         grid_options:
-          columns: 12
+          columns: full
 
   - type: grid
-    title: Battery Levels
-    background: true
+    theme: family_dashboard_chips
+    background:
+      opacity: 100
     column_span: 3
     cards:
+      - type: heading
+        heading: BATTERY LEVELS
+        heading_style: subtitle
       - type: tile
         entity: binary_sensor.ecowitt_batt1
         name: South sensor
         grid_options:
-          columns: 9
+          columns: 6
       - type: tile
         entity: binary_sensor.ecowitt_batt2
         name: North sensor
         grid_options:
-          columns: 9
+          columns: 6
