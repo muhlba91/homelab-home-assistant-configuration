@@ -129,7 +129,7 @@ themes:
         primary-background-color: "#121418"
         secondary-background-color: "#121418"
         ha-section-background-color: "#23262c"
-        card-background-color: "#2c2f36"
+        card-background-color: "#30333b"
         primary-text-color: "#e7e8eb"
         secondary-text-color: "#a3a8b1"
         disabled-text-color: "#737882"
