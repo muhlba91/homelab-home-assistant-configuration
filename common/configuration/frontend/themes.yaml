@@ -1,15 +1,18 @@
 ---
 themes:
+  # Main theme: white section panels on a grey page, flat (borderless) rows inside.
   family_dashboard:
     primary-color: "#3b73c4"
     accent-color: "#c98a1d"
     ha-section-border-radius: "20px"
+    ha-card-border-width: "0px"
+    ha-card-box-shadow: "none"
     modes:
       light:
         primary-background-color: "#f3f4f6"
         secondary-background-color: "#f3f4f6"
+        ha-section-background-color: "#ffffff"
         card-background-color: "#ffffff"
-        ha-section-background-color: "#e4e7ec"
         primary-text-color: "#15171c"
         secondary-text-color: "#5b5f68"
         disabled-text-color: "#8a8e97"
@@ -17,8 +20,35 @@ themes:
       dark:
         primary-background-color: "#101114"
         secondary-background-color: "#101114"
+        ha-section-background-color: "#202329"
         card-background-color: "#202329"
-        ha-section-background-color: "#181a1e"
+        primary-text-color: "#f4f4f2"
+        secondary-text-color: "#a7abb3"
+        disabled-text-color: "#6d717a"
+        divider-color: "rgba(255, 255, 255, 0.14)"
+
+  # Section variant: same panel, but cards render as grey chips (used for battery levels).
+  family_dashboard_chips:
+    primary-color: "#3b73c4"
+    accent-color: "#c98a1d"
+    ha-section-border-radius: "20px"
+    ha-card-border-width: "0px"
+    ha-card-box-shadow: "none"
+    modes:
+      light:
+        primary-background-color: "#f3f4f6"
+        secondary-background-color: "#f3f4f6"
+        ha-section-background-color: "#ffffff"
+        card-background-color: "#f0f1f4"
+        primary-text-color: "#15171c"
+        secondary-text-color: "#5b5f68"
+        disabled-text-color: "#8a8e97"
+        divider-color: "rgba(15, 17, 21, 0.13)"
+      dark:
+        primary-background-color: "#101114"
+        secondary-background-color: "#101114"
+        ha-section-background-color: "#202329"
+        card-background-color: "#363b46"
         primary-text-color: "#f4f4f2"
         secondary-text-color: "#a7abb3"
         disabled-text-color: "#6d717a"

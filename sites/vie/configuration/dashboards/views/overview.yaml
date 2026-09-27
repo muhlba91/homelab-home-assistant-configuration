@@ -7,10 +7,33 @@ type: sections
 max_columns: 3
 sections:
   - type: grid
-    title: Security & Safety
-    background: true
+    background:
+      opacity: 100
     column_span: 2
     cards:
+      - type: heading
+        heading: SECURITY & SAFETY
+        heading_style: subtitle
+      - type: custom:mushroom-template-card
+        primary: >-
+          {% set alarms = (['binary_sensor.ass1_smoke_detected', 'binary_sensor.ass2_smoke_detected', 'binary_sensor.ass3_smoke_detected', 'binary_sensor.ass4_smoke_detected', 'binary_sensor.ass5_smoke_detected', 'binary_sensor.ass6_smoke_detected', 'binary_sensor.ass7_smoke_detected', 'binary_sensor.ffs1_water_alarm_water_leak_detected', 'binary_sensor.ffs2_water_leak_detected']) | select('is_state', 'on') | list | count %}
+          {% set open = ['binary_sensor.ring_rcs1', 'binary_sensor.ring_rcs2', 'binary_sensor.ring_rcs3'] | select('is_state', 'on') | list | count %}
+          {% if is_state('alarm_control_panel.ring_control_panel', 'triggered') %}Alarm triggered!
+          {% elif alarms > 0 %}{{ alarms }} safety alert(s)!
+          {% elif open > 0 %}{{ open }} door/window open
+          {% else %}All clear{% endif %}
+        icon: >-
+          {% set alarms = (['binary_sensor.ass1_smoke_detected', 'binary_sensor.ass2_smoke_detected', 'binary_sensor.ass3_smoke_detected', 'binary_sensor.ass4_smoke_detected', 'binary_sensor.ass5_smoke_detected', 'binary_sensor.ass6_smoke_detected', 'binary_sensor.ass7_smoke_detected', 'binary_sensor.ffs1_water_alarm_water_leak_detected', 'binary_sensor.ffs2_water_leak_detected']) | select('is_state', 'on') | list | count %}
+          {% set open = ['binary_sensor.ring_rcs1', 'binary_sensor.ring_rcs2', 'binary_sensor.ring_rcs3'] | select('is_state', 'on') | list | count %}
+          {% if is_state('alarm_control_panel.ring_control_panel', 'triggered') or alarms > 0 %}mdi:alert
+          {% elif open > 0 %}mdi:door-open{% else %}mdi:shield-check{% endif %}
+        icon_color: >-
+          {% set alarms = (['binary_sensor.ass1_smoke_detected', 'binary_sensor.ass2_smoke_detected', 'binary_sensor.ass3_smoke_detected', 'binary_sensor.ass4_smoke_detected', 'binary_sensor.ass5_smoke_detected', 'binary_sensor.ass6_smoke_detected', 'binary_sensor.ass7_smoke_detected', 'binary_sensor.ffs1_water_alarm_water_leak_detected', 'binary_sensor.ffs2_water_leak_detected']) | select('is_state', 'on') | list | count %}
+          {% set open = ['binary_sensor.ring_rcs1', 'binary_sensor.ring_rcs2', 'binary_sensor.ring_rcs3'] | select('is_state', 'on') | list | count %}
+          {% if is_state('alarm_control_panel.ring_control_panel', 'triggered') or alarms > 0 %}red
+          {% elif open > 0 %}amber{% else %}green{% endif %}
+        grid_options:
+          columns: full
       - type: tile
         entity: alarm_control_panel.ring_control_panel
         name: Alarm
@@ -24,61 +47,48 @@ sections:
       - type: custom:mushroom-template-card
         primary: Smoke
         secondary: >-
-          {% set ids = ['binary_sensor.ass1_smoke_detected',
-          'binary_sensor.ass2_smoke_detected',
-          'binary_sensor.ass3_smoke_detected',
-          'binary_sensor.ass4_smoke_detected',
-          'binary_sensor.ass5_smoke_detected',
-          'binary_sensor.ass6_smoke_detected',
-          'binary_sensor.ass7_smoke_detected'] %}
+          {% set ids = ['binary_sensor.ass1_smoke_detected', 'binary_sensor.ass2_smoke_detected', 'binary_sensor.ass3_smoke_detected', 'binary_sensor.ass4_smoke_detected', 'binary_sensor.ass5_smoke_detected', 'binary_sensor.ass6_smoke_detected', 'binary_sensor.ass7_smoke_detected'] %}
           {% set on = ids | select('is_state', 'on') | list | count %}
           {{ 'All clear (' ~ ids | count ~ ')' if on == 0 else on ~ ' triggered!' }}
         icon: mdi:smoke-detector
         icon_color: >-
-          {% set ids = ['binary_sensor.ass1_smoke_detected',
-          'binary_sensor.ass2_smoke_detected',
-          'binary_sensor.ass3_smoke_detected',
-          'binary_sensor.ass4_smoke_detected',
-          'binary_sensor.ass5_smoke_detected',
-          'binary_sensor.ass6_smoke_detected',
-          'binary_sensor.ass7_smoke_detected'] %}
+          {% set ids = ['binary_sensor.ass1_smoke_detected', 'binary_sensor.ass2_smoke_detected', 'binary_sensor.ass3_smoke_detected', 'binary_sensor.ass4_smoke_detected', 'binary_sensor.ass5_smoke_detected', 'binary_sensor.ass6_smoke_detected', 'binary_sensor.ass7_smoke_detected'] %}
           {{ 'green' if ids | select('is_state', 'on') | list | count == 0 else 'red' }}
         grid_options:
           columns: 8
       - type: custom:mushroom-template-card
         primary: Water leaks
         secondary: >-
-          {% set ids = ['binary_sensor.ffs1_water_alarm_water_leak_detected',
-          'binary_sensor.ffs2_water_leak_detected'] %}
+          {% set ids = ['binary_sensor.ffs1_water_alarm_water_leak_detected', 'binary_sensor.ffs2_water_leak_detected'] %}
           {% set on = ids | select('is_state', 'on') | list | count %}
           {{ 'Dry (' ~ ids | count ~ ')' if on == 0 else on ~ ' wet!' }}
         icon: mdi:water-alert
         icon_color: >-
-          {% set ids = ['binary_sensor.ffs1_water_alarm_water_leak_detected',
-          'binary_sensor.ffs2_water_leak_detected'] %}
+          {% set ids = ['binary_sensor.ffs1_water_alarm_water_leak_detected', 'binary_sensor.ffs2_water_leak_detected'] %}
           {{ 'green' if ids | select('is_state', 'on') | list | count == 0 else 'red' }}
         grid_options:
           columns: 8
       - type: custom:mushroom-template-card
         primary: Doors & windows
         secondary: >-
-          {% set ids = ['binary_sensor.ring_rcs1', 'binary_sensor.ring_rcs2',
-          'binary_sensor.ring_rcs3'] %}
+          {% set ids = ['binary_sensor.ring_rcs1', 'binary_sensor.ring_rcs2', 'binary_sensor.ring_rcs3'] %}
           {% set on = ids | select('is_state', 'on') | list | count %}
           {{ 'All closed (' ~ ids | count ~ ')' if on == 0 else on ~ ' open' }}
         icon: mdi:door-open
         icon_color: >-
-          {% set ids = ['binary_sensor.ring_rcs1', 'binary_sensor.ring_rcs2',
-          'binary_sensor.ring_rcs3'] %}
+          {% set ids = ['binary_sensor.ring_rcs1', 'binary_sensor.ring_rcs2', 'binary_sensor.ring_rcs3'] %}
           {{ 'green' if ids | select('is_state', 'on') | list | count == 0 else 'amber' }}
         grid_options:
           columns: 8
 
   - type: grid
-    title: Outdoor (Forecast)
-    background: true
+    background:
+      opacity: 100
     column_span: 1
     cards:
+      - type: heading
+        heading: OUTDOOR (FORECAST)
+        heading_style: subtitle
       - type: weather-forecast
         entity: weather.home
         show_current: true
@@ -87,20 +97,37 @@ sections:
           columns: full
       - type: tile
         entity: weather.home
-        name: Details
-        icon: mdi:weather-windy
-        state_content:
-          - humidity
-          - pressure
-          - wind_speed
+        name: Humidity
+        icon: mdi:water-percent
+        vertical: true
+        state_content: humidity
         grid_options:
-          columns: full
+          columns: 4
+      - type: tile
+        entity: weather.home
+        name: Pressure
+        icon: mdi:gauge
+        vertical: true
+        state_content: pressure
+        grid_options:
+          columns: 4
+      - type: tile
+        entity: weather.home
+        name: Wind
+        icon: mdi:weather-windy
+        vertical: true
+        state_content: wind_speed
+        grid_options:
+          columns: 4
 
   - type: grid
-    title: Indoor Climate
-    background: true
+    background:
+      opacity: 100
     column_span: 2
     cards:
+      - type: heading
+        heading: INDOOR CLIMATE
+        heading_style: subtitle
       - type: custom:modern-circular-gauge
         entity: sensor.living_room_living_room_temperature_humidity_temperature
         name: Living Room
@@ -111,6 +138,10 @@ sections:
           show_gauge: outer
           min: 30
           max: 70
+        tertiary:
+          entity: climate.living_room_air_conditioner
+          state_text: "{{ 'AC ' ~ (states('climate.living_room_air_conditioner') | replace('_', ' ') | title) }}"
+          show_unit: false
         grid_options:
           columns: 6
           rows: 3
@@ -124,6 +155,10 @@ sections:
           show_gauge: outer
           min: 30
           max: 70
+        tertiary:
+          entity: climate.bedroom_air_conditioner
+          state_text: "{{ 'AC ' ~ (states('climate.bedroom_air_conditioner') | replace('_', ' ') | title) }}"
+          show_unit: false
         grid_options:
           columns: 6
           rows: 3
@@ -137,6 +172,10 @@ sections:
           show_gauge: outer
           min: 30
           max: 70
+        tertiary:
+          entity: climate.office_air_conditioner
+          state_text: "{{ 'AC ' ~ (states('climate.office_air_conditioner') | replace('_', ' ') | title) }}"
+          show_unit: false
         grid_options:
           columns: 6
           rows: 3
@@ -155,10 +194,13 @@ sections:
           rows: 3
 
   - type: grid
-    title: Weather Station
-    background: true
+    background:
+      opacity: 100
     column_span: 1
     cards:
+      - type: heading
+        heading: WEATHER STATION
+        heading_style: subtitle
       - type: custom:modern-circular-gauge
         entity: sensor.ecowitt_temp1
         name: South
@@ -187,10 +229,13 @@ sections:
           rows: 3
 
   - type: grid
-    title: Solar & Energy
-    background: true
+    background:
+      opacity: 100
     column_span: 3
     cards:
+      - type: heading
+        heading: SOLAR & ENERGY
+        heading_style: subtitle
       - type: custom:modern-circular-gauge
         entity: sensor.pv_power_photovoltaics_fronius_power_flow
         name: Solar power
@@ -221,10 +266,13 @@ sections:
           columns: 24
 
   - type: grid
-    title: Energy Flow
-    background: true
+    background:
+      opacity: 100
     column_span: 3
     cards:
+      - type: heading
+        heading: ENERGY FLOW
+        heading_style: subtitle
       - type: custom:sankey-chart
         show_names: true
         height: 160
