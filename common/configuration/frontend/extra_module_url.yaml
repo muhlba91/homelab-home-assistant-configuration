@@ -1,5 +1,5 @@
 ---
-extra_module_url:
+extra_module_url: []
   # renovate: datasource=github-releases packageName=denysdovhan/vacuum-card
   # - /local/community/vacuum-card/vacuum-card.js?v=v2.10.1
   # renovate: datasource=github-releases packageName=rianadon/timer-bar-card
