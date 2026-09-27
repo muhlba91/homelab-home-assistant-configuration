@@ -108,3 +108,19 @@
           {% elif is_state('binary_sensor.ffs2_water_leak_detected', 'on') %}Water leak
           {% elif is_state('binary_sensor.ring_rcs2', 'on') %}Storage window open
           {% else %}All clear{% endif %}
+    - unique_id: 3f7a1d2e-9b4c-4e8f-a6d1-5c2b8e9f0a66
+      name: "Bathrooms: Safety Status"
+      default_entity_id: binary_sensor.bathrooms_safety_status
+      device_class: safety
+      state: >-
+        {{ is_state('binary_sensor.fms1_home_security_motion_detection', 'on')
+        and is_state('alarm_control_panel.ring_control_panel', 'armed_away') }}
+      icon: >-
+        {% if is_state('binary_sensor.fms1_home_security_motion_detection', 'on')
+        and is_state('alarm_control_panel.ring_control_panel', 'armed_away') %}mdi:alert
+        {% else %}mdi:shield-check{% endif %}
+      attributes:
+        summary: >-
+          {% if is_state('binary_sensor.fms1_home_security_motion_detection', 'on')
+          and is_state('alarm_control_panel.ring_control_panel', 'armed_away') %}Motion while armed
+          {% else %}All clear{% endif %}

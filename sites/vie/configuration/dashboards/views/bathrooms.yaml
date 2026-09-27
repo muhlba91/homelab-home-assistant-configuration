@@ -71,8 +71,25 @@ sections:
     column_span: 3
     cards:
       - type: heading
-        heading: MOTION
+        heading: SAFETY
         heading_style: subtitle
+        grid_options:
+          columns: 27
+      - type: custom:mushroom-chips-card
+        alignment: end
+        chips:
+          - type: template
+            entity: binary_sensor.bathrooms_safety_status
+            content: "{{ state_attr('binary_sensor.bathrooms_safety_status', 'summary') }}"
+            icon: "{{ state_attr('binary_sensor.bathrooms_safety_status', 'icon') }}"
+            icon_color: >-
+              {% if is_state('binary_sensor.bathrooms_safety_status', 'on') %}red
+              {% elif state_attr('binary_sensor.bathrooms_safety_status', 'summary') != 'All clear' %}orange
+              {% else %}green{% endif %}
+            tap_action:
+              action: more-info
+        grid_options:
+          columns: 9
       - type: tile
         entity: binary_sensor.fms1_home_security_motion_detection
         name: Toilet motion
