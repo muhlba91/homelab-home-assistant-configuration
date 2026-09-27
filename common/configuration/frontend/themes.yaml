@@ -1,21 +1,22 @@
 ---
-home_dashboard:
-  primary-color: "#3b73c4"
-  accent-color: "#c98a1d"
-  modes:
-    light:
-      primary-background-color: "#f3f4f6"
-      secondary-background-color: "#f3f4f6"
-      card-background-color: "#ffffff"
-      primary-text-color: "#15171c"
-      secondary-text-color: "#5b5f68"
-      disabled-text-color: "#8a8e97"
-      divider-color: "rgba(15, 17, 21, 0.13)"
-    dark:
-      primary-background-color: "#101114"
-      secondary-background-color: "#101114"
-      card-background-color: "#202329"
-      primary-text-color: "#f4f4f2"
-      secondary-text-color: "#a7abb3"
-      disabled-text-color: "#6d717a"
-      divider-color: "rgba(255, 255, 255, 0.14)"
+themes:
+  home_dashboard:
+    primary-color: "#3b73c4"
+    accent-color: "#c98a1d"
+    modes:
+      light:
+        primary-background-color: "#f3f4f6"
+        secondary-background-color: "#f3f4f6"
+        card-background-color: "#ffffff"
+        primary-text-color: "#15171c"
+        secondary-text-color: "#5b5f68"
+        disabled-text-color: "#8a8e97"
+        divider-color: "rgba(15, 17, 21, 0.13)"
+      dark:
+        primary-background-color: "#101114"
+        secondary-background-color: "#101114"
+        card-background-color: "#202329"
+        primary-text-color: "#f4f4f2"
+        secondary-text-color: "#a7abb3"
+        disabled-text-color: "#6d717a"
+        divider-color: "rgba(255, 255, 255, 0.14)"
