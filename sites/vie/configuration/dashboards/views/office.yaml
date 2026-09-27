@@ -3,56 +3,58 @@ title: Office
 path: office
 icon: mdi:briefcase
 cards:
-  - type: grid
-    columns: 2
-    square: false
-    cards:
-      - type: custom:mushroom-climate-card
-        entity: climate.office_air_conditioner
-        show_temperature_control: true
-        collapsible_controls: true
-      - type: custom:modern-circular-gauge
-        entity: sensor.office_office_temperature_humidity_temperature
-        name: Climate
-        min: 15
-        max: 28
-        secondary:
-          entity: sensor.office_office_temperature_humidity_humidity
-          show_gauge: outer
-          min: 30
-          max: 70
-  - type: custom:mushroom-entity-card
-    entity: switch.fs7_1
-    name: Office Light
-    icon: mdi:lightbulb
-    icon_color: amber
-    tap_action:
-      action: toggle
   - type: vertical-stack
     cards:
-      - type: custom:mushroom-title-card
-        title: Shutter
-      - type: custom:bubble-card
-        card_type: cover
-        entity: cover.office
-        name: Office Shutter
-  - type: custom:mushroom-entity-card
-    entity: binary_sensor.ass1_smoke_detected
-    name: Smoke
-    icon: mdi:smoke-detector
-    icon_color: >-
-      {{ 'red' if is_state('binary_sensor.ass1_smoke_detected', 'on') else 'green' }}
-  - type: vertical-stack
-    cards:
-      - type: custom:mushroom-title-card
-        title: Battery Levels
       - type: grid
         columns: 2
         square: false
         cards:
-          - type: custom:mushroom-entity-card
-            entity: sensor.ass1_battery
-            name: Office Smoke
-          - type: custom:mushroom-entity-card
-            entity: sensor.office_office_temperature_humidity_battery
-            name: Office T&H Sensor
+          - type: custom:mushroom-climate-card
+            entity: climate.office_air_conditioner
+            show_temperature_control: true
+            collapsible_controls: true
+          - type: custom:modern-circular-gauge
+            entity: sensor.office_office_temperature_humidity_temperature
+            name: Climate
+            min: 15
+            max: 28
+            secondary:
+              entity: sensor.office_office_temperature_humidity_humidity
+              show_gauge: outer
+              min: 30
+              max: 70
+      - type: custom:mushroom-entity-card
+        entity: switch.fs7_1
+        name: Office Light
+        icon: mdi:lightbulb
+        icon_color: amber
+        tap_action:
+          action: toggle
+      - type: vertical-stack
+        cards:
+          - type: custom:mushroom-title-card
+            title: Shutter
+          - type: custom:bubble-card
+            card_type: cover
+            entity: cover.office
+            name: Office Shutter
+      - type: custom:mushroom-entity-card
+        entity: binary_sensor.ass1_smoke_detected
+        name: Smoke
+        icon: mdi:smoke-detector
+        icon_color: >-
+          {{ 'red' if is_state('binary_sensor.ass1_smoke_detected', 'on') else 'green' }}
+      - type: vertical-stack
+        cards:
+          - type: custom:mushroom-title-card
+            title: Battery Levels
+          - type: grid
+            columns: 2
+            square: false
+            cards:
+              - type: custom:mushroom-entity-card
+                entity: sensor.ass1_battery
+                name: Office Smoke
+              - type: custom:mushroom-entity-card
+                entity: sensor.office_office_temperature_humidity_battery
+                name: Office T&H Sensor

@@ -3,81 +3,83 @@ title: Utility
 path: utility
 icon: mdi:washing-machine
 cards:
-  - type: grid
-    columns: 2
-    square: false
-    cards:
-      - type: vertical-stack
-        cards:
-          - type: custom:mushroom-title-card
-            title: Lighting
-          - type: custom:mushroom-entity-card
-            entity: switch.fs10_1
-            name: Utility Room Light
-            icon: mdi:lightbulb
-            icon_color: amber
-            tap_action:
-              action: toggle
-          - type: custom:mushroom-entity-card
-            entity: switch.fs3_1
-            name: Storage Room Light
-            icon: mdi:lightbulb
-            icon_color: amber
-            tap_action:
-              action: toggle
-      - type: vertical-stack
-        cards:
-          - type: custom:mushroom-title-card
-            title: Storage Room Shutter
-          - type: custom:bubble-card
-            card_type: cover
-            entity: cover.storage_room
-            name: Storage Room Shutter
   - type: vertical-stack
     cards:
-      - type: custom:mushroom-title-card
-        title: Safety
       - type: grid
         columns: 2
         square: false
         cards:
-          - type: custom:mushroom-entity-card
-            entity: binary_sensor.ass5_smoke_detected
-            name: Utility smoke
-            icon: mdi:smoke-detector
-            icon_color: >-
-              {{ 'red' if is_state('binary_sensor.ass5_smoke_detected', 'on') else 'green' }}
-          - type: custom:mushroom-entity-card
-            entity: binary_sensor.ffs2_water_leak_detected
-            name: Utility leak
-            icon: mdi:water-alert
-            icon_color: >-
-              {{ 'red' if is_state('binary_sensor.ffs2_water_leak_detected', 'on') else 'green' }}
-          - type: custom:mushroom-entity-card
-            entity: binary_sensor.fms3_home_security_motion_detection
-            name: Storage motion
-            icon: mdi:motion-sensor
-          - type: custom:mushroom-entity-card
-            entity: binary_sensor.ring_rcs2
-            name: Storage window
-            icon: mdi:window-closed-variant
-  - type: vertical-stack
-    cards:
-      - type: custom:mushroom-title-card
-        title: Battery Levels
-      - type: grid
-        columns: 2
-        square: false
+          - type: vertical-stack
+            cards:
+              - type: custom:mushroom-title-card
+                title: Lighting
+              - type: custom:mushroom-entity-card
+                entity: switch.fs10_1
+                name: Utility Room Light
+                icon: mdi:lightbulb
+                icon_color: amber
+                tap_action:
+                  action: toggle
+              - type: custom:mushroom-entity-card
+                entity: switch.fs3_1
+                name: Storage Room Light
+                icon: mdi:lightbulb
+                icon_color: amber
+                tap_action:
+                  action: toggle
+          - type: vertical-stack
+            cards:
+              - type: custom:mushroom-title-card
+                title: Storage Room Shutter
+              - type: custom:bubble-card
+                card_type: cover
+                entity: cover.storage_room
+                name: Storage Room Shutter
+      - type: vertical-stack
         cards:
-          - type: custom:mushroom-entity-card
-            entity: sensor.fms3_battery_level
-            name: Storage Motion
-          - type: custom:mushroom-entity-card
-            entity: sensor.ring_rcs2_front_window_battery
-            name: Storage Window
-          - type: custom:mushroom-entity-card
-            entity: sensor.ffs2_battery_level
-            name: Utility Leak
-          - type: custom:mushroom-entity-card
-            entity: sensor.ass5_battery
-            name: Utility Smoke
+          - type: custom:mushroom-title-card
+            title: Safety
+          - type: grid
+            columns: 2
+            square: false
+            cards:
+              - type: custom:mushroom-entity-card
+                entity: binary_sensor.ass5_smoke_detected
+                name: Utility smoke
+                icon: mdi:smoke-detector
+                icon_color: >-
+                  {{ 'red' if is_state('binary_sensor.ass5_smoke_detected', 'on') else 'green' }}
+              - type: custom:mushroom-entity-card
+                entity: binary_sensor.ffs2_water_leak_detected
+                name: Utility leak
+                icon: mdi:water-alert
+                icon_color: >-
+                  {{ 'red' if is_state('binary_sensor.ffs2_water_leak_detected', 'on') else 'green' }}
+              - type: custom:mushroom-entity-card
+                entity: binary_sensor.fms3_home_security_motion_detection
+                name: Storage motion
+                icon: mdi:motion-sensor
+              - type: custom:mushroom-entity-card
+                entity: binary_sensor.ring_rcs2
+                name: Storage window
+                icon: mdi:window-closed-variant
+      - type: vertical-stack
+        cards:
+          - type: custom:mushroom-title-card
+            title: Battery Levels
+          - type: grid
+            columns: 2
+            square: false
+            cards:
+              - type: custom:mushroom-entity-card
+                entity: sensor.fms3_battery_level
+                name: Storage Motion
+              - type: custom:mushroom-entity-card
+                entity: sensor.ring_rcs2_front_window_battery
+                name: Storage Window
+              - type: custom:mushroom-entity-card
+                entity: sensor.ffs2_battery_level
+                name: Utility Leak
+              - type: custom:mushroom-entity-card
+                entity: sensor.ass5_battery
+                name: Utility Smoke

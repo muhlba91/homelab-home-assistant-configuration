@@ -3,166 +3,168 @@ title: Overview
 path: overview
 icon: mdi:home
 cards:
-  - type: grid
-    columns: 2
-    square: false
-    cards:
-      - type: vertical-stack
-        cards:
-          - type: custom:mushroom-title-card
-            title: Security & Safety
-          - type: grid
-            columns: 2
-            square: false
-            cards:
-              - type: custom:mushroom-alarm-control-panel-card
-                entity: alarm_control_panel.ring_control_panel
-                icon_color: green
-              - type: custom:mushroom-lock-card
-                entity: lock.entrance_door_lock
-                icon_color: green
-              - type: custom:mushroom-template-card
-                primary: Smoke sensors
-                secondary: >-
-                  {% set ids = ['binary_sensor.ass1_smoke_detected',
-                  'binary_sensor.ass2_smoke_detected',
-                  'binary_sensor.ass3_smoke_detected',
-                  'binary_sensor.ass4_smoke_detected',
-                  'binary_sensor.ass5_smoke_detected',
-                  'binary_sensor.ass6_smoke_detected',
-                  'binary_sensor.ass7_smoke_detected'] %}
-                  {% set triggered = ids | select('is_state', 'on') | list | count %}
-                  {{ 'All clear (' ~ ids | count ~ ' monitored)' if triggered == 0 else triggered ~ ' triggered!' }}
-                icon: mdi:smoke-detector
-                icon_color: >-
-                  {% set ids = ['binary_sensor.ass1_smoke_detected',
-                  'binary_sensor.ass2_smoke_detected',
-                  'binary_sensor.ass3_smoke_detected',
-                  'binary_sensor.ass4_smoke_detected',
-                  'binary_sensor.ass5_smoke_detected',
-                  'binary_sensor.ass6_smoke_detected',
-                  'binary_sensor.ass7_smoke_detected'] %}
-                  {{ 'green' if ids | select('is_state', 'on') | list | count == 0 else 'red' }}
-              - type: custom:mushroom-template-card
-                primary: Water leak sensors
-                secondary: >-
-                  {% set ids = ['binary_sensor.ffs1_water_alarm_water_leak_detected',
-                  'binary_sensor.ffs2_water_leak_detected'] %}
-                  {% set triggered = ids | select('is_state', 'on') | list | count %}
-                  {{ 'Dry (' ~ ids | count ~ ' monitored)' if triggered == 0 else triggered ~ ' wet!' }}
-                icon: mdi:water-alert
-                icon_color: >-
-                  {% set ids = ['binary_sensor.ffs1_water_alarm_water_leak_detected',
-                  'binary_sensor.ffs2_water_leak_detected'] %}
-                  {{ 'green' if ids | select('is_state', 'on') | list | count == 0 else 'red' }}
-              - type: custom:mushroom-template-card
-                primary: Doors & windows
-                secondary: >-
-                  {% set ids = ['binary_sensor.ring_rcs1', 'binary_sensor.ring_rcs2',
-                  'binary_sensor.ring_rcs3'] %}
-                  {% set open = ids | select('is_state', 'on') | list | count %}
-                  {{ 'All closed (' ~ ids | count ~ ' monitored)' if open == 0 else open ~ ' open' }}
-                icon: mdi:door-open
-                icon_color: >-
-                  {% set ids = ['binary_sensor.ring_rcs1', 'binary_sensor.ring_rcs2',
-                  'binary_sensor.ring_rcs3'] %}
-                  {{ 'green' if ids | select('is_state', 'on') | list | count == 0 else 'amber' }}
-      - type: weather-forecast
-        entity: weather.home
-        show_current: true
-        show_forecast: false
-  - type: grid
-    columns: 3
-    square: false
-    cards:
-      - type: custom:modern-circular-gauge
-        entity: sensor.living_room_living_room_temperature_humidity_temperature
-        name: Living Room
-        min: 15
-        max: 28
-        secondary:
-          entity: sensor.living_room_living_room_temperature_humidity_humidity
-          show_gauge: outer
-          min: 30
-          max: 70
-      - type: custom:modern-circular-gauge
-        entity: sensor.bedroom_bedroom_temperature_humidity_temperature
-        name: Bedroom
-        min: 15
-        max: 28
-        secondary:
-          entity: sensor.bedroom_bedroom_temperature_humidity_humidity
-          show_gauge: outer
-          min: 30
-          max: 70
-      - type: custom:modern-circular-gauge
-        entity: sensor.office_office_temperature_humidity_temperature
-        name: Office
-        min: 15
-        max: 28
-        secondary:
-          entity: sensor.office_office_temperature_humidity_humidity
-          show_gauge: outer
-          min: 30
-          max: 70
-      - type: custom:modern-circular-gauge
-        entity: sensor.tea_room_tea_room_temperature_humidity_temperature
-        name: Tea Room
-        min: 15
-        max: 28
-        secondary:
-          entity: sensor.tea_room_tea_room_temperature_humidity_humidity
-          show_gauge: outer
-          min: 30
-          max: 70
-      - type: custom:modern-circular-gauge
-        entity: sensor.ecowitt_temp1
-        name: Garden (South)
-        min: 5
-        max: 35
-        secondary:
-          entity: sensor.ecowitt_humidity1
-          show_gauge: outer
-          min: 20
-          max: 80
-      - type: custom:modern-circular-gauge
-        entity: sensor.ecowitt_temp2
-        name: Garden (North)
-        min: 5
-        max: 35
-        secondary:
-          entity: sensor.ecowitt_humidity2
-          show_gauge: outer
-          min: 20
-          max: 80
   - type: vertical-stack
     cards:
-      - type: custom:mushroom-title-card
-        title: Solar & Energy
       - type: grid
         columns: 2
         square: false
         cards:
+          - type: vertical-stack
+            cards:
+              - type: custom:mushroom-title-card
+                title: Security & Safety
+              - type: grid
+                columns: 2
+                square: false
+                cards:
+                  - type: custom:mushroom-alarm-control-panel-card
+                    entity: alarm_control_panel.ring_control_panel
+                    icon_color: green
+                  - type: custom:mushroom-lock-card
+                    entity: lock.entrance_door_lock
+                    icon_color: green
+                  - type: custom:mushroom-template-card
+                    primary: Smoke sensors
+                    secondary: >-
+                      {% set ids = ['binary_sensor.ass1_smoke_detected',
+                      'binary_sensor.ass2_smoke_detected',
+                      'binary_sensor.ass3_smoke_detected',
+                      'binary_sensor.ass4_smoke_detected',
+                      'binary_sensor.ass5_smoke_detected',
+                      'binary_sensor.ass6_smoke_detected',
+                      'binary_sensor.ass7_smoke_detected'] %}
+                      {% set triggered = ids | select('is_state', 'on') | list | count %}
+                      {{ 'All clear (' ~ ids | count ~ ' monitored)' if triggered == 0 else triggered ~ ' triggered!' }}
+                    icon: mdi:smoke-detector
+                    icon_color: >-
+                      {% set ids = ['binary_sensor.ass1_smoke_detected',
+                      'binary_sensor.ass2_smoke_detected',
+                      'binary_sensor.ass3_smoke_detected',
+                      'binary_sensor.ass4_smoke_detected',
+                      'binary_sensor.ass5_smoke_detected',
+                      'binary_sensor.ass6_smoke_detected',
+                      'binary_sensor.ass7_smoke_detected'] %}
+                      {{ 'green' if ids | select('is_state', 'on') | list | count == 0 else 'red' }}
+                  - type: custom:mushroom-template-card
+                    primary: Water leak sensors
+                    secondary: >-
+                      {% set ids = ['binary_sensor.ffs1_water_alarm_water_leak_detected',
+                      'binary_sensor.ffs2_water_leak_detected'] %}
+                      {% set triggered = ids | select('is_state', 'on') | list | count %}
+                      {{ 'Dry (' ~ ids | count ~ ' monitored)' if triggered == 0 else triggered ~ ' wet!' }}
+                    icon: mdi:water-alert
+                    icon_color: >-
+                      {% set ids = ['binary_sensor.ffs1_water_alarm_water_leak_detected',
+                      'binary_sensor.ffs2_water_leak_detected'] %}
+                      {{ 'green' if ids | select('is_state', 'on') | list | count == 0 else 'red' }}
+                  - type: custom:mushroom-template-card
+                    primary: Doors & windows
+                    secondary: >-
+                      {% set ids = ['binary_sensor.ring_rcs1', 'binary_sensor.ring_rcs2',
+                      'binary_sensor.ring_rcs3'] %}
+                      {% set open = ids | select('is_state', 'on') | list | count %}
+                      {{ 'All closed (' ~ ids | count ~ ' monitored)' if open == 0 else open ~ ' open' }}
+                    icon: mdi:door-open
+                    icon_color: >-
+                      {% set ids = ['binary_sensor.ring_rcs1', 'binary_sensor.ring_rcs2',
+                      'binary_sensor.ring_rcs3'] %}
+                      {{ 'green' if ids | select('is_state', 'on') | list | count == 0 else 'amber' }}
+          - type: weather-forecast
+            entity: weather.home
+            show_current: true
+            show_forecast: false
+      - type: grid
+        columns: 3
+        square: false
+        cards:
           - type: custom:modern-circular-gauge
-            entity: sensor.pv_power_photovoltaics_fronius_power_flow
-            name: Solar power
-            min: 0
-            max: 5000
+            entity: sensor.living_room_living_room_temperature_humidity_temperature
+            name: Living Room
+            min: 15
+            max: 28
+            secondary:
+              entity: sensor.living_room_living_room_temperature_humidity_humidity
+              show_gauge: outer
+              min: 30
+              max: 70
+          - type: custom:modern-circular-gauge
+            entity: sensor.bedroom_bedroom_temperature_humidity_temperature
+            name: Bedroom
+            min: 15
+            max: 28
+            secondary:
+              entity: sensor.bedroom_bedroom_temperature_humidity_humidity
+              show_gauge: outer
+              min: 30
+              max: 70
+          - type: custom:modern-circular-gauge
+            entity: sensor.office_office_temperature_humidity_temperature
+            name: Office
+            min: 15
+            max: 28
+            secondary:
+              entity: sensor.office_office_temperature_humidity_humidity
+              show_gauge: outer
+              min: 30
+              max: 70
+          - type: custom:modern-circular-gauge
+            entity: sensor.tea_room_tea_room_temperature_humidity_temperature
+            name: Tea Room
+            min: 15
+            max: 28
+            secondary:
+              entity: sensor.tea_room_tea_room_temperature_humidity_humidity
+              show_gauge: outer
+              min: 30
+              max: 70
+          - type: custom:modern-circular-gauge
+            entity: sensor.ecowitt_temp1
+            name: Garden (South)
+            min: 5
+            max: 35
+            secondary:
+              entity: sensor.ecowitt_humidity1
+              show_gauge: outer
+              min: 20
+              max: 80
+          - type: custom:modern-circular-gauge
+            entity: sensor.ecowitt_temp2
+            name: Garden (North)
+            min: 5
+            max: 35
+            secondary:
+              entity: sensor.ecowitt_humidity2
+              show_gauge: outer
+              min: 20
+              max: 80
+      - type: vertical-stack
+        cards:
+          - type: custom:mushroom-title-card
+            title: Solar & Energy
           - type: grid
-            columns: 1
+            columns: 2
             square: false
             cards:
-              - type: custom:mushroom-entity-card
-                entity: sensor.pv_energy_day_fronius_power_flow
-                name: Produced today
-                icon: mdi:solar-power
-                icon_color: amber
-              - type: custom:mushroom-entity-card
-                entity: sensor.energy_meter_po
-                name: Exporting
-                icon: mdi:transmission-tower-export
-                icon_color: green
-              - type: custom:mushroom-entity-card
-                entity: sensor.energy_meter_p
-                name: Importing
-                icon: mdi:transmission-tower-import
+              - type: custom:modern-circular-gauge
+                entity: sensor.pv_power_photovoltaics_fronius_power_flow
+                name: Solar power
+                min: 0
+                max: 5000
+              - type: grid
+                columns: 1
+                square: false
+                cards:
+                  - type: custom:mushroom-entity-card
+                    entity: sensor.pv_energy_day_fronius_power_flow
+                    name: Produced today
+                    icon: mdi:solar-power
+                    icon_color: amber
+                  - type: custom:mushroom-entity-card
+                    entity: sensor.energy_meter_po
+                    name: Exporting
+                    icon: mdi:transmission-tower-export
+                    icon_color: green
+                  - type: custom:mushroom-entity-card
+                    entity: sensor.energy_meter_p
+                    name: Importing
+                    icon: mdi:transmission-tower-import
