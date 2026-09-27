@@ -2,81 +2,128 @@
 title: Hallways
 path: hallways
 icon: mdi:door
+theme: family_dashboard
 type: sections
+max_columns: 3
 sections:
   - type: grid
     title: Lighting
     background: true
+    column_span: 3
     cards:
       - type: tile
         entity: switch.fs4_1
-        name: Hallway Light
+        name: Hallway
         icon: mdi:lightbulb
+        color: amber
+        features_position: inline
         features:
           - type: toggle
+        grid_options:
+          columns: 12
       - type: tile
         entity: switch.fds1_2
-        name: Hallway Light 2
+        name: Hallway 2
         icon: mdi:lightbulb
+        color: amber
+        features_position: inline
         features:
           - type: toggle
+        grid_options:
+          columns: 12
       - type: tile
         entity: switch.fs2_1
-        name: Entrance Room Light
+        name: Entrance
         icon: mdi:lightbulb
+        color: amber
+        features_position: inline
         features:
           - type: toggle
+        grid_options:
+          columns: 12
 
   - type: grid
     title: Front Door
     background: true
+    column_span: 3
     cards:
-      - type: custom:mushroom-lock-card
+      - type: tile
         entity: lock.entrance_door_lock
-        icon_color: green
+        name: Front Door
+        features_position: inline
+        features:
+          - type: lock-commands
+        grid_options:
+          columns: 12
       - type: tile
         entity: switch.alarm_keypad_chirps
-        name: Ring Keypad Chirps
+        name: Keypad chirps
         icon: mdi:bell-ring
+        color: amber
+        features_position: inline
         features:
           - type: toggle
+        grid_options:
+          columns: 12
 
   - type: grid
     title: Safety
     background: true
+    column_span: 3
     cards:
       - type: tile
         entity: binary_sensor.ass7_smoke_detected
         name: Hallway smoke
+        grid_options:
+          columns: 9
       - type: tile
         entity: binary_sensor.ass4_smoke_detected
         name: Entrance smoke
+        grid_options:
+          columns: 9
       - type: tile
         entity: binary_sensor.ring_rms1
-        name: Entrance motion (Ring)
+        name: Ring motion
+        grid_options:
+          columns: 9
       - type: tile
         entity: binary_sensor.fms2_home_security_motion_detection
-        name: Entrance motion (Fibaro)
+        name: Fibaro motion
+        grid_options:
+          columns: 9
 
   - type: grid
     title: Battery Levels
     background: true
+    column_span: 3
     cards:
       - type: tile
         entity: sensor.ass7_battery
-        name: Hallway Smoke
+        name: Hallway smoke
+        grid_options:
+          columns: 9
       - type: tile
         entity: sensor.ass4_battery
-        name: Entrance Smoke
+        name: Entrance smoke
+        grid_options:
+          columns: 9
       - type: tile
         entity: sensor.ring_rms1_entrance_room_battery
-        name: Entrance Motion (Ring)
+        name: Ring motion
+        grid_options:
+          columns: 9
       - type: tile
         entity: sensor.fms2_battery_level
-        name: Entrance Motion (Fibaro)
+        name: Fibaro motion
+        grid_options:
+          columns: 9
       - type: tile
         entity: sensor.ring_keypad_battery
-        name: Ring Keypad
+        name: Keypad
+        grid_options:
+          columns: 9
       - type: tile
         entity: sensor.entrance_room_entrance_door_lock_battery
-        name: Door Lock
+        name: Door lock
+        grid_options:
+          columns: 9

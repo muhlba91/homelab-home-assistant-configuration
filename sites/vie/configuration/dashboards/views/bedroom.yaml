@@ -2,16 +2,24 @@
 title: Bedroom
 path: bedroom
 icon: mdi:bed
+theme: family_dashboard
 type: sections
+max_columns: 3
 sections:
   - type: grid
     title: Climate & Lighting
     background: true
+    column_span: 3
     cards:
-      - type: custom:mushroom-climate-card
+      - type: tile
         entity: climate.bedroom_air_conditioner
-        show_temperature_control: true
-        collapsible_controls: true
+        name: Air Conditioner
+        features:
+          - type: climate-hvac-modes
+            style: icons
+          - type: target-temperature
+        grid_options:
+          columns: 12
       - type: custom:modern-circular-gauge
         entity: sensor.bedroom_bedroom_temperature_humidity_temperature
         name: Climate
@@ -22,39 +30,57 @@ sections:
           show_gauge: outer
           min: 30
           max: 70
+        grid_options:
+          columns: 12
       - type: tile
         entity: switch.fs6_1
-        name: Bedroom Light
+        name: Bedroom
         icon: mdi:lightbulb
+        color: amber
+        features_position: inline
         features:
           - type: toggle
+        grid_options:
+          columns: 12
 
   - type: grid
-    title: Shutter
+    title: Shutters
     background: true
+    column_span: 3
     cards:
       - type: tile
         entity: cover.bedroom
-        name: Bedroom Shutter
+        name: Bedroom
+        color: blue
+        features_position: inline
         features:
           - type: cover-open-close
-          - type: cover-position
+        grid_options:
+          columns: 12
 
   - type: grid
     title: Safety
     background: true
+    column_span: 3
     cards:
       - type: tile
         entity: binary_sensor.ass2_smoke_detected
         name: Smoke
+        grid_options:
+          columns: 9
 
   - type: grid
     title: Battery Levels
     background: true
+    column_span: 3
     cards:
       - type: tile
         entity: sensor.ass2_battery
-        name: Bedroom Smoke
+        name: Smoke
+        grid_options:
+          columns: 9
       - type: tile
         entity: sensor.bedroom_bedroom_temperature_humidity_battery
-        name: Bedroom T&H Sensor
+        name: Climate sensor
+        grid_options:
+          columns: 9

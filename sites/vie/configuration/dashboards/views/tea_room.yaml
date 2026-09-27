@@ -2,11 +2,14 @@
 title: Tea Room
 path: tea-room
 icon: mdi:tea
+theme: family_dashboard
 type: sections
+max_columns: 3
 sections:
   - type: grid
     title: Climate & Lighting
     background: true
+    column_span: 3
     cards:
       - type: custom:modern-circular-gauge
         entity: sensor.tea_room_tea_room_temperature_humidity_temperature
@@ -18,40 +21,57 @@ sections:
           show_gauge: outer
           min: 30
           max: 70
+        grid_options:
+          columns: 12
       - type: tile
         entity: switch.fs5_1
-        name: Tea Room Light
+        name: Tea Room
         icon: mdi:lightbulb
+        color: amber
+        features_position: inline
         features:
           - type: toggle
+        grid_options:
+          columns: 12
 
   - type: grid
-    title: Shutter
+    title: Shutters
     background: true
+    column_span: 3
     cards:
       - type: tile
         entity: cover.tea_room
-        name: Tea Room Shutter
+        name: Tea Room
+        color: blue
+        features_position: inline
         features:
           - type: cover-open-close
-          - type: cover-position
-          - type: cover-tilt-position
+        grid_options:
+          columns: 12
 
   - type: grid
     title: Safety
     background: true
+    column_span: 3
     cards:
       - type: tile
         entity: binary_sensor.ass6_smoke_detected
         name: Smoke
+        grid_options:
+          columns: 9
 
   - type: grid
     title: Battery Levels
     background: true
+    column_span: 3
     cards:
       - type: tile
         entity: sensor.ass6_battery
-        name: Tea Room Smoke
+        name: Smoke
+        grid_options:
+          columns: 9
       - type: tile
         entity: sensor.tea_room_tea_room_temperature_humidity_battery
-        name: Tea Room T&H Sensor
+        name: Climate sensor
+        grid_options:
+          columns: 9

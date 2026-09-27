@@ -2,16 +2,24 @@
 title: Office
 path: office
 icon: mdi:briefcase
+theme: family_dashboard
 type: sections
+max_columns: 3
 sections:
   - type: grid
     title: Climate & Lighting
     background: true
+    column_span: 3
     cards:
-      - type: custom:mushroom-climate-card
+      - type: tile
         entity: climate.office_air_conditioner
-        show_temperature_control: true
-        collapsible_controls: true
+        name: Air Conditioner
+        features:
+          - type: climate-hvac-modes
+            style: icons
+          - type: target-temperature
+        grid_options:
+          columns: 12
       - type: custom:modern-circular-gauge
         entity: sensor.office_office_temperature_humidity_temperature
         name: Climate
@@ -22,40 +30,57 @@ sections:
           show_gauge: outer
           min: 30
           max: 70
+        grid_options:
+          columns: 12
       - type: tile
         entity: switch.fs7_1
-        name: Office Light
+        name: Office
         icon: mdi:lightbulb
+        color: amber
+        features_position: inline
         features:
           - type: toggle
+        grid_options:
+          columns: 12
 
   - type: grid
-    title: Shutter
+    title: Shutters
     background: true
+    column_span: 3
     cards:
       - type: tile
         entity: cover.office
-        name: Office Shutter
+        name: Office
+        color: blue
+        features_position: inline
         features:
           - type: cover-open-close
-          - type: cover-position
-          - type: cover-tilt-position
+        grid_options:
+          columns: 12
 
   - type: grid
     title: Safety
     background: true
+    column_span: 3
     cards:
       - type: tile
         entity: binary_sensor.ass1_smoke_detected
         name: Smoke
+        grid_options:
+          columns: 9
 
   - type: grid
     title: Battery Levels
     background: true
+    column_span: 3
     cards:
       - type: tile
         entity: sensor.ass1_battery
-        name: Office Smoke
+        name: Smoke
+        grid_options:
+          columns: 9
       - type: tile
         entity: sensor.office_office_temperature_humidity_battery
-        name: Office T&H Sensor
+        name: Climate sensor
+        grid_options:
+          columns: 9

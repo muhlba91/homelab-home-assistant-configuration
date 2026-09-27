@@ -2,54 +2,79 @@
 title: Bathrooms
 path: bathrooms
 icon: mdi:shower
+theme: family_dashboard
 type: sections
+max_columns: 3
 sections:
   - type: grid
     title: Lighting
     background: true
+    column_span: 3
     cards:
       - type: tile
         entity: switch.fds2_2
-        name: Bathroom Light
+        name: Bathroom
         icon: mdi:lightbulb
+        color: amber
+        features_position: inline
         features:
           - type: toggle
+        grid_options:
+          columns: 12
       - type: tile
         entity: switch.fds2_1
-        name: Bathroom Mirror Light
+        name: Mirror
         icon: mdi:lightbulb
+        color: amber
+        features_position: inline
         features:
           - type: toggle
+        grid_options:
+          columns: 12
       - type: tile
         entity: switch.fs1_1
-        name: Toilet Light
+        name: Toilet
         icon: mdi:lightbulb
+        color: amber
+        features_position: inline
         features:
           - type: toggle
+        grid_options:
+          columns: 12
 
   - type: grid
-    title: Shutter
+    title: Shutters
     background: true
+    column_span: 3
     cards:
       - type: tile
         entity: cover.bathroom
-        name: Bathroom Shutter
+        name: Bathroom
+        color: blue
+        features_position: inline
         features:
           - type: cover-open-close
-          - type: cover-position
+        grid_options:
+          columns: 12
 
   - type: grid
     title: Safety
     background: true
+    column_span: 3
     cards:
       - type: tile
         entity: binary_sensor.fms1_home_security_motion_detection
         name: Toilet motion
+        grid_options:
+          columns: 9
 
   - type: grid
     title: Battery Levels
     background: true
+    column_span: 3
     cards:
       - type: tile
         entity: sensor.fms1_battery_level
-        name: Toilet Motion Sensor
+        name: Toilet motion
+        grid_options:
+          columns: 9
