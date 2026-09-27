@@ -39,7 +39,7 @@ network:
 system_health:
 
 frontend: !include_dir_merge_named frontend
-# lovelace: !include_dir_merge_named lovelace
+lovelace: !include_dir_merge_named lovelace
 
 counter:
 
