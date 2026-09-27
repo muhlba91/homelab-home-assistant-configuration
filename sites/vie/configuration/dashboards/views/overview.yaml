@@ -15,12 +15,23 @@ sections:
       - type: heading
         heading: SECURITY & SAFETY
         heading_style: subtitle
-        badges:
-          - type: entity
+        grid_options:
+          columns: 16
+      - type: custom:mushroom-chips-card
+        alignment: end
+        chips:
+          - type: template
             entity: binary_sensor.house_safety_status
-            show_state: true
-            state_content: summary
-            color: state
+            content: "{{ state_attr('binary_sensor.house_safety_status', 'summary') }}"
+            icon: "{{ state_attr('binary_sensor.house_safety_status', 'icon') }}"
+            icon_color: >-
+              {% if is_state('binary_sensor.house_safety_status', 'on') %}red
+              {% elif state_attr('binary_sensor.house_safety_status', 'summary') != 'All clear' %}orange
+              {% else %}green{% endif %}
+            tap_action:
+              action: more-info
+        grid_options:
+          columns: 8
       - type: tile
         entity: alarm_control_panel.ring_control_panel
         name: Alarm
@@ -64,12 +75,11 @@ sections:
         icon: mdi:door-open
         icon_color: >-
           {% set ids = ['binary_sensor.ring_rcs1', 'binary_sensor.ring_rcs2', 'binary_sensor.ring_rcs3'] %}
-          {{ 'green' if ids | select('is_state', 'on') | list | count == 0 else 'amber' }}
+          {{ 'green' if ids | select('is_state', 'on') | list | count == 0 else 'orange' }}
         grid_options:
           columns: 8
 
   - type: grid
-    theme: family_dashboard_chips
     background:
       opacity: 100
     column_span: 1
@@ -79,7 +89,7 @@ sections:
         heading_style: subtitle
       - type: tile
         entity: weather.home
-        name: Outdoor
+        name: Now
         state_content:
           - state
           - temperature
@@ -87,25 +97,14 @@ sections:
           columns: full
       - type: tile
         entity: weather.home
-        name: Humidity
-        icon: mdi:water-percent
-        state_content: humidity
-        grid_options:
-          columns: 4
-      - type: tile
-        entity: weather.home
-        name: Pressure
-        icon: mdi:gauge
-        state_content: pressure
-        grid_options:
-          columns: 4
-      - type: tile
-        entity: weather.home
-        name: Wind
+        name: Humidity · Pressure · Wind
         icon: mdi:weather-windy
-        state_content: wind_speed
+        state_content:
+          - humidity
+          - pressure
+          - wind_speed
         grid_options:
-          columns: 4
+          columns: full
 
   - type: grid
     background:
@@ -120,16 +119,15 @@ sections:
         name: Living Room
         min: 15
         max: 28
+        gauge_foreground_style:
+          color: "#5b83c0"
         secondary:
           entity: sensor.living_room_living_room_temperature_humidity_humidity
           show_gauge: outer
           min: 30
           max: 70
-        tertiary:
-          entity: climate.living_room_air_conditioner
-          state_text: "{{ 'AC ' ~ (states('climate.living_room_air_conditioner') | replace('_', ' ') | title) }}"
-          show_unit: false
-          state_font_size: 8
+          gauge_foreground_style:
+            color: "#6aa87a"
         grid_options:
           columns: 6
           rows: 3
@@ -138,16 +136,15 @@ sections:
         name: Bedroom
         min: 15
         max: 28
+        gauge_foreground_style:
+          color: "#5b83c0"
         secondary:
           entity: sensor.bedroom_bedroom_temperature_humidity_humidity
           show_gauge: outer
           min: 30
           max: 70
-        tertiary:
-          entity: climate.bedroom_air_conditioner
-          state_text: "{{ 'AC ' ~ (states('climate.bedroom_air_conditioner') | replace('_', ' ') | title) }}"
-          show_unit: false
-          state_font_size: 8
+          gauge_foreground_style:
+            color: "#6aa87a"
         grid_options:
           columns: 6
           rows: 3
@@ -156,16 +153,15 @@ sections:
         name: Office
         min: 15
         max: 28
+        gauge_foreground_style:
+          color: "#5b83c0"
         secondary:
           entity: sensor.office_office_temperature_humidity_humidity
           show_gauge: outer
           min: 30
           max: 70
-        tertiary:
-          entity: climate.office_air_conditioner
-          state_text: "{{ 'AC ' ~ (states('climate.office_air_conditioner') | replace('_', ' ') | title) }}"
-          show_unit: false
-          state_font_size: 8
+          gauge_foreground_style:
+            color: "#6aa87a"
         grid_options:
           columns: 6
           rows: 3
@@ -174,14 +170,63 @@ sections:
         name: Tea Room
         min: 15
         max: 28
+        gauge_foreground_style:
+          color: "#5b83c0"
         secondary:
           entity: sensor.tea_room_tea_room_temperature_humidity_humidity
           show_gauge: outer
           min: 30
           max: 70
+          gauge_foreground_style:
+            color: "#6aa87a"
         grid_options:
           columns: 6
           rows: 3
+      - type: custom:mushroom-chips-card
+        alignment: center
+        chips:
+          - type: template
+            entity: climate.living_room_air_conditioner
+            icon: mdi:air-conditioner
+            icon_color: "{{ 'grey' if is_state('climate.living_room_air_conditioner', 'off') else 'blue' }}"
+            content: "{{ 'AC ' ~ (states('climate.living_room_air_conditioner') | replace('_', ' ') | title) }}"
+            tap_action:
+              action: more-info
+        grid_options:
+          columns: 6
+      - type: custom:mushroom-chips-card
+        alignment: center
+        chips:
+          - type: template
+            entity: climate.bedroom_air_conditioner
+            icon: mdi:air-conditioner
+            icon_color: "{{ 'grey' if is_state('climate.bedroom_air_conditioner', 'off') else 'blue' }}"
+            content: "{{ 'AC ' ~ (states('climate.bedroom_air_conditioner') | replace('_', ' ') | title) }}"
+            tap_action:
+              action: more-info
+        grid_options:
+          columns: 6
+      - type: custom:mushroom-chips-card
+        alignment: center
+        chips:
+          - type: template
+            entity: climate.office_air_conditioner
+            icon: mdi:air-conditioner
+            icon_color: "{{ 'grey' if is_state('climate.office_air_conditioner', 'off') else 'blue' }}"
+            content: "{{ 'AC ' ~ (states('climate.office_air_conditioner') | replace('_', ' ') | title) }}"
+            tap_action:
+              action: more-info
+        grid_options:
+          columns: 6
+      - type: custom:mushroom-chips-card
+        alignment: center
+        chips:
+          - type: template
+            icon: mdi:air-conditioner
+            icon_color: disabled
+            content: No AC
+        grid_options:
+          columns: 6
 
   - type: grid
     background:
@@ -196,11 +241,15 @@ sections:
         name: South
         min: 5
         max: 35
+        gauge_foreground_style:
+          color: "#5b83c0"
         secondary:
           entity: sensor.ecowitt_humidity1
           show_gauge: outer
           min: 20
           max: 80
+          gauge_foreground_style:
+            color: "#6aa87a"
         grid_options:
           columns: 6
           rows: 3
@@ -209,14 +258,32 @@ sections:
         name: North
         min: 5
         max: 35
+        gauge_foreground_style:
+          color: "#5b83c0"
         secondary:
           entity: sensor.ecowitt_humidity2
           show_gauge: outer
           min: 20
           max: 80
+          gauge_foreground_style:
+            color: "#6aa87a"
         grid_options:
           columns: 6
           rows: 3
+      - type: custom:mushroom-chips-card
+        alignment: center
+        chips:
+          - type: template
+            icon: mdi:thermometer-lines
+            icon_color: grey
+            content: >-
+              {% set s = states('sensor.ecowitt_temp1') %}
+              {% set n = states('sensor.ecowitt_temp2') %}
+              {% if not (s | is_number and n | is_number) %}Sensors unavailable
+              {% elif s | float >= n | float %}South +{{ (s | float - n | float) | round(1) }} °C
+              {% else %}North +{{ (n | float - s | float) | round(1) }} °C{% endif %}
+        grid_options:
+          columns: full
 
   - type: grid
     background:
@@ -231,6 +298,8 @@ sections:
         name: Solar power
         min: 0
         max: 5000
+        gauge_foreground_style:
+          color: "#d9a441"
         grid_options:
           columns: 12
           rows: 3

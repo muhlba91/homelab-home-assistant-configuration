@@ -6,7 +6,6 @@ theme: family_dashboard
 type: sections
 max_columns: 3
 sections:
-  # ---------- Row 1: Lighting | Air Conditioner | Climate (equal heights) ----------
   - type: grid
     background:
       opacity: 100
@@ -53,7 +52,6 @@ sections:
           - type: target-temperature
         grid_options:
           columns: full
-          rows: 3
 
   - type: grid
     background:
@@ -73,8 +71,7 @@ sections:
             hours_to_show: 24
             detail: false
         grid_options:
-          columns: 6
-          rows: 3
+          columns: full
       - type: tile
         entity: sensor.living_room_living_room_temperature_humidity_humidity
         name: Humidity
@@ -85,10 +82,8 @@ sections:
             hours_to_show: 24
             detail: false
         grid_options:
-          columns: 6
-          rows: 3
+          columns: full
 
-  # ---------- Row 2: Shutters (grey chips so the three read as separate items) ----------
   - type: grid
     theme: family_dashboard_chips
     background:
@@ -126,7 +121,6 @@ sections:
         grid_options:
           columns: 12
 
-  # ---------- Row 3: Media System | Vacuum (devices) ----------
   - type: grid
     background:
       opacity: 100
@@ -166,62 +160,53 @@ sections:
         grid_options:
           columns: full
 
-  # ---------- Row 4: Safety | Camera (monitoring) ----------
   - type: grid
     theme: family_dashboard_chips
     background:
       opacity: 100
-    column_span: 2
+    column_span: 3
     cards:
       - type: heading
         heading: SAFETY
         heading_style: subtitle
-        badges:
-          - type: entity
+        grid_options:
+          columns: 27
+      - type: custom:mushroom-chips-card
+        alignment: end
+        chips:
+          - type: template
             entity: binary_sensor.living_room_safety_status
-            show_state: true
-            state_content: summary
-            color: state
+            content: "{{ state_attr('binary_sensor.living_room_safety_status', 'summary') }}"
+            icon: "{{ state_attr('binary_sensor.living_room_safety_status', 'icon') }}"
+            icon_color: >-
+              {% if is_state('binary_sensor.living_room_safety_status', 'on') %}red
+              {% elif state_attr('binary_sensor.living_room_safety_status', 'summary') != 'All clear' %}orange
+              {% else %}green{% endif %}
+            tap_action:
+              action: more-info
+        grid_options:
+          columns: 9
       - type: tile
         entity: binary_sensor.ass3_smoke_detected
         name: Smoke
         grid_options:
-          columns: 12
+          columns: 9
       - type: tile
         entity: binary_sensor.ffs1_water_alarm_water_leak_detected
         name: Kitchen leak
         grid_options:
-          columns: 12
+          columns: 9
       - type: tile
         entity: binary_sensor.living_room_ring_motion_sensor
         name: Motion
         grid_options:
-          columns: 12
+          columns: 9
       - type: tile
         entity: binary_sensor.ring_rcs3
         name: Garden door
         grid_options:
-          columns: 12
+          columns: 9
 
-  - type: grid
-    background:
-      opacity: 100
-    column_span: 1
-    cards:
-      - type: heading
-        heading: CAMERA
-        heading_style: subtitle
-      - type: custom:advanced-camera-card
-        cameras:
-          - camera_entity: camera.living_room_living_room_fluent
-        card_id: living_room_camera
-        dimensions:
-          aspect_ratio_mode: static
-          aspect_ratio: "16:9"
-        grid_options:
-          columns: full
-
-  # ---------- Row 5: Battery (always last, grey chips) ----------
   - type: grid
     theme: family_dashboard_chips
     background:
