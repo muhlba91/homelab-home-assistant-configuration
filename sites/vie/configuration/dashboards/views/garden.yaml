@@ -2,40 +2,43 @@
 title: Garden
 path: garden
 icon: mdi:tree
-cards:
-  - type: vertical-stack
+type: sections
+sections:
+  - type: grid
+    title: Lighting
+    background: true
     cards:
-      - type: grid
-        columns: 3
-        square: false
-        cards:
-          - type: custom:mushroom-entity-card
-            entity: switch.fds4_2
-            name: Pergola Light
-            icon: mdi:lightbulb
-            icon_color: amber
-            tap_action:
-              action: toggle
-          - type: custom:modern-circular-gauge
-            entity: sensor.ecowitt_temp1
-            name: South
-            min: 5
-            max: 35
-            secondary:
-              entity: sensor.ecowitt_humidity1
-              show_gauge: outer
-              min: 20
-              max: 80
-          - type: custom:modern-circular-gauge
-            entity: sensor.ecowitt_temp2
-            name: North
-            min: 5
-            max: 35
-            secondary:
-              entity: sensor.ecowitt_humidity2
-              show_gauge: outer
-              min: 20
-              max: 80
+      - type: tile
+        entity: switch.fds4_2
+        name: Pergola Light
+        icon: mdi:lightbulb
+        features:
+          - type: toggle
+
+  - type: grid
+    title: Weather Station
+    background: true
+    cards:
+      - type: custom:modern-circular-gauge
+        entity: sensor.ecowitt_temp1
+        name: South
+        min: 5
+        max: 35
+        secondary:
+          entity: sensor.ecowitt_humidity1
+          show_gauge: outer
+          min: 20
+          max: 80
+      - type: custom:modern-circular-gauge
+        entity: sensor.ecowitt_temp2
+        name: North
+        min: 5
+        max: 35
+        secondary:
+          entity: sensor.ecowitt_humidity2
+          show_gauge: outer
+          min: 20
+          max: 80
       - type: custom:mushroom-template-card
         primary: Weather Station
         secondary: >-
@@ -44,25 +47,22 @@ cards:
           {{ 'South is ' ~ diff | round(1) ~ '°C warmer than North' if diff >= 0
           else 'North is ' ~ (-diff) | round(1) ~ '°C warmer than South' }}
         icon: mdi:weather-partly-cloudy
-      - type: vertical-stack
-        cards:
-          - type: custom:mushroom-title-card
-            title: Battery Levels
-          - type: grid
-            columns: 2
-            square: false
-            cards:
-              - type: custom:mushroom-template-card
-                primary: South Sensor
-                secondary: >-
-                  {{ 'Low' if is_state('binary_sensor.ecowitt_batt1', 'on') else 'OK' }}
-                icon: mdi:battery
-                icon_color: >-
-                  {{ 'red' if is_state('binary_sensor.ecowitt_batt1', 'on') else 'green' }}
-              - type: custom:mushroom-template-card
-                primary: North Sensor
-                secondary: >-
-                  {{ 'Low' if is_state('binary_sensor.ecowitt_batt2', 'on') else 'OK' }}
-                icon: mdi:battery
-                icon_color: >-
-                  {{ 'red' if is_state('binary_sensor.ecowitt_batt2', 'on') else 'green' }}
+
+  - type: grid
+    title: Battery Levels
+    background: true
+    cards:
+      - type: custom:mushroom-template-card
+        primary: South Sensor
+        secondary: >-
+          {{ 'Low' if is_state('binary_sensor.ecowitt_batt1', 'on') else 'OK' }}
+        icon: mdi:battery
+        icon_color: >-
+          {{ 'red' if is_state('binary_sensor.ecowitt_batt1', 'on') else 'green' }}
+      - type: custom:mushroom-template-card
+        primary: North Sensor
+        secondary: >-
+          {{ 'Low' if is_state('binary_sensor.ecowitt_batt2', 'on') else 'OK' }}
+        icon: mdi:battery
+        icon_color: >-
+          {{ 'red' if is_state('binary_sensor.ecowitt_batt2', 'on') else 'green' }}

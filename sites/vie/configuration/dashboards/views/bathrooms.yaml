@@ -2,54 +2,54 @@
 title: Bathrooms
 path: bathrooms
 icon: mdi:shower
-cards:
-  - type: vertical-stack
+type: sections
+sections:
+  - type: grid
+    title: Lighting
+    background: true
     cards:
-      - type: grid
-        columns: 2
-        square: false
-        cards:
-          - type: vertical-stack
-            cards:
-              - type: custom:mushroom-title-card
-                title: Lighting
-              - type: custom:mushroom-entity-card
-                entity: switch.fds2_2
-                name: Bathroom Light
-                icon: mdi:lightbulb
-                icon_color: amber
-                tap_action:
-                  action: toggle
-              - type: custom:mushroom-entity-card
-                entity: switch.fds2_1
-                name: Bathroom Mirror Light
-                icon: mdi:lightbulb
-                icon_color: amber
-                tap_action:
-                  action: toggle
-              - type: custom:mushroom-entity-card
-                entity: switch.fs1_1
-                name: Toilet Light
-                icon: mdi:lightbulb
-                icon_color: amber
-                tap_action:
-                  action: toggle
-          - type: vertical-stack
-            cards:
-              - type: custom:mushroom-title-card
-                title: Shutter
-              - type: custom:bubble-card
-                card_type: cover
-                entity: cover.bathroom
-                name: Bathroom Shutter
-      - type: custom:mushroom-entity-card
+      - type: tile
+        entity: switch.fds2_2
+        name: Bathroom Light
+        icon: mdi:lightbulb
+        features:
+          - type: toggle
+      - type: tile
+        entity: switch.fds2_1
+        name: Bathroom Mirror Light
+        icon: mdi:lightbulb
+        features:
+          - type: toggle
+      - type: tile
+        entity: switch.fs1_1
+        name: Toilet Light
+        icon: mdi:lightbulb
+        features:
+          - type: toggle
+
+  - type: grid
+    title: Shutter
+    background: true
+    cards:
+      - type: tile
+        entity: cover.bathroom
+        name: Bathroom Shutter
+        features:
+          - type: cover-open-close
+          - type: cover-position
+
+  - type: grid
+    title: Safety
+    background: true
+    cards:
+      - type: tile
         entity: binary_sensor.fms1_home_security_motion_detection
         name: Toilet motion
-        icon: mdi:motion-sensor
-      - type: vertical-stack
-        cards:
-          - type: custom:mushroom-title-card
-            title: Battery Levels
-          - type: custom:mushroom-entity-card
-            entity: sensor.fms1_battery_level
-            name: Toilet Motion Sensor
+
+  - type: grid
+    title: Battery Levels
+    background: true
+    cards:
+      - type: tile
+        entity: sensor.fms1_battery_level
+        name: Toilet Motion Sensor

@@ -2,132 +2,123 @@
 title: Living Room
 path: living-room
 icon: mdi:sofa
-cards:
-  - type: vertical-stack
+type: sections
+sections:
+  - type: grid
+    title: Climate & Lighting
+    background: true
     cards:
-      - type: grid
-        columns: 3
-        square: false
-        cards:
-          - type: custom:mushroom-climate-card
-            entity: climate.living_room_air_conditioner
-            show_temperature_control: true
-            collapsible_controls: true
-          - type: custom:modern-circular-gauge
-            entity: sensor.living_room_living_room_temperature_humidity_temperature
-            name: Climate
-            min: 15
-            max: 28
-            secondary:
-              entity: sensor.living_room_living_room_temperature_humidity_humidity
-              show_gauge: outer
-              min: 30
-              max: 70
-          - type: vertical-stack
-            cards:
-              - type: custom:mushroom-title-card
-                title: Lighting
-              - type: custom:mushroom-entity-card
-                entity: switch.fds1_1
-                name: Living Room
-                icon: mdi:lightbulb
-                icon_color: amber
-                tap_action:
-                  action: toggle
-              - type: custom:mushroom-entity-card
-                entity: switch.fs12_1
-                name: Kitchen
-                icon: mdi:lightbulb
-                icon_color: amber
-                tap_action:
-                  action: toggle
-      - type: vertical-stack
-        cards:
-          - type: custom:mushroom-title-card
-            title: Shutters
-          - type: custom:bubble-card
-            card_type: cover
-            entity: cover.living_room_kitchen
-            name: Kitchen Shutter
-          - type: custom:bubble-card
-            card_type: cover
-            entity: cover.garden_door
-            name: Garden Door Shutter
-          - type: custom:bubble-card
-            card_type: cover
-            entity: cover.living_room_tv
-            name: TV Shutter
-      - type: custom:mushroom-entity-card
+      - type: custom:mushroom-climate-card
+        entity: climate.living_room_air_conditioner
+        show_temperature_control: true
+        collapsible_controls: true
+      - type: custom:modern-circular-gauge
+        entity: sensor.living_room_living_room_temperature_humidity_temperature
+        name: Climate
+        min: 15
+        max: 28
+        secondary:
+          entity: sensor.living_room_living_room_temperature_humidity_humidity
+          show_gauge: outer
+          min: 30
+          max: 70
+      - type: tile
+        entity: switch.fds1_1
+        name: Living Room
+        icon: mdi:lightbulb
+        features:
+          - type: toggle
+      - type: tile
+        entity: switch.fs12_1
+        name: Kitchen
+        icon: mdi:lightbulb
+        features:
+          - type: toggle
+
+  - type: grid
+    title: Shutters
+    background: true
+    cards:
+      - type: tile
+        entity: cover.living_room_kitchen
+        name: Kitchen Shutter
+        features:
+          - type: cover-open-close
+          - type: cover-position
+          - type: cover-tilt-position
+      - type: tile
+        entity: cover.garden_door
+        name: Garden Door Shutter
+        features:
+          - type: cover-open-close
+          - type: cover-position
+          - type: cover-tilt-position
+      - type: tile
+        entity: cover.living_room_tv
+        name: TV Shutter
+        features:
+          - type: cover-open-close
+          - type: cover-position
+          - type: cover-tilt-position
+
+  - type: grid
+    title: Media System
+    background: true
+    cards:
+      - type: tile
         entity: switch.living_room_media_system
         name: Media System
         icon: mdi:power
-        icon_color: purple
-        layout: horizontal
-        secondary_info: >-
-          {{ 'Denon AVR · projector syncs automatically' }}
-        tap_action:
-          action: toggle
-      - type: vertical-stack
-        cards:
-          - type: custom:mushroom-title-card
-            title: Safety
-          - type: grid
-            columns: 2
-            square: false
-            cards:
-              - type: custom:mushroom-entity-card
-                entity: binary_sensor.ass3_smoke_detected
-                name: Smoke
-                icon: mdi:smoke-detector
-                icon_color: >-
-                  {{ 'red' if is_state('binary_sensor.ass3_smoke_detected', 'on') else 'green' }}
-              - type: custom:mushroom-entity-card
-                entity: binary_sensor.ffs1_water_alarm_water_leak_detected
-                name: Kitchen leak
-                icon: mdi:water-alert
-                icon_color: >-
-                  {{ 'red' if is_state('binary_sensor.ffs1_water_alarm_water_leak_detected', 'on') else 'green' }}
-              - type: custom:mushroom-entity-card
-                entity: binary_sensor.living_room_ring_motion_sensor
-                name: Motion
-                icon: mdi:motion-sensor
-              - type: custom:mushroom-entity-card
-                entity: binary_sensor.ring_rcs3
-                name: Garden door
-                icon: mdi:door
-      - type: grid
-        columns: 2
-        square: false
-        cards:
-          - type: custom:advanced-camera-card
-            cameras:
-              - camera_entity: camera.living_room_living_room_fluent
-            card_id: living-room-camera
-          - type: custom:mushroom-vacuum-card
-            entity: vacuum.tea_room_roborock
-      - type: vertical-stack
-        cards:
-          - type: custom:mushroom-title-card
-            title: Battery Levels
-          - type: grid
-            columns: 3
-            square: false
-            cards:
-              - type: custom:mushroom-entity-card
-                entity: sensor.ass3_battery
-                name: LR Smoke
-              - type: custom:mushroom-entity-card
-                entity: sensor.living_room_living_room_temperature_humidity_battery
-                name: LR Sensor
-              - type: custom:mushroom-entity-card
-                entity: sensor.living_room_ring_motion_sensor_battery
-                name: LR Motion
-              - type: custom:mushroom-entity-card
-                entity: sensor.ffs1_battery_level
-                name: Kitchen Leak
-              - type: custom:mushroom-entity-card
-                entity: sensor.ring_rcs3_garden_door_battery
-                name: Garden Door
-              - type: custom:mushroom-entity-card
-                entity: sensor.tea_room_roborock_battery
-                name: Roborock
+        features:
+          - type: toggle
+
+  - type: grid
+    title: Safety
+    background: true
+    cards:
+      - type: tile
+        entity: binary_sensor.ass3_smoke_detected
+        name: Smoke
+      - type: tile
+        entity: binary_sensor.ffs1_water_alarm_water_leak_detected
+        name: Kitchen leak
+      - type: tile
+        entity: binary_sensor.living_room_ring_motion_sensor
+        name: Motion
+      - type: tile
+        entity: binary_sensor.ring_rcs3
+        name: Garden door
+
+  - type: grid
+    title: Camera & Vacuum
+    background: true
+    cards:
+      - type: custom:advanced-camera-card
+        cameras:
+          - camera_entity: camera.living_room_living_room_fluent
+        card_id: living-room-camera
+      - type: custom:mushroom-vacuum-card
+        entity: vacuum.tea_room_roborock
+
+  - type: grid
+    title: Battery Levels
+    background: true
+    cards:
+      - type: tile
+        entity: sensor.ass3_battery
+        name: LR Smoke
+      - type: tile
+        entity: sensor.living_room_living_room_temperature_humidity_battery
+        name: LR Sensor
+      - type: tile
+        entity: sensor.living_room_ring_motion_sensor_battery
+        name: LR Motion
+      - type: tile
+        entity: sensor.ffs1_battery_level
+        name: Kitchen Leak
+      - type: tile
+        entity: sensor.ring_rcs3_garden_door_battery
+        name: Garden Door
+      - type: tile
+        entity: sensor.tea_room_roborock_battery
+        name: Roborock
