@@ -3,17 +3,17 @@ extra_module_url:
   # renovate: datasource=github-releases packageName=denysdovhan/vacuum-card
   - /local/community/vacuum-card/vacuum-card.js?v=v2.10.1
   # renovate: datasource=github-releases packageName=rianadon/timer-bar-card
-  # - /local/community/timer-bar-card/timer-bar-card.js?v=v1.31.1
+  - /local/community/timer-bar-card/timer-bar-card.js?v=v1.31.1
   # renovate: datasource=github-releases packageName=custom-cards/button-card
-  # - /local/community/button-card/button-card.js?v=v7.0.1
+  - /local/community/button-card/button-card.js?v=v7.0.1
   # renovate: datasource=github-releases packageName=MindFreeze/ha-sankey-chart
-  # - /local/community/ha-sankey-chart/ha-sankey-chart.js?v=v6.4.0
+  - /local/community/ha-sankey-chart/ha-sankey-chart.js?v=v6.4.0
   # renovate: datasource=github-releases packageName=piitaya/lovelace-mushroom
   - /local/community/mushroom/mushroom.js?v=v5.2.3
   # renovate: datasource=github-releases packageName=RomRider/apexcharts-card
-  # - /local/community/apexcharts-card/apexcharts-card.js?v=2.2.3
+  - /local/community/apexcharts-card/apexcharts-card.js?v=2.2.3
   # renovate: datasource=github-tags packageName=Clooos/Bubble-Card
-  # - /local/community/bubble-card/bubble-card.js?v=v3.4.1
+  - /local/community/bubble-card/bubble-card.js?v=v3.4.1
   # renovate: datasource=github-tags packageName=selvalt7/modern-circular-gauge
   - /local/community/modern-circular-gauge/modern-circular-gauge.js?v=v0.15.0
   # renovate: datasource=github-tags packageName=dermotduffy/advanced-camera-card
