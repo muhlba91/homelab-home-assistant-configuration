@@ -87,10 +87,40 @@ sections:
           columns: full
 
   - type: grid
-    theme: family_dashboard_chips
     background:
       opacity: 100
     column_span: 3
+    cards:
+      - type: heading
+        heading: DEVICES
+        heading_style: subtitle
+      - type: tile
+        entity: switch.living_room_media_system
+        name: Media System
+        icon: mdi:television-play
+        color: purple
+        features_position: inline
+        features:
+          - type: toggle
+        grid_options:
+          columns: 12
+      - type: tile
+        entity: vacuum.tea_room_roborock
+        name: Roborock
+        features_position: inline
+        features:
+          - type: vacuum-commands
+            commands:
+              - start_pause
+              - return_home
+        grid_options:
+          columns: 12
+
+  - type: grid
+    theme: family_dashboard_chips
+    background:
+      opacity: 100
+    column_span: 1
     cards:
       - type: heading
         heading: SHUTTERS
@@ -124,36 +154,6 @@ sections:
           columns: 12
 
   - type: grid
-    background:
-      opacity: 100
-    column_span: 1
-    cards:
-      - type: heading
-        heading: DEVICES
-        heading_style: subtitle
-      - type: tile
-        entity: switch.living_room_media_system
-        name: Media System
-        icon: mdi:television-play
-        color: purple
-        features_position: inline
-        features:
-          - type: toggle
-        grid_options:
-          columns: full
-      - type: tile
-        entity: vacuum.tea_room_roborock
-        name: Roborock
-        features_position: inline
-        features:
-          - type: vacuum-commands
-            commands:
-              - start_pause
-              - return_home
-        grid_options:
-          columns: full
-
-  - type: grid
     theme: family_dashboard_chips
     background:
       opacity: 100
@@ -181,22 +181,22 @@ sections:
         entity: binary_sensor.ass3_smoke_detected
         name: Smoke
         grid_options:
-          columns: 6
+          columns: 12
       - type: tile
         entity: binary_sensor.ffs1_water_alarm_water_leak_detected
         name: Kitchen leak
         grid_options:
-          columns: 6
+          columns: 12
       - type: tile
         entity: binary_sensor.living_room_ring_motion_sensor
         name: Motion
         grid_options:
-          columns: 6
+          columns: 12
       - type: tile
         entity: binary_sensor.ring_rcs3
         name: Garden door
         grid_options:
-          columns: 6
+          columns: 12
 
   - type: grid
     theme: family_dashboard_chips

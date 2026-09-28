@@ -9,7 +9,7 @@ sections:
   - type: grid
     background:
       opacity: 100
-    column_span: 2
+    column_span: 3
     cards:
       - type: heading
         heading: LIGHTING
@@ -23,7 +23,7 @@ sections:
         features:
           - type: toggle
         grid_options:
-          columns: full
+          columns: 12
       - type: tile
         entity: switch.fs3_1
         name: Storage Room
@@ -33,7 +33,7 @@ sections:
         features:
           - type: toggle
         grid_options:
-          columns: full
+          columns: 12
 
   - type: grid
     theme: family_dashboard_chips
@@ -58,15 +58,13 @@ sections:
     theme: family_dashboard_chips
     background:
       opacity: 100
-    column_span: 3
+    column_span: 2
     cards:
       - type: heading
         heading: SAFETY
         heading_style: subtitle
-        grid_options:
-          columns: 27
       - type: custom:mushroom-chips-card
-        alignment: end
+        alignment: start
         chips:
           - type: template
             entity: binary_sensor.utility_safety_status
@@ -79,27 +77,27 @@ sections:
             tap_action:
               action: more-info
         grid_options:
-          columns: 9
+          columns: full
       - type: tile
         entity: binary_sensor.ass5_smoke_detected
         name: Smoke
         grid_options:
-          columns: 9
+          columns: 12
       - type: tile
         entity: binary_sensor.ffs2_water_leak_detected
         name: Leak
         grid_options:
-          columns: 9
+          columns: 12
       - type: tile
         entity: binary_sensor.fms3_home_security_motion_detection
         name: Storage motion
         grid_options:
-          columns: 9
+          columns: 12
       - type: tile
         entity: binary_sensor.ring_rcs2
         name: Storage window
         grid_options:
-          columns: 9
+          columns: 12
 
   - type: grid
     theme: family_dashboard_chips

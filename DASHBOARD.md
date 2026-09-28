@@ -18,6 +18,7 @@ plain, hand-editable YAML that follows the patterns described below.
 - [Component catalogue](#component-catalogue)
 - [Views](#views)
 - [Safety status sensors](#safety-status-sensors)
+- [Dashboard status sensors](#dashboard-status-sensors)
 - [Selecting entities from an entity list](#selecting-entities-from-an-entity-list)
 - [Recipes](#recipes)
 - [Hard-coded entity lists](#hard-coded-entity-lists)
@@ -45,14 +46,15 @@ plain, hand-editable YAML that follows the patterns described below.
 
 ## Files and loading
 
-| Path                                                  | Purpose                                                                                              |
-| ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `common/configuration/configuration.yaml`             | Loads `lovelace: !include_dir_merge_named lovelace` and `template: !include_dir_merge_list template` |
-| `common/configuration/frontend/themes.yaml`           | Themes `family_dashboard` and `family_dashboard_chips` (light and dark)                              |
-| `sites/vie/configuration/lovelace/dashboards.yaml`    | Registers the dashboard under the key `lovelace`: it replaces the built-in Overview                  |
-| `sites/vie/configuration/ui-lovelace.yaml`            | Dashboard root: title and the ordered `!include` list of views                                       |
-| `sites/vie/configuration/dashboards/views/*.yaml`     | One file per tab (view)                                                                              |
-| `sites/vie/configuration/template/safety_status.yaml` | Template binary sensors behind the safety pills                                                      |
+| Path                                                     | Purpose                                                                                              |
+| -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `common/configuration/configuration.yaml`                | Loads `lovelace: !include_dir_merge_named lovelace` and `template: !include_dir_merge_list template` |
+| `common/configuration/frontend/themes.yaml`              | Themes `family_dashboard` and `family_dashboard_chips` (light and dark)                              |
+| `sites/vie/configuration/lovelace/dashboards.yaml`       | Registers the dashboard under the key `lovelace`: it replaces the built-in Overview                  |
+| `sites/vie/configuration/ui-lovelace.yaml`               | Dashboard root: title and the ordered `!include` list of views                                       |
+| `sites/vie/configuration/dashboards/views/*.yaml`        | One file per tab (view)                                                                              |
+| `sites/vie/configuration/template/safety_status.yaml`    | Template binary sensors behind the safety pills                                                      |
+| `sites/vie/configuration/template/dashboard_status.yaml` | Template sensors behind the A/C and battery summaries                                                |
 
 `common/` and `sites/vie/` are merged into one Home Assistant configuration
 directory at deploy time by `lifecycle/configuration.sh`.
@@ -157,8 +159,8 @@ Each unit of `column_span` provides 12 grid columns. Card widths are set with
 | 2                     | 24           | `full` or 24 | 12   | 8     | 6       | 4     |
 | 3                     | 36           | `full` or 36 | 18   | 12    | 9       | 6     |
 
-On narrow screens Home Assistant collapses sections to one column
-automatically; nothing extra is needed for mobile.
+These fractions are desktop maths. Which of them to actually use is decided
+by the [Width rule](#width-rule): only 6, 12 and full.
 
 ### Two themes: panels and chips
 
@@ -226,53 +228,84 @@ Global theme settings: `ha-card-border-width: 0px`, `ha-card-box-shadow: none`
 
 ### Room views
 
-Sections appear in this order. Omit a section when the room has nothing for
-it. Adjacent sections may share a row (that is what `column_span` is for), but
-the order is always kept.
+Every room tab follows the same shape, so the same things sit in the same
+places in every tab:
 
-1. **Lighting**, then **Air conditioner**, then **Climate** (first row).
-2. **Shutters**.
-3. Room-specific devices: **Front door**, **Media system**, **Vacuum**,
-   **Weather station**.
-4. **Safety** (with a status pill when the room has a safety status sensor).
-5. **Battery levels**: always the last row, always full width
-   (`column_span: 3`), always chip theme.
+1. **Row 1**: **Lighting**, then **Air conditioner**, then **Climate** where
+   present. Rooms without either use a full-width Lighting row with the lights
+   side by side.
+2. Extra controls, only where they exist: **Devices** (Living Room: media
+   system and vacuum) as a full-width row.
+3. **The slot row**: **Shutters** (left, span 1) and **Safety** (right,
+   span 2). Rooms without a shutter put their other room control in the left
+   slot (Hallways: **Front door**). Multiple shutters stack in the slot.
+4. **Battery levels**: always its own full-width last row, always chip theme.
 
-Row packing used today:
+Controls come first, status last. Safety is what people act on; batteries are
+maintenance that is glanced at now and then, so they are never mixed into the
+Safety row.
 
-| Situation                                  | Row 1                        | Row 2                | Row 3             | Row 4                    |
-| ------------------------------------------ | ---------------------------- | -------------------- | ----------------- | ------------------------ |
-| Lights, A/C, climate, one shutter          | Lighting 1, A/C 1, Climate 1 | Shutters 1, Safety 2 | Battery 3         |                          |
-| Lights, climate, no A/C, one shutter       | Lighting 1, Climate 2        | Shutters 1, Safety 2 | Battery 3         |                          |
-| Several shutters and devices (Living Room) | Lighting 1, A/C 1, Climate 1 | Shutters 3           | Media 2, Vacuum 1 | Safety 3, then Battery 3 |
-| Lights and one shutter, no climate         | Lighting 2, Shutters 1       | Safety 3             | Battery 3         |                          |
+Row layout per room (numbers are `column_span` values):
 
-Numbers are `column_span` values; each row sums to 3.
+| Room               | Row 1                         | Row 2                  | Row 3                                | Row 4     |
+| ------------------ | ----------------------------- | ---------------------- | ------------------------------------ | --------- |
+| Office, Bedroom    | Lighting 1, A/C 1, Climate 1  | Shutters 1, Safety 2   | Battery 3                            |           |
+| Tea Room           | Lighting 1, Climate 2         | Shutters 1, Safety 2   | Battery 3                            |           |
+| Living Room        | Lighting 1, A/C 1, Climate 1  | Devices 3              | Shutters 1 (three stacked), Safety 2 | Battery 3 |
+| Bathrooms, Utility | Lighting 3                    | Shutters 1, Safety 2   | Battery 3                            |           |
+| Hallways           | Lighting 3                    | Front door 1, Safety 2 | Battery 3                            |           |
+| Garden             | Lighting 1, Weather station 2 | Battery 3              |                                      |           |
+
+Panels end where their content ends; Home Assistant does not stretch panels
+in a row to equal height.
+
+### Width rule
+
+On phones every section collapses into one column with a **12-unit** grid,
+whatever its `column_span`. Card widths then behave differently:
+
+- Widths of 12 or more (`12`, `24`, `36`, `full`) become one full row.
+- Widths below 12 keep their absolute size.
+
+Therefore only use widths that also work on a 12-unit grid:
+
+- `6`: two per row on phones.
+- `12` or `full`: one per row on phones.
+- Anything of 12 or more that should span the whole phone width.
+
+Never use `8` or `9`; they leave ragged rows on phones. Width 6 is used for
+compact strips such as the Overview's four Security summaries (one row on
+desktop, 2×2 on phones); sensor tiles use 12 (see
+[Card widths inside sections](#card-widths-inside-sections)).
 
 ### Card widths inside sections
 
-| Section                                           | Card width                                       |
-| ------------------------------------------------- | ------------------------------------------------ |
-| Lighting, A/C, Climate, Media, Vacuum, Front door | `columns: full` (one per row, stacked)           |
-| Shutters (span 3)                                 | 12 (three per row)                               |
-| Shutters (span 1)                                 | 12 (full)                                        |
-| Safety sensors (span 3)                           | 9 (four per row); 12 when there are five or more |
-| Safety sensors (span 2)                           | 12 (two per row)                                 |
-| Battery levels                                    | 6 (six per row)                                  |
+Tile widths are **consistent across tabs**: the same kind of tile has the same
+size in every room. Panels wrap rather than stretch tiles, and a single tile
+keeps its standard width.
 
-### Heading with status pill
+| Card                                                        | Width                                                                         |
+| ----------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Lights in a span-1 Lighting panel; A/C; Climate; Front door | `columns: full` (stacked)                                                     |
+| Lights in a full-width Lighting row; Devices                | 12 (a third of the page)                                                      |
+| Shutters                                                    | 12 (full in the span-1 slot, stacked when several)                            |
+| Safety sensors                                              | **always 12** (two per row in the span-2 Safety panel, one per row on phones) |
+| Security alarm and front door (Overview)                    | 12                                                                            |
+| Security summaries (Overview)                               | 6 (four in one row on desktop, 2×2 on phones)                                 |
+| Temperature rings                                           | 6 (12 in Garden)                                                              |
+| Battery levels                                              | 6 (six per row, two on phones)                                                |
 
-A heading with a pill shares its row with a `mushroom-chips-card`. Split the
-section's grid columns between them:
+### Status pill row
 
-| Section `column_span` | Heading `columns` | Pill `columns` |
-| --------------------- | ----------------- | -------------- |
-| 1                     | 6                 | 6              |
-| 2                     | 16                | 8              |
-| 3                     | 27                | 9              |
+A section's status pill sits on its **own full-width row directly under the
+heading**, left-aligned, on every device: heading, then status, then content.
+The pill is a `mushroom-chips-card` with `alignment: start` and
+`columns: full`; the heading has no `grid_options`.
 
-Known and accepted: a heading next to a pill sits about 15 px lower than a
-heading without one (see [Decision log](#decision-log)).
+This keeps the pill correct on phones and aligns all headings on desktop.
+Sections placed side by side on desktop either both have a pill row or both
+have none, so their heights stay equal (Security and Forecast, Indoor climate
+and Weather station).
 
 ## Component catalogue
 
@@ -380,16 +413,14 @@ Use percentage battery sensors. For devices that only expose a binary battery
 sensor (`device_class: battery`, `on` means low), use the binary sensor; it
 shows "Normal" or "Low".
 
-### Status pill in a section heading
+### Status pill card
 
 ```yaml
       - type: heading
         heading: SAFETY
         heading_style: subtitle
-        grid_options:
-          columns: 16
       - type: custom:mushroom-chips-card
-        alignment: end
+        alignment: start
         chips:
           - type: template
             entity: binary_sensor.office_safety_status
@@ -402,19 +433,26 @@ shows "Normal" or "Low".
             tap_action:
               action: more-info
         grid_options:
-          columns: 8
+          columns: full
 ```
 
 Colour logic: red when the sensor is `on`; orange when it is `off` but the
 summary is not "All clear"; green otherwise. The pill itself only reads the
 sensor; all logic lives in `safety_status.yaml`.
 
+Pill text is always neutral; only the icon is coloured. Coloured text fails
+contrast on the pill background (green 3.1:1, blue 4.2:1; 4.5:1 is needed).
+
 ### Temperature ring (Overview and Garden)
 
 ```yaml
       - type: custom:modern-circular-gauge
         entity: sensor.office_office_temperature_humidity_temperature
-        name: Office
+        name: >-
+          {%- set m = states('climate.office_air_conditioner') -%}
+          {%- set w = {'cool': 'Cooling', 'heat': 'Heating', 'dry': 'Drying',
+          'fan_only': 'Fan only', 'heat_cool': 'Auto', 'auto': 'Auto'} -%}
+          Office{{ ' · ' ~ w[m] if m in w else '' }}
         min: 15
         max: 28
         show_icon: false
@@ -434,29 +472,51 @@ sensor; all logic lives in `safety_status.yaml`.
           rows: 3
 ```
 
+The templated `name` is the ring label: the room name while the room's air
+conditioner is off, "Office · Cooling" while it runs. Because it is part of
+the ring, it can never detach from it. Rooms without an air conditioner use a
+plain `name: Tea Room`.
+
 Ranges: indoor 15 to 28 °C and 30 to 70 %; outdoor 5 to 35 °C and 20 to 80 %.
 The solar gauge uses `var(--amber-color)`, 0 to 5000 W, and no secondary.
 
-### Informational pill (under a ring)
+### A/C summary pill (Indoor climate)
 
 ```yaml
       - type: custom:mushroom-chips-card
-        alignment: center
+        alignment: start
         chips:
           - type: template
-            entity: climate.office_air_conditioner
-            icon: mdi:air-conditioner
-            icon_color: "{{ 'grey' if is_state('climate.office_air_conditioner', 'off') else 'blue' }}"
-            content: "{{ 'AC ' ~ (states('climate.office_air_conditioner') | replace('_', ' ') | title) }}"
+            entity: sensor.house_ac_status
+            content: "{{ state_attr('sensor.house_ac_status', 'summary') }}"
+            icon: "{{ state_attr('sensor.house_ac_status', 'icon') }}"
+            icon_color: "{{ 'blue' if states('sensor.house_ac_status') | int(0) > 0 else 'grey' }}"
             tap_action:
               action: more-info
         grid_options:
-          columns: 6
+          columns: full
 ```
 
-Rooms without an air conditioner get a static "No AC" pill with
-`icon_color: disabled` so the ring row stays aligned. Pills are placed after
-all rings of a section; the grid puts each pill under its ring.
+Division of labour: the pill says **what** is happening overall (counts per
+mode, never room names), the ring labels say **where**. Icon shape carries
+the mode (snowflake: cooling only, flame: heating only, A/C icon: mixed or
+off); colour carries the state (grey: all off, blue: anything running). The
+worst case with three units is 34 characters and always fits a phone.
+
+### Battery summary (Security)
+
+```yaml
+      - type: custom:mushroom-template-card
+        entity: sensor.house_battery_status
+        primary: Batteries
+        secondary: "{{ state_attr('sensor.house_battery_status', 'summary') }}"
+        icon: "{{ 'mdi:battery-alert' if states('sensor.house_battery_status') | int(0) > 0 else 'mdi:battery' }}"
+        icon_color: "{{ 'orange' if states('sensor.house_battery_status') | int(0) > 0 else 'green' }}"
+        tap_action:
+          action: more-info
+        grid_options:
+          columns: 6
+```
 
 ## Views
 
@@ -467,16 +527,17 @@ includes the entrance room, Utility includes the storage room.
 
 ### Overview
 
-| Row | Sections (`column_span`)                      | Content                                                                                                                                                                                              |
-| --- | --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | Security and safety (2), Outdoor forecast (1) | Status pill `binary_sensor.house_safety_status`; alarm and front door tiles; smoke, water leak and doors summaries. Forecast: sunrise or sunset pill, condition row, humidity, pressure and wind row |
-| 2   | Indoor climate (2), Weather station (1)       | One ring per room sensor with an A/C pill under each; South and North rings with a temperature difference pill                                                                                       |
-| 3   | Solar and energy (3)                          | Solar gauge (12 columns, 3 rows) and three stacked stat tiles (24 columns each)                                                                                                                      |
-| 4   | Energy flow (3)                               | Sankey: Solar and Grid import into House and Grid export                                                                                                                                             |
+| Row | Sections (`column_span`)                      | Content                                                                                                                                                                                                         |
+| --- | --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Security and safety (2), Outdoor forecast (1) | Status pill `binary_sensor.house_safety_status`; alarm and front door tiles; smoke, water leak, doors and batteries summaries. Forecast: sunrise or sunset pill, condition row, humidity, pressure and wind row |
+| 2   | Indoor climate (2), Weather station (1)       | A/C summary pill `sensor.house_ac_status`; one ring per room sensor with a templated A/C label. Temperature difference pill; South and North rings                                                              |
+| 3   | Solar and energy (3)                          | Solar gauge (12 columns, 3 rows) and three stacked stat tiles (24 columns each)                                                                                                                                 |
+| 4   | Energy flow (3)                               | Sankey: Solar and Grid import into House and Grid export                                                                                                                                                        |
 
-Summary rows ("Smoke: All clear (7)") are Mushroom template cards with a
+Smoke, water leak and doors summaries are Mushroom template cards with a
 hard-coded entity list each (see
-[Hard-coded entity lists](#hard-coded-entity-lists)).
+[Hard-coded entity lists](#hard-coded-entity-lists)). The batteries summary
+reads `sensor.house_battery_status` and needs no list.
 
 The sankey's House node is computed as solar plus import minus export
 (`add_entities` and `subtract_entities`). Do not replace it with
@@ -557,6 +618,28 @@ Current sensors: `house`, `living_room`, `office`, `tea_room`, `bedroom`,
 `bathrooms`, `hallways`, `utility`. Garden has none on purpose: it has no
 safety sensors, and an always-green pill would be decoration.
 
+## Dashboard status sensors
+
+`sites/vie/configuration/template/dashboard_status.yaml` defines two sensors
+that summarise the whole house. Both discover their entities automatically,
+so new devices are included without editing any list.
+
+| Sensor                        | State                              | Attributes                                                               | Discovers                                                       |
+| ----------------------------- | ---------------------------------- | ------------------------------------------------------------------------ | --------------------------------------------------------------- |
+| `sensor.house_ac_status`      | Number of running air conditioners | `summary` (for example `1 cooling · 1 heating`, or `All AC off`), `icon` | Every `climate` entity                                          |
+| `sensor.house_battery_status` | Number of low batteries            | `summary` (`All OK (38)` or `2 low`)                                     | Every `sensor` and `binary_sensor` with `device_class: battery` |
+
+Rules:
+
+- A unit counts as running in any state except `off`, `unavailable` and
+  `unknown`. `heat_cool` is reported as "auto".
+- A battery is low at **20 % or less**, or when a binary battery sensor is
+  `on`. Unavailable batteries are ignored, not counted as low.
+- Every field computes from live states. Never use `this` in these templates:
+  it refers to the sensor's previous value and lags one update behind.
+- Templates over a whole domain (`states.sensor`) are rate-limited by Home
+  Assistant to one update per minute. That is fine for batteries.
+
 ## Selecting entities from an entity list
 
 Use these rules when mapping an entity export to the dashboard.
@@ -608,11 +691,14 @@ detectors or smoke detectors.
 ### Add a temperature and humidity sensor
 
 1. Room view: add or update the Climate section with both trend tiles.
-2. Overview: add a ring to Indoor climate and a matching pill (A/C state, or
-   "No AC"). Keep rings and pills in the same order. With more than four
-   rooms, the ring row wraps; keep `columns: 6`.
+2. Overview: add a ring to Indoor climate. If the room has an air
+   conditioner, template its `name` as in
+   [Temperature ring](#temperature-ring-overview-and-garden); otherwise use the
+   plain room name. With more than four rooms the ring row wraps; keep
+   `columns: 6`.
 3. If the room has an air conditioner, add the A/C section between Lighting
-   and Climate.
+   and Climate. `sensor.house_ac_status` picks the new unit up
+   automatically.
 
 ### Add a motion sensor
 
@@ -639,12 +725,14 @@ detectors or smoke detectors.
 ### Add a room (new tab)
 
 1. Create `sites/vie/configuration/dashboards/views/<room>.yaml` with the view
-   header from [Views and sections](#views-and-sections) and sections in the
-   order from [Layout rules](#layout-rules).
+   header from [Views and sections](#views-and-sections), sections in the
+   order from [Layout rules](#layout-rules), and widths following the
+   [Width rule](#width-rule).
 2. Add `- !include dashboards/views/<room>.yaml` to `ui-lovelace.yaml` at the
    right position.
 3. If the room has safety-relevant sensors, add a room safety status sensor
-   with a new UUID4 and a Safety heading pill.
+   with a new UUID4 and a [status pill row](#status-pill-row) under the
+   Safety heading.
 4. Update the Overview (ring, summaries, house sensor lists).
 
 ### Add devices to the energy flow
@@ -670,14 +758,17 @@ consumption.
 These places contain explicit entity lists. Update all of them when adding,
 removing or renaming a safety-relevant entity.
 
-| Location                                           | Contents                                       |
-| -------------------------------------------------- | ---------------------------------------------- |
-| `template/safety_status.yaml`, house sensor        | Smoke (7), leak (2), contacts (3), alarm panel |
-| `template/safety_status.yaml`, room sensors        | That room's alarms and contacts                |
-| `views/overview.yaml`, "Smoke" summary             | Smoke sensors                                  |
-| `views/overview.yaml`, "Water leaks" summary       | Leak sensors                                   |
-| `views/overview.yaml`, "Doors and windows" summary | Contacts                                       |
-| `views/overview.yaml`, Indoor climate              | One ring and one pill per room                 |
+| Location                                           | Contents                                                            |
+| -------------------------------------------------- | ------------------------------------------------------------------- |
+| `template/safety_status.yaml`, house sensor        | Smoke (7), leak (2), contacts (3), alarm panel                      |
+| `template/safety_status.yaml`, room sensors        | That room's alarms and contacts                                     |
+| `views/overview.yaml`, "Smoke" summary             | Smoke sensors                                                       |
+| `views/overview.yaml`, "Water leaks" summary       | Leak sensors                                                        |
+| `views/overview.yaml`, "Doors and windows" summary | Contacts                                                            |
+| `views/overview.yaml`, Indoor climate              | One ring per room; each ring label names its room's air conditioner |
+
+Air conditioners and batteries are **not** listed anywhere: the
+[dashboard status sensors](#dashboard-status-sensors) discover them.
 
 After renaming entities in Home Assistant, search the whole repository for the
 old entity ID.
@@ -704,59 +795,68 @@ Before committing:
 2. Every entity ID in views and templates exists in a current entity export
    and is not disabled.
 3. Every view: first card of each section is a `heading` in capitals with
-   `heading_style: subtitle`; Battery levels is the last section.
-4. No hex colours in view files (`grep -rn "#[0-9a-fA-F]\{6\}" views/` finds
+   `heading_style: subtitle`; a status pill row, if any, is the second card;
+   Battery levels is the last section.
+4. No card uses width `8` or `9` (see [Width rule](#width-rule)).
+5. No hex colours in view files (`grep -rn "#[0-9a-fA-F]\{6\}" views/` finds
    nothing).
-5. All `unique_id` values in `template/` are unique; existing ones unchanged.
-6. Every `summary` falls back to exactly `All clear`.
-7. `markdownlint DASHBOARD.md` passes after editing this document.
+6. All `unique_id` values in `template/` are unique; existing ones unchanged.
+7. Every safety `summary` falls back to exactly `All clear`.
+8. `markdownlint -c .markdownlint.yaml DASHBOARD.md` passes after editing this
+   document.
 
 ## Decision log
 
-| Decision                                      | Reason                                                                                                    |
-| --------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| `sections` views instead of masonry           | Masonry reorders cards by height; sections keep the designed order                                        |
-| Native `tile` cards                           | Consistent shape, real toggles and cover controls                                                         |
-| Flat rows and chip sections via two themes    | Native way to group items without custom CSS                                                              |
-| No shadows on section panels                  | Needs `card-mod` targeting frontend internals, which breaks on updates; depth comes from surface contrast |
-| Heading next to a pill sits about 15 px lower | Only fix is inline heading badges, which support two colours only; the orange state was more valuable     |
-| Status logic in template sensors              | Reusable in automations; the dashboard stays declarative                                                  |
-| Gauge icons hidden                            | The gauge offers no palette-safe icon colour; the mockups had no icon                                     |
-| A/C state as a pill under each ring           | Matches the mockup; the gauge's text slot could not render a pill                                         |
-| Camera removed from Living Room               | Too dominant for its value                                                                                |
-| `vacuum-card` not loaded                      | Breaks the whole frontend (duplicate `ha-icon-button`)                                                    |
-| Shutter position and tilt only in the dialog  | Keeps rows compact; sliders are rarely needed                                                             |
-| Dark mode uses its own desaturated palette    | Saturated colours glare on dark surfaces                                                                  |
+| Decision                                       | Reason                                                                                                                           |
+| ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `sections` views instead of masonry            | Masonry reorders cards by height; sections keep the designed order                                                               |
+| Native `tile` cards                            | Consistent shape, real toggles and cover controls                                                                                |
+| Flat rows and chip sections via two themes     | Native way to group items without custom CSS                                                                                     |
+| No shadows on section panels                   | Needs `card-mod` targeting frontend internals, which breaks on updates; depth comes from surface contrast                        |
+| Status pill on its own row under the heading   | Correct on phones and keeps all headings aligned on desktop; replaced pills sharing the heading row                              |
+| Status logic in template sensors               | Reusable in automations; the dashboard stays declarative                                                                         |
+| Gauge icons hidden                             | The gauge offers no palette-safe icon colour; the mockups had no icon                                                            |
+| A/C shown as ring label plus summary pill      | Pills under rings detached from their rings on phones; the label is part of the ring, the pill carries counts per mode           |
+| Camera removed from Living Room                | Too dominant for its value                                                                                                       |
+| `vacuum-card` not loaded                       | Breaks the whole frontend (duplicate `ha-icon-button`)                                                                           |
+| Shutter position and tilt only in the dialog   | Keeps rows compact; sliders are rarely needed                                                                                    |
+| Dark mode uses its own desaturated palette     | Saturated colours glare on dark surfaces                                                                                         |
+| Widths limited to 6, 12 and full               | Phones use a 12-unit grid; 8 and 9 left ragged rows                                                                              |
+| Batteries summary on Overview                  | Low batteries are the most common silent failure; auto-discovered, no list to maintain                                           |
+| Media and vacuum share a Devices panel         | Keeps the Living Room's extra controls in one full-width row                                                                     |
+| Neutral pill text, coloured icons              | Coloured text fails contrast; green is reserved for all clear                                                                    |
+| Shutters left of Safety in every room          | Same place in every tab; Living Room's three shutters stack in the slot next to its 2×2 Safety grid                              |
+| Living Room devices above the slot row         | Controls first, status last; every tab ends with Shutters and Safety, then Batteries                                             |
+| Batteries always their own full-width last row | Safety is acted on, batteries only glanced at; rejected a compact battery panel beside Safety because it blurred that separation |
+| Safety tiles always width 12                   | Consistent tile sizes across tabs; panels wrap instead of stretching tiles                                                       |
 
 ## Entity inventory
 
-Generated from the view files at the time of writing. Regenerate or update it
-when views change.
+Generated from the view and template files at the time of writing. Regenerate
+or update it when views change.
 
 ### Overview (`overview.yaml`)
 
 | Section                     | Span | Name                       | Entities                                                                                                                                                                                                                                                          |
 | --------------------------- | ---- | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Security and Safety (chips) | 2    | Pill                       | `binary_sensor.house_safety_status`                                                                                                                                                                                                                               |
+| Security and Safety (chips) | 2    | Pill row                   | `binary_sensor.house_safety_status`                                                                                                                                                                                                                               |
 | Security and Safety (chips) | 2    | Alarm                      | `alarm_control_panel.ring_control_panel`                                                                                                                                                                                                                          |
 | Security and Safety (chips) | 2    | Front Door                 | `lock.entrance_door_lock`                                                                                                                                                                                                                                         |
 | Security and Safety (chips) | 2    | Smoke                      | `binary_sensor.ass1_smoke_detected`, `binary_sensor.ass2_smoke_detected`, `binary_sensor.ass3_smoke_detected`, `binary_sensor.ass4_smoke_detected`, `binary_sensor.ass5_smoke_detected`, `binary_sensor.ass6_smoke_detected`, `binary_sensor.ass7_smoke_detected` |
 | Security and Safety (chips) | 2    | Water leaks                | `binary_sensor.ffs1_water_alarm_water_leak_detected`, `binary_sensor.ffs2_water_leak_detected`                                                                                                                                                                    |
 | Security and Safety (chips) | 2    | Doors & windows            | `binary_sensor.ring_rcs1`, `binary_sensor.ring_rcs2`, `binary_sensor.ring_rcs3`                                                                                                                                                                                   |
-| Outdoor (forecast)          | 1    | Pill                       | `sun.sun`                                                                                                                                                                                                                                                         |
+| Security and Safety (chips) | 2    | Batteries                  | `sensor.house_battery_status`                                                                                                                                                                                                                                     |
+| Outdoor (forecast)          | 1    | Pill row                   | `sun.sun`                                                                                                                                                                                                                                                         |
 | Outdoor (forecast)          | 1    | Condition                  | `weather.home`                                                                                                                                                                                                                                                    |
 | Outdoor (forecast)          | 1    | Humidity · Pressure · Wind | `weather.home`                                                                                                                                                                                                                                                    |
-| Indoor Climate              | 2    | Living Room                | `sensor.living_room_living_room_temperature_humidity_temperature`, `sensor.living_room_living_room_temperature_humidity_humidity`                                                                                                                                 |
-| Indoor Climate              | 2    | Bedroom                    | `sensor.bedroom_bedroom_temperature_humidity_temperature`, `sensor.bedroom_bedroom_temperature_humidity_humidity`                                                                                                                                                 |
-| Indoor Climate              | 2    | Office                     | `sensor.office_office_temperature_humidity_temperature`, `sensor.office_office_temperature_humidity_humidity`                                                                                                                                                     |
+| Indoor Climate              | 2    | Pill row                   | `sensor.house_ac_status`                                                                                                                                                                                                                                          |
+| Indoor Climate              | 2    | Living Room (+ A/C mode)   | `sensor.living_room_living_room_temperature_humidity_temperature`, `sensor.living_room_living_room_temperature_humidity_humidity`, `climate.living_room_air_conditioner`                                                                                          |
+| Indoor Climate              | 2    | Bedroom (+ A/C mode)       | `sensor.bedroom_bedroom_temperature_humidity_temperature`, `sensor.bedroom_bedroom_temperature_humidity_humidity`, `climate.bedroom_air_conditioner`                                                                                                              |
+| Indoor Climate              | 2    | Office (+ A/C mode)        | `sensor.office_office_temperature_humidity_temperature`, `sensor.office_office_temperature_humidity_humidity`, `climate.office_air_conditioner`                                                                                                                   |
 | Indoor Climate              | 2    | Tea Room                   | `sensor.tea_room_tea_room_temperature_humidity_temperature`, `sensor.tea_room_tea_room_temperature_humidity_humidity`                                                                                                                                             |
-| Indoor Climate              | 2    | Pill                       | `climate.living_room_air_conditioner`                                                                                                                                                                                                                             |
-| Indoor Climate              | 2    | Pill                       | `climate.bedroom_air_conditioner`                                                                                                                                                                                                                                 |
-| Indoor Climate              | 2    | Pill                       | `climate.office_air_conditioner`                                                                                                                                                                                                                                  |
-| Indoor Climate              | 2    | Pill (No AC)               | none                                                                                                                                                                                                                                                              |
+| Weather Station             | 1    | Pill row                   | `sensor.ecowitt_temp1`, `sensor.ecowitt_temp2`                                                                                                                                                                                                                    |
 | Weather Station             | 1    | South                      | `sensor.ecowitt_temp1`, `sensor.ecowitt_humidity1`                                                                                                                                                                                                                |
 | Weather Station             | 1    | North                      | `sensor.ecowitt_temp2`, `sensor.ecowitt_humidity2`                                                                                                                                                                                                                |
-| Weather Station             | 1    | Difference pill            | `sensor.ecowitt_temp1`, `sensor.ecowitt_temp2`                                                                                                                                                                                                                    |
 | Solar and Energy            | 3    | Solar power                | `sensor.pv_power_photovoltaics_fronius_power_flow`                                                                                                                                                                                                                |
 | Solar and Energy            | 3    | Produced today             | `sensor.pv_energy_day_fronius_power_flow`                                                                                                                                                                                                                         |
 | Solar and Energy            | 3    | Exporting to grid          | `sensor.energy_meter_po`                                                                                                                                                                                                                                          |
@@ -772,16 +872,16 @@ when views change.
 | Air Conditioner        | 1    | Living Room  | `climate.living_room_air_conditioner`                             |
 | Climate                | 1    | Temperature  | `sensor.living_room_living_room_temperature_humidity_temperature` |
 | Climate                | 1    | Humidity     | `sensor.living_room_living_room_temperature_humidity_humidity`    |
-| Shutters (chips)       | 3    | Kitchen      | `cover.living_room_kitchen`                                       |
-| Shutters (chips)       | 3    | Garden Door  | `cover.garden_door`                                               |
-| Shutters (chips)       | 3    | TV           | `cover.living_room_tv`                                            |
-| Media System           | 2    | Media System | `switch.living_room_media_system`                                 |
-| Vacuum                 | 1    | Roborock     | `vacuum.tea_room_roborock`                                        |
-| Safety (chips)         | 3    | Pill         | `binary_sensor.living_room_safety_status`                         |
-| Safety (chips)         | 3    | Smoke        | `binary_sensor.ass3_smoke_detected`                               |
-| Safety (chips)         | 3    | Kitchen leak | `binary_sensor.ffs1_water_alarm_water_leak_detected`              |
-| Safety (chips)         | 3    | Motion       | `binary_sensor.living_room_ring_motion_sensor`                    |
-| Safety (chips)         | 3    | Garden door  | `binary_sensor.ring_rcs3`                                         |
+| Devices                | 3    | Media System | `switch.living_room_media_system`                                 |
+| Devices                | 3    | Roborock     | `vacuum.tea_room_roborock`                                        |
+| Shutters (chips)       | 1    | Kitchen      | `cover.living_room_kitchen`                                       |
+| Shutters (chips)       | 1    | Garden Door  | `cover.garden_door`                                               |
+| Shutters (chips)       | 1    | TV           | `cover.living_room_tv`                                            |
+| Safety (chips)         | 2    | Pill row     | `binary_sensor.living_room_safety_status`                         |
+| Safety (chips)         | 2    | Smoke        | `binary_sensor.ass3_smoke_detected`                               |
+| Safety (chips)         | 2    | Kitchen leak | `binary_sensor.ffs1_water_alarm_water_leak_detected`              |
+| Safety (chips)         | 2    | Motion       | `binary_sensor.living_room_ring_motion_sensor`                    |
+| Safety (chips)         | 2    | Garden door  | `binary_sensor.ring_rcs3`                                         |
 | Battery Levels (chips) | 3    | Smoke        | `sensor.ass3_battery`                                             |
 | Battery Levels (chips) | 3    | Climate      | `sensor.living_room_living_room_temperature_humidity_battery`     |
 | Battery Levels (chips) | 3    | Motion       | `sensor.living_room_ring_motion_sensor_battery`                   |
@@ -798,7 +898,7 @@ when views change.
 | Climate                | 1    | Temperature | `sensor.office_office_temperature_humidity_temperature` |
 | Climate                | 1    | Humidity    | `sensor.office_office_temperature_humidity_humidity`    |
 | Shutters (chips)       | 1    | Office      | `cover.office`                                          |
-| Safety (chips)         | 2    | Pill        | `binary_sensor.office_safety_status`                    |
+| Safety (chips)         | 2    | Pill row    | `binary_sensor.office_safety_status`                    |
 | Safety (chips)         | 2    | Smoke       | `binary_sensor.ass1_smoke_detected`                     |
 | Battery Levels (chips) | 3    | Smoke       | `sensor.ass1_battery`                                   |
 | Battery Levels (chips) | 3    | Climate     | `sensor.office_office_temperature_humidity_battery`     |
@@ -811,7 +911,7 @@ when views change.
 | Climate                | 2    | Temperature | `sensor.tea_room_tea_room_temperature_humidity_temperature` |
 | Climate                | 2    | Humidity    | `sensor.tea_room_tea_room_temperature_humidity_humidity`    |
 | Shutters (chips)       | 1    | Tea Room    | `cover.tea_room`                                            |
-| Safety (chips)         | 2    | Pill        | `binary_sensor.tea_room_safety_status`                      |
+| Safety (chips)         | 2    | Pill row    | `binary_sensor.tea_room_safety_status`                      |
 | Safety (chips)         | 2    | Smoke       | `binary_sensor.ass6_smoke_detected`                         |
 | Battery Levels (chips) | 3    | Smoke       | `sensor.ass6_battery`                                       |
 | Battery Levels (chips) | 3    | Climate     | `sensor.tea_room_tea_room_temperature_humidity_battery`     |
@@ -825,7 +925,7 @@ when views change.
 | Climate                | 1    | Temperature | `sensor.bedroom_bedroom_temperature_humidity_temperature` |
 | Climate                | 1    | Humidity    | `sensor.bedroom_bedroom_temperature_humidity_humidity`    |
 | Shutters (chips)       | 1    | Bedroom     | `cover.bedroom`                                           |
-| Safety (chips)         | 2    | Pill        | `binary_sensor.bedroom_safety_status`                     |
+| Safety (chips)         | 2    | Pill row    | `binary_sensor.bedroom_safety_status`                     |
 | Safety (chips)         | 2    | Smoke       | `binary_sensor.ass2_smoke_detected`                       |
 | Battery Levels (chips) | 3    | Smoke       | `sensor.ass2_battery`                                     |
 | Battery Levels (chips) | 3    | Climate     | `sensor.bedroom_bedroom_temperature_humidity_battery`     |
@@ -834,29 +934,29 @@ when views change.
 
 | Section                | Span | Name          | Entities                                            |
 | ---------------------- | ---- | ------------- | --------------------------------------------------- |
-| Lighting               | 2    | Bathroom      | `switch.fds2_2`                                     |
-| Lighting               | 2    | Mirror        | `switch.fds2_1`                                     |
-| Lighting               | 2    | Toilet        | `switch.fs1_1`                                      |
+| Lighting               | 3    | Bathroom      | `switch.fds2_2`                                     |
+| Lighting               | 3    | Mirror        | `switch.fds2_1`                                     |
+| Lighting               | 3    | Toilet        | `switch.fs1_1`                                      |
 | Shutters (chips)       | 1    | Bathroom      | `cover.bathroom`                                    |
-| Safety (chips)         | 3    | Pill          | `binary_sensor.bathrooms_safety_status`             |
-| Safety (chips)         | 3    | Toilet motion | `binary_sensor.fms1_home_security_motion_detection` |
+| Safety (chips)         | 2    | Pill row      | `binary_sensor.bathrooms_safety_status`             |
+| Safety (chips)         | 2    | Toilet motion | `binary_sensor.fms1_home_security_motion_detection` |
 | Battery Levels (chips) | 3    | Toilet motion | `sensor.fms1_battery_level`                         |
 
 ### Hallways (`hallways.yaml`)
 
 | Section                | Span | Name           | Entities                                            |
 | ---------------------- | ---- | -------------- | --------------------------------------------------- |
-| Lighting               | 2    | Hallway        | `switch.fs4_1`                                      |
-| Lighting               | 2    | Hallway 2      | `switch.fds1_2`                                     |
-| Lighting               | 2    | Entrance       | `switch.fs2_1`                                      |
+| Lighting               | 3    | Hallway        | `switch.fs4_1`                                      |
+| Lighting               | 3    | Hallway 2      | `switch.fds1_2`                                     |
+| Lighting               | 3    | Entrance       | `switch.fs2_1`                                      |
 | Front Door             | 1    | Front Door     | `lock.entrance_door_lock`                           |
 | Front Door             | 1    | Keypad chirps  | `switch.alarm_keypad_chirps`                        |
-| Safety (chips)         | 3    | Pill           | `binary_sensor.hallways_safety_status`              |
-| Safety (chips)         | 3    | Hallway smoke  | `binary_sensor.ass7_smoke_detected`                 |
-| Safety (chips)         | 3    | Entrance smoke | `binary_sensor.ass4_smoke_detected`                 |
-| Safety (chips)         | 3    | Front door     | `binary_sensor.ring_rcs1`                           |
-| Safety (chips)         | 3    | Ring motion    | `binary_sensor.ring_rms1`                           |
-| Safety (chips)         | 3    | Fibaro motion  | `binary_sensor.fms2_home_security_motion_detection` |
+| Safety (chips)         | 2    | Pill row       | `binary_sensor.hallways_safety_status`              |
+| Safety (chips)         | 2    | Hallway smoke  | `binary_sensor.ass7_smoke_detected`                 |
+| Safety (chips)         | 2    | Entrance smoke | `binary_sensor.ass4_smoke_detected`                 |
+| Safety (chips)         | 2    | Front door     | `binary_sensor.ring_rcs1`                           |
+| Safety (chips)         | 2    | Ring motion    | `binary_sensor.ring_rms1`                           |
+| Safety (chips)         | 2    | Fibaro motion  | `binary_sensor.fms2_home_security_motion_detection` |
 | Battery Levels (chips) | 3    | Hallway smoke  | `sensor.ass7_battery`                               |
 | Battery Levels (chips) | 3    | Entrance smoke | `sensor.ass4_battery`                               |
 | Battery Levels (chips) | 3    | Front door     | `sensor.ring_rcs1_front_door_battery`               |
@@ -867,27 +967,27 @@ when views change.
 
 ### Garden (`garden.yaml`)
 
-| Section                | Span | Name            | Entities                                           |
-| ---------------------- | ---- | --------------- | -------------------------------------------------- |
-| Lighting               | 1    | Pergola         | `switch.fds4_2`                                    |
-| Weather Station        | 2    | South           | `sensor.ecowitt_temp1`, `sensor.ecowitt_humidity1` |
-| Weather Station        | 2    | North           | `sensor.ecowitt_temp2`, `sensor.ecowitt_humidity2` |
-| Weather Station        | 2    | Difference pill | `sensor.ecowitt_temp1`, `sensor.ecowitt_temp2`     |
-| Battery Levels (chips) | 3    | South sensor    | `binary_sensor.ecowitt_batt1`                      |
-| Battery Levels (chips) | 3    | North sensor    | `binary_sensor.ecowitt_batt2`                      |
+| Section                | Span | Name         | Entities                                           |
+| ---------------------- | ---- | ------------ | -------------------------------------------------- |
+| Lighting               | 1    | Pergola      | `switch.fds4_2`                                    |
+| Weather Station        | 2    | Pill row     | `sensor.ecowitt_temp1`, `sensor.ecowitt_temp2`     |
+| Weather Station        | 2    | South        | `sensor.ecowitt_temp1`, `sensor.ecowitt_humidity1` |
+| Weather Station        | 2    | North        | `sensor.ecowitt_temp2`, `sensor.ecowitt_humidity2` |
+| Battery Levels (chips) | 3    | South sensor | `binary_sensor.ecowitt_batt1`                      |
+| Battery Levels (chips) | 3    | North sensor | `binary_sensor.ecowitt_batt2`                      |
 
 ### Utility (`utility.yaml`)
 
 | Section                | Span | Name           | Entities                                            |
 | ---------------------- | ---- | -------------- | --------------------------------------------------- |
-| Lighting               | 2    | Utility Room   | `switch.fs10_1`                                     |
-| Lighting               | 2    | Storage Room   | `switch.fs3_1`                                      |
+| Lighting               | 3    | Utility Room   | `switch.fs10_1`                                     |
+| Lighting               | 3    | Storage Room   | `switch.fs3_1`                                      |
 | Shutters (chips)       | 1    | Storage Room   | `cover.storage_room`                                |
-| Safety (chips)         | 3    | Pill           | `binary_sensor.utility_safety_status`               |
-| Safety (chips)         | 3    | Smoke          | `binary_sensor.ass5_smoke_detected`                 |
-| Safety (chips)         | 3    | Leak           | `binary_sensor.ffs2_water_leak_detected`            |
-| Safety (chips)         | 3    | Storage motion | `binary_sensor.fms3_home_security_motion_detection` |
-| Safety (chips)         | 3    | Storage window | `binary_sensor.ring_rcs2`                           |
+| Safety (chips)         | 2    | Pill row       | `binary_sensor.utility_safety_status`               |
+| Safety (chips)         | 2    | Smoke          | `binary_sensor.ass5_smoke_detected`                 |
+| Safety (chips)         | 2    | Leak           | `binary_sensor.ffs2_water_leak_detected`            |
+| Safety (chips)         | 2    | Storage motion | `binary_sensor.fms3_home_security_motion_detection` |
+| Safety (chips)         | 2    | Storage window | `binary_sensor.ring_rcs2`                           |
 | Battery Levels (chips) | 3    | Storage motion | `sensor.fms3_battery_level`                         |
 | Battery Levels (chips) | 3    | Storage window | `sensor.ring_rcs2_front_window_battery`             |
 | Battery Levels (chips) | 3    | Leak           | `sensor.ffs2_battery_level`                         |
@@ -905,3 +1005,10 @@ when views change.
 | `binary_sensor.hallways_safety_status`    | `binary_sensor.ass4_smoke_detected`, `binary_sensor.ass7_smoke_detected`                                                                                                                                                                                                                                                                                                                                    | `binary_sensor.ring_rcs1`                                                       |
 | `binary_sensor.utility_safety_status`     | `binary_sensor.ass5_smoke_detected`, `binary_sensor.ffs2_water_leak_detected`                                                                                                                                                                                                                                                                                                                               | `binary_sensor.ring_rcs2`                                                       |
 | `binary_sensor.bathrooms_safety_status`   | `alarm_control_panel.ring_control_panel`, `binary_sensor.fms1_home_security_motion_detection`                                                                                                                                                                                                                                                                                                               | none                                                                            |
+
+### Dashboard status sensors (`template/dashboard_status.yaml`)
+
+| Entity                        | Discovers                                         | Used by                              |
+| ----------------------------- | ------------------------------------------------- | ------------------------------------ |
+| `sensor.house_ac_status`      | All `climate` entities                            | Overview, Indoor climate pill row    |
+| `sensor.house_battery_status` | All battery `sensor` and `binary_sensor` entities | Overview, Security batteries summary |
