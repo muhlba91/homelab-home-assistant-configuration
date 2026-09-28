@@ -29,9 +29,19 @@
           {{ ns.parts | join(' · ') }}
           {%- endif -%}
 
-    # Summary of all batteries (auto-discovered by device class).
+# Summary of all batteries (auto-discovered by device class).
+# Trigger-based on purpose: it reads all sensors and is a sensor itself, so a
+# state-tracking template would re-trigger itself (template loop). Triggers:
+# every 5 minutes, Home Assistant start, and template reload.
+- triggers:
+    - trigger: time_pattern
+      minutes: "/5"
+    - trigger: homeassistant
+      event: start
+    - trigger: event
+      event_type: event_template_reloaded
+  sensor:
     # State: number of low batteries (percentage <= 20, or binary battery sensor on).
-    # Every field computes from live states (never from `this`, which lags one update).
     - unique_id: 4b7e9c13-5a2d-4f86-9e01-c3d8a6f5b2e4
       name: "House: Battery Status"
       default_entity_id: sensor.house_battery_status
