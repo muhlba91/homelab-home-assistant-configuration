@@ -15,10 +15,8 @@ sections:
       - type: heading
         heading: SECURITY & SAFETY
         heading_style: subtitle
-        grid_options:
-          columns: 16
       - type: custom:mushroom-chips-card
-        alignment: end
+        alignment: start
         chips:
           - type: template
             entity: binary_sensor.house_safety_status
@@ -31,7 +29,7 @@ sections:
             tap_action:
               action: more-info
         grid_options:
-          columns: 8
+          columns: full
       - type: tile
         entity: alarm_control_panel.ring_control_panel
         name: Alarm
@@ -53,7 +51,7 @@ sections:
           {% set ids = ['binary_sensor.ass1_smoke_detected', 'binary_sensor.ass2_smoke_detected', 'binary_sensor.ass3_smoke_detected', 'binary_sensor.ass4_smoke_detected', 'binary_sensor.ass5_smoke_detected', 'binary_sensor.ass6_smoke_detected', 'binary_sensor.ass7_smoke_detected'] %}
           {{ 'green' if ids | select('is_state', 'on') | list | count == 0 else 'red' }}
         grid_options:
-          columns: 8
+          columns: 6
       - type: custom:mushroom-template-card
         primary: Water leaks
         secondary: >-
@@ -65,7 +63,7 @@ sections:
           {% set ids = ['binary_sensor.ffs1_water_alarm_water_leak_detected', 'binary_sensor.ffs2_water_leak_detected'] %}
           {{ 'green' if ids | select('is_state', 'on') | list | count == 0 else 'red' }}
         grid_options:
-          columns: 8
+          columns: 6
       - type: custom:mushroom-template-card
         primary: Doors & windows
         secondary: >-
@@ -77,7 +75,17 @@ sections:
           {% set ids = ['binary_sensor.ring_rcs1', 'binary_sensor.ring_rcs2', 'binary_sensor.ring_rcs3'] %}
           {{ 'green' if ids | select('is_state', 'on') | list | count == 0 else 'orange' }}
         grid_options:
-          columns: 8
+          columns: 6
+      - type: custom:mushroom-template-card
+        entity: sensor.house_battery_status
+        primary: Batteries
+        secondary: "{{ state_attr('sensor.house_battery_status', 'summary') }}"
+        icon: "{{ 'mdi:battery-alert' if states('sensor.house_battery_status') | int(0) > 0 else 'mdi:battery' }}"
+        icon_color: "{{ 'orange' if states('sensor.house_battery_status') | int(0) > 0 else 'green' }}"
+        tap_action:
+          action: more-info
+        grid_options:
+          columns: 6
 
   - type: grid
     background:
@@ -87,10 +95,8 @@ sections:
       - type: heading
         heading: OUTDOOR (FORECAST)
         heading_style: subtitle
-        grid_options:
-          columns: 6
       - type: custom:mushroom-chips-card
-        alignment: end
+        alignment: start
         chips:
           - type: template
             entity: sun.sun
@@ -107,7 +113,7 @@ sections:
             tap_action:
               action: more-info
         grid_options:
-          columns: 6
+          columns: full
       - type: custom:mushroom-template-card
         entity: weather.home
         primary: >-
@@ -145,9 +151,25 @@ sections:
       - type: heading
         heading: INDOOR CLIMATE
         heading_style: subtitle
+      - type: custom:mushroom-chips-card
+        alignment: start
+        chips:
+          - type: template
+            entity: sensor.house_ac_status
+            content: "{{ state_attr('sensor.house_ac_status', 'summary') }}"
+            icon: "{{ state_attr('sensor.house_ac_status', 'icon') }}"
+            icon_color: "{{ 'blue' if states('sensor.house_ac_status') | int(0) > 0 else 'grey' }}"
+            tap_action:
+              action: more-info
+        grid_options:
+          columns: full
       - type: custom:modern-circular-gauge
         entity: sensor.living_room_living_room_temperature_humidity_temperature
-        name: Living Room
+        name: >-
+          {%- set m = states('climate.living_room_air_conditioner') -%}
+          {%- set w = {'cool': 'Cooling', 'heat': 'Heating', 'dry': 'Drying',
+          'fan_only': 'Fan only', 'heat_cool': 'Auto', 'auto': 'Auto'} -%}
+          Living Room{{ ' · ' ~ w[m] if m in w else '' }}
         min: 15
         max: 28
         show_icon: false
@@ -167,7 +189,11 @@ sections:
           rows: 3
       - type: custom:modern-circular-gauge
         entity: sensor.bedroom_bedroom_temperature_humidity_temperature
-        name: Bedroom
+        name: >-
+          {%- set m = states('climate.bedroom_air_conditioner') -%}
+          {%- set w = {'cool': 'Cooling', 'heat': 'Heating', 'dry': 'Drying',
+          'fan_only': 'Fan only', 'heat_cool': 'Auto', 'auto': 'Auto'} -%}
+          Bedroom{{ ' · ' ~ w[m] if m in w else '' }}
         min: 15
         max: 28
         show_icon: false
@@ -187,7 +213,11 @@ sections:
           rows: 3
       - type: custom:modern-circular-gauge
         entity: sensor.office_office_temperature_humidity_temperature
-        name: Office
+        name: >-
+          {%- set m = states('climate.office_air_conditioner') -%}
+          {%- set w = {'cool': 'Cooling', 'heat': 'Heating', 'dry': 'Drying',
+          'fan_only': 'Fan only', 'heat_cool': 'Auto', 'auto': 'Auto'} -%}
+          Office{{ ' · ' ~ w[m] if m in w else '' }}
         min: 15
         max: 28
         show_icon: false
@@ -225,51 +255,6 @@ sections:
         grid_options:
           columns: 6
           rows: 3
-      - type: custom:mushroom-chips-card
-        alignment: center
-        chips:
-          - type: template
-            entity: climate.living_room_air_conditioner
-            icon: mdi:air-conditioner
-            icon_color: "{{ 'grey' if is_state('climate.living_room_air_conditioner', 'off') else 'blue' }}"
-            content: "{{ 'AC ' ~ (states('climate.living_room_air_conditioner') | replace('_', ' ') | title) }}"
-            tap_action:
-              action: more-info
-        grid_options:
-          columns: 6
-      - type: custom:mushroom-chips-card
-        alignment: center
-        chips:
-          - type: template
-            entity: climate.bedroom_air_conditioner
-            icon: mdi:air-conditioner
-            icon_color: "{{ 'grey' if is_state('climate.bedroom_air_conditioner', 'off') else 'blue' }}"
-            content: "{{ 'AC ' ~ (states('climate.bedroom_air_conditioner') | replace('_', ' ') | title) }}"
-            tap_action:
-              action: more-info
-        grid_options:
-          columns: 6
-      - type: custom:mushroom-chips-card
-        alignment: center
-        chips:
-          - type: template
-            entity: climate.office_air_conditioner
-            icon: mdi:air-conditioner
-            icon_color: "{{ 'grey' if is_state('climate.office_air_conditioner', 'off') else 'blue' }}"
-            content: "{{ 'AC ' ~ (states('climate.office_air_conditioner') | replace('_', ' ') | title) }}"
-            tap_action:
-              action: more-info
-        grid_options:
-          columns: 6
-      - type: custom:mushroom-chips-card
-        alignment: center
-        chips:
-          - type: template
-            icon: mdi:air-conditioner
-            icon_color: disabled
-            content: No AC
-        grid_options:
-          columns: 6
 
   - type: grid
     background:
@@ -279,6 +264,20 @@ sections:
       - type: heading
         heading: WEATHER STATION
         heading_style: subtitle
+      - type: custom:mushroom-chips-card
+        alignment: start
+        chips:
+          - type: template
+            icon: mdi:thermometer-lines
+            icon_color: grey
+            content: >-
+              {% set s = states('sensor.ecowitt_temp1') %}
+              {% set n = states('sensor.ecowitt_temp2') %}
+              {% if not (s | is_number and n | is_number) %}Sensors unavailable
+              {% elif s | float >= n | float %}South +{{ (s | float - n | float) | round(1) }} °C
+              {% else %}North +{{ (n | float - s | float) | round(1) }} °C{% endif %}
+        grid_options:
+          columns: full
       - type: custom:modern-circular-gauge
         entity: sensor.ecowitt_temp1
         name: South
@@ -319,20 +318,6 @@ sections:
         grid_options:
           columns: 6
           rows: 3
-      - type: custom:mushroom-chips-card
-        alignment: center
-        chips:
-          - type: template
-            icon: mdi:thermometer-lines
-            icon_color: grey
-            content: >-
-              {% set s = states('sensor.ecowitt_temp1') %}
-              {% set n = states('sensor.ecowitt_temp2') %}
-              {% if not (s | is_number and n | is_number) %}Sensors unavailable
-              {% elif s | float >= n | float %}South +{{ (s | float - n | float) | round(1) }} °C
-              {% else %}North +{{ (n | float - s | float) | round(1) }} °C{% endif %}
-        grid_options:
-          columns: full
 
   - type: grid
     background:

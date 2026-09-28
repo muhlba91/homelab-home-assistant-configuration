@@ -1,0 +1,56 @@
+---
+- sensor:
+    # Summary of all air conditioners (auto-discovered: every climate entity).
+    # State: number of running units. Attributes feed the Overview pill.
+    - unique_id: 8d2f4a61-3c7e-4b95-a0d8-6e1f9b2c4a71
+      name: "House: AC Status"
+      default_entity_id: sensor.house_ac_status
+      state: >-
+        {{ states.climate | rejectattr('state', 'in', ['off', 'unavailable', 'unknown']) | list | count }}
+      icon: >-
+        {%- set running = states.climate | rejectattr('state', 'in', ['off', 'unavailable', 'unknown'])
+        | map(attribute='state') | list -%}
+        {%- if running | count == 0 -%}mdi:air-conditioner
+        {%- elif running | reject('eq', 'cool') | list | count == 0 -%}mdi:snowflake
+        {%- elif running | reject('eq', 'heat') | list | count == 0 -%}mdi:fire
+        {%- else -%}mdi:air-conditioner{%- endif -%}
+      attributes:
+        summary: >-
+          {%- set words = {'cool': 'cooling', 'heat': 'heating', 'dry': 'drying', 'fan_only': 'fan only', 'auto': 'auto'} -%}
+          {%- set running = states.climate | rejectattr('state', 'in', ['off', 'unavailable', 'unknown'])
+          | map(attribute='state') | map('replace', 'heat_cool', 'auto') | list -%}
+          {%- if running | count == 0 -%}All AC off
+          {%- else -%}
+          {%- set ns = namespace(parts=[]) -%}
+          {%- for mode in ['cool', 'heat', 'dry', 'fan_only', 'auto'] -%}
+          {%- set n = running | select('eq', mode) | list | count -%}
+          {%- if n > 0 -%}{%- set ns.parts = ns.parts + [n ~ ' ' ~ words[mode]] -%}{%- endif -%}
+          {%- endfor -%}
+          {{ ns.parts | join(' · ') }}
+          {%- endif -%}
+
+    # Summary of all batteries (auto-discovered by device class).
+    # State: number of low batteries (percentage <= 20, or binary battery sensor on).
+    # Every field computes from live states (never from `this`, which lags one update).
+    - unique_id: 4b7e9c13-5a2d-4f86-9e01-c3d8a6f5b2e4
+      name: "House: Battery Status"
+      default_entity_id: sensor.house_battery_status
+      state: >-
+        {%- set pct = states.sensor | selectattr('attributes.device_class', 'defined')
+        | selectattr('attributes.device_class', 'eq', 'battery')
+        | rejectattr('state', 'in', ['unavailable', 'unknown']) | map(attribute='state') | map('float', 100) | list -%}
+        {%- set bin = states.binary_sensor | selectattr('attributes.device_class', 'defined')
+        | selectattr('attributes.device_class', 'eq', 'battery') | selectattr('state', 'eq', 'on') | list -%}
+        {{ (pct | select('le', 20) | list | count) + (bin | count) }}
+      attributes:
+        summary: >-
+          {%- set pct_all = states.sensor | selectattr('attributes.device_class', 'defined')
+          | selectattr('attributes.device_class', 'eq', 'battery')
+          | rejectattr('state', 'in', ['unavailable', 'unknown']) | list -%}
+          {%- set bin_all = states.binary_sensor | selectattr('attributes.device_class', 'defined')
+          | selectattr('attributes.device_class', 'eq', 'battery')
+          | rejectattr('state', 'in', ['unavailable', 'unknown']) | list -%}
+          {%- set low = (pct_all | map(attribute='state') | map('float', 100) | select('le', 20) | list | count)
+          + (bin_all | selectattr('state', 'eq', 'on') | list | count) -%}
+          {%- set total = (pct_all | count) + (bin_all | count) -%}
+          {{ 'All OK (' ~ total ~ ')' if low == 0 else low ~ ' low' }}

@@ -126,10 +126,10 @@ sections:
   - type: grid
     background:
       opacity: 100
-    column_span: 2
+    column_span: 1
     cards:
       - type: heading
-        heading: MEDIA SYSTEM
+        heading: DEVICES
         heading_style: subtitle
       - type: tile
         entity: switch.living_room_media_system
@@ -141,15 +141,6 @@ sections:
           - type: toggle
         grid_options:
           columns: full
-
-  - type: grid
-    background:
-      opacity: 100
-    column_span: 1
-    cards:
-      - type: heading
-        heading: VACUUM
-        heading_style: subtitle
       - type: tile
         entity: vacuum.tea_room_roborock
         name: Roborock
@@ -166,15 +157,13 @@ sections:
     theme: family_dashboard_chips
     background:
       opacity: 100
-    column_span: 3
+    column_span: 2
     cards:
       - type: heading
         heading: SAFETY
         heading_style: subtitle
-        grid_options:
-          columns: 27
       - type: custom:mushroom-chips-card
-        alignment: end
+        alignment: start
         chips:
           - type: template
             entity: binary_sensor.living_room_safety_status
@@ -187,27 +176,27 @@ sections:
             tap_action:
               action: more-info
         grid_options:
-          columns: 9
+          columns: full
       - type: tile
         entity: binary_sensor.ass3_smoke_detected
         name: Smoke
         grid_options:
-          columns: 9
+          columns: 6
       - type: tile
         entity: binary_sensor.ffs1_water_alarm_water_leak_detected
         name: Kitchen leak
         grid_options:
-          columns: 9
+          columns: 6
       - type: tile
         entity: binary_sensor.living_room_ring_motion_sensor
         name: Motion
         grid_options:
-          columns: 9
+          columns: 6
       - type: tile
         entity: binary_sensor.ring_rcs3
         name: Garden door
         grid_options:
-          columns: 9
+          columns: 6
 
   - type: grid
     theme: family_dashboard_chips
