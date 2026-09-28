@@ -104,10 +104,8 @@ sections:
       - type: heading
         heading: SAFETY
         heading_style: subtitle
-        grid_options:
-          columns: 16
       - type: custom:mushroom-chips-card
-        alignment: end
+        alignment: start
         chips:
           - type: template
             entity: binary_sensor.office_safety_status
@@ -120,7 +118,7 @@ sections:
             tap_action:
               action: more-info
         grid_options:
-          columns: 8
+          columns: full
       - type: tile
         entity: binary_sensor.ass1_smoke_detected
         name: Smoke

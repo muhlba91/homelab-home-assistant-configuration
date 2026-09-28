@@ -9,7 +9,7 @@ sections:
   - type: grid
     background:
       opacity: 100
-    column_span: 2
+    column_span: 3
     cards:
       - type: heading
         heading: LIGHTING
@@ -23,7 +23,7 @@ sections:
         features:
           - type: toggle
         grid_options:
-          columns: full
+          columns: 12
       - type: tile
         entity: switch.fds1_2
         name: Hallway 2
@@ -33,7 +33,7 @@ sections:
         features:
           - type: toggle
         grid_options:
-          columns: full
+          columns: 12
       - type: tile
         entity: switch.fs2_1
         name: Entrance
@@ -43,7 +43,7 @@ sections:
         features:
           - type: toggle
         grid_options:
-          columns: full
+          columns: 12
 
   - type: grid
     background:
@@ -76,15 +76,13 @@ sections:
     theme: family_dashboard_chips
     background:
       opacity: 100
-    column_span: 3
+    column_span: 2
     cards:
       - type: heading
         heading: SAFETY
         heading_style: subtitle
-        grid_options:
-          columns: 27
       - type: custom:mushroom-chips-card
-        alignment: end
+        alignment: start
         chips:
           - type: template
             entity: binary_sensor.hallways_safety_status
@@ -97,32 +95,32 @@ sections:
             tap_action:
               action: more-info
         grid_options:
-          columns: 9
+          columns: full
       - type: tile
         entity: binary_sensor.ass7_smoke_detected
         name: Hallway smoke
         grid_options:
-          columns: 9
+          columns: 12
       - type: tile
         entity: binary_sensor.ass4_smoke_detected
         name: Entrance smoke
         grid_options:
-          columns: 9
+          columns: 12
       - type: tile
         entity: binary_sensor.ring_rcs1
         name: Front door
         grid_options:
-          columns: 9
+          columns: 12
       - type: tile
         entity: binary_sensor.ring_rms1
         name: Ring motion
         grid_options:
-          columns: 9
+          columns: 12
       - type: tile
         entity: binary_sensor.fms2_home_security_motion_detection
         name: Fibaro motion
         grid_options:
-          columns: 9
+          columns: 12
 
   - type: grid
     theme: family_dashboard_chips
