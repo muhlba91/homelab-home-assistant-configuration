@@ -33,6 +33,20 @@ sections:
       - type: heading
         heading: WEATHER STATION
         heading_style: subtitle
+      - type: custom:mushroom-chips-card
+        alignment: start
+        chips:
+          - type: template
+            icon: mdi:thermometer-lines
+            icon_color: grey
+            content: >-
+              {% set s = states('sensor.ecowitt_temp1') %}
+              {% set n = states('sensor.ecowitt_temp2') %}
+              {% if not (s | is_number and n | is_number) %}Sensors unavailable
+              {% elif s | float >= n | float %}South +{{ (s | float - n | float) | round(1) }} °C
+              {% else %}North +{{ (n | float - s | float) | round(1) }} °C{% endif %}
+        grid_options:
+          columns: full
       - type: custom:modern-circular-gauge
         entity: sensor.ecowitt_temp1
         name: South
@@ -73,20 +87,55 @@ sections:
         grid_options:
           columns: 12
           rows: 3
+
+  - type: grid
+    theme: family_dashboard_chips
+    background:
+      opacity: 100
+    column_span: 1
+    cards:
+      - type: heading
+        heading: SHUTTERS
+        heading_style: subtitle
+      - type: tile
+        entity: cover.garden_door
+        name: Garden Door
+        color: blue
+        features_position: inline
+        features:
+          - type: cover-open-close
+        grid_options:
+          columns: 12
+
+  - type: grid
+    theme: family_dashboard_chips
+    background:
+      opacity: 100
+    column_span: 2
+    cards:
+      - type: heading
+        heading: SAFETY
+        heading_style: subtitle
       - type: custom:mushroom-chips-card
-        alignment: center
+        alignment: start
         chips:
           - type: template
-            icon: mdi:thermometer-lines
-            icon_color: grey
-            content: >-
-              {% set s = states('sensor.ecowitt_temp1') %}
-              {% set n = states('sensor.ecowitt_temp2') %}
-              {% if not (s | is_number and n | is_number) %}Sensors unavailable
-              {% elif s | float >= n | float %}South +{{ (s | float - n | float) | round(1) }} °C
-              {% else %}North +{{ (n | float - s | float) | round(1) }} °C{% endif %}
+            entity: binary_sensor.garden_safety_status
+            content: "{{ state_attr('binary_sensor.garden_safety_status', 'summary') }}"
+            icon: "{{ state_attr('binary_sensor.garden_safety_status', 'icon') }}"
+            icon_color: >-
+              {% if is_state('binary_sensor.garden_safety_status', 'on') %}red
+              {% elif state_attr('binary_sensor.garden_safety_status', 'summary') != 'All clear' %}orange
+              {% else %}green{% endif %}
+            tap_action:
+              action: more-info
         grid_options:
           columns: full
+      - type: tile
+        entity: binary_sensor.ring_rcs3
+        name: Garden door
+        grid_options:
+          columns: 12
 
   - type: grid
     theme: family_dashboard_chips
@@ -105,5 +154,10 @@ sections:
       - type: tile
         entity: binary_sensor.ecowitt_batt2
         name: North sensor
+        grid_options:
+          columns: 6
+      - type: tile
+        entity: sensor.ring_rcs3_garden_door_battery
+        name: Garden door
         grid_options:
           columns: 6

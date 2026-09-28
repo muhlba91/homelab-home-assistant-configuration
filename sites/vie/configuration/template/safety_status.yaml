@@ -124,3 +124,16 @@
           {% if is_state('binary_sensor.fms1_home_security_motion_detection', 'on')
           and is_state('alarm_control_panel.ring_control_panel', 'armed_away') %}Motion while armed
           {% else %}All clear{% endif %}
+    - unique_id: 9a404b8c-f781-437e-bffd-3ed55b658200
+      name: "Garden: Safety Status"
+      default_entity_id: binary_sensor.garden_safety_status
+      device_class: safety
+      state: >-
+        {{ false }}
+      icon: >-
+        {% if is_state('binary_sensor.ring_rcs3', 'on') %}mdi:door-open
+        {% else %}mdi:shield-check{% endif %}
+      attributes:
+        summary: >-
+          {% if is_state('binary_sensor.ring_rcs3', 'on') %}Garden door open
+          {% else %}All clear{% endif %}

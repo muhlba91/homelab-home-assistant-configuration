@@ -232,8 +232,8 @@ Every room tab follows the same shape, so the same things sit in the same
 places in every tab:
 
 1. **Row 1**: **Lighting**, then **Air conditioner**, then **Climate** where
-   present. Rooms without either use a full-width Lighting row with the lights
-   side by side.
+   present (Garden: **Weather station**). Rooms without either use a
+   full-width Lighting row with the lights side by side.
 2. Extra controls, only where they exist: **Devices** (Living Room: media
    system and vacuum) as a full-width row.
 3. **The slot row**: **Shutters** (left, span 1) and **Safety** (right,
@@ -254,7 +254,7 @@ Row layout per room (numbers are `column_span` values):
 | Living Room        | Lighting 1, A/C 1, Climate 1  | Devices 3              | Shutters 1 (three stacked), Safety 2 | Battery 3 |
 | Bathrooms, Utility | Lighting 3                    | Shutters 1, Safety 2   | Battery 3                            |           |
 | Hallways           | Lighting 3                    | Front door 1, Safety 2 | Battery 3                            |           |
-| Garden             | Lighting 1, Weather station 2 | Battery 3              |                                      |           |
+| Garden             | Lighting 1, Weather station 2 | Shutters 1, Safety 2   | Battery 3                            |           |
 
 Panels end where their content ends; Home Assistant does not stretch panels
 in a row to equal height.
@@ -615,8 +615,16 @@ panel's `triggered` state as an alarm, and all door and window contacts as
 attention items, with counts in the text (`2 door/window open`).
 
 Current sensors: `house`, `living_room`, `office`, `tea_room`, `bedroom`,
-`bathrooms`, `hallways`, `utility`. Garden has none on purpose: it has no
-safety sensors, and an always-green pill would be decoration.
+`bathrooms`, `hallways`, `utility`, `garden`. Every room tab has one, so every
+Safety section carries a status pill.
+
+A sensor with only attention items and no alarms (Garden: the garden door)
+uses `state: "{{ false }}"`: it never turns red, only orange through its
+`summary`.
+
+An entity may appear in more than one tab when it physically belongs to both.
+The garden door (shutter, contact and battery) is shown in the Living Room and
+in the Garden; each room's safety sensor lists it.
 
 ## Dashboard status sensors
 
@@ -829,6 +837,7 @@ Before committing:
 | Living Room devices above the slot row         | Controls first, status last; every tab ends with Shutters and Safety, then Batteries                                             |
 | Batteries always their own full-width last row | Safety is acted on, batteries only glanced at; rejected a compact battery panel beside Safety because it blurred that separation |
 | Safety tiles always width 12                   | Consistent tile sizes across tabs; panels wrap instead of stretching tiles                                                       |
+| Garden door shown in Garden and Living Room    | The door belongs to both spaces; the Garden tab now follows the same slot row as every room                                      |
 
 ## Entity inventory
 
@@ -973,8 +982,12 @@ or update it when views change.
 | Weather Station        | 2    | Pill row     | `sensor.ecowitt_temp1`, `sensor.ecowitt_temp2`     |
 | Weather Station        | 2    | South        | `sensor.ecowitt_temp1`, `sensor.ecowitt_humidity1` |
 | Weather Station        | 2    | North        | `sensor.ecowitt_temp2`, `sensor.ecowitt_humidity2` |
+| Shutters (chips)       | 1    | Garden Door  | `cover.garden_door`                                |
+| Safety (chips)         | 2    | Pill row     | `binary_sensor.garden_safety_status`               |
+| Safety (chips)         | 2    | Garden door  | `binary_sensor.ring_rcs3`                          |
 | Battery Levels (chips) | 3    | South sensor | `binary_sensor.ecowitt_batt1`                      |
 | Battery Levels (chips) | 3    | North sensor | `binary_sensor.ecowitt_batt2`                      |
+| Battery Levels (chips) | 3    | Garden door  | `sensor.ring_rcs3_garden_door_battery`             |
 
 ### Utility (`utility.yaml`)
 
@@ -1005,6 +1018,7 @@ or update it when views change.
 | `binary_sensor.hallways_safety_status`    | `binary_sensor.ass4_smoke_detected`, `binary_sensor.ass7_smoke_detected`                                                                                                                                                                                                                                                                                                                                    | `binary_sensor.ring_rcs1`                                                       |
 | `binary_sensor.utility_safety_status`     | `binary_sensor.ass5_smoke_detected`, `binary_sensor.ffs2_water_leak_detected`                                                                                                                                                                                                                                                                                                                               | `binary_sensor.ring_rcs2`                                                       |
 | `binary_sensor.bathrooms_safety_status`   | `alarm_control_panel.ring_control_panel`, `binary_sensor.fms1_home_security_motion_detection`                                                                                                                                                                                                                                                                                                               | none                                                                            |
+| `binary_sensor.garden_safety_status`      | none                                                                                                                                                                                                                                                                                                                                                                                                        | `binary_sensor.ring_rcs3`                                                       |
 
 ### Dashboard status sensors (`template/dashboard_status.yaml`)
 
