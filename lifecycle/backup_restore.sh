@@ -18,6 +18,12 @@ function data_exists() {
 function backup() {
   echo "[backup_restore] backing up..."
 
+  # sync --delete-removed would mirror an empty or damaged .storage to S3 and delete the backup;
+  if [ ! -s "${DATA_PATH}/.storage/core.config_entries" ]; then
+    echo "[backup_restore] WARNING: ${DATA_PATH}/.storage/core.config_entries is missing or empty — skipping backup to keep the one in S3."
+    return 0
+  fi
+
   echo "[backup_restore] uploading storage..."
   local s3ignore
   s3ignore="$(dirname "${BASH_SOURCE[0]}")/../.s3ignore"
