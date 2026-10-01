@@ -361,9 +361,10 @@ pyrightconfig.json
 [Ll]ib
 [Ll]ib64
 [Ll]ocal
-[Ss]cripts
+Scripts
 pyvenv.cfg
 pip-selfcheck.json
+!scripts/
 
 ### VisualStudioCode ###
 .vscode/*
@@ -394,3 +395,4 @@ tmp_state/
 share/
 .python-version
 !cover/
+entities.json

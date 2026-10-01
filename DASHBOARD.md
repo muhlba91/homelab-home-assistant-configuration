@@ -11,6 +11,7 @@ plain, hand-editable YAML that follows the patterns described below.
 ## Contents
 
 - [Goals and principles](#goals-and-principles)
+- [Working on this dashboard](#working-on-this-dashboard)
 - [Files and loading](#files-and-loading)
 - [Dependencies](#dependencies)
 - [Design system](#design-system)
@@ -19,12 +20,15 @@ plain, hand-editable YAML that follows the patterns described below.
 - [Views](#views)
 - [Safety status sensors](#safety-status-sensors)
 - [Dashboard status sensors](#dashboard-status-sensors)
+- [Energy sensors](#energy-sensors)
 - [Selecting entities from an entity list](#selecting-entities-from-an-entity-list)
 - [Recipes](#recipes)
 - [Hard-coded entity lists](#hard-coded-entity-lists)
 - [Deploying and reloading](#deploying-and-reloading)
 - [Validation checklist](#validation-checklist)
+- [Known pitfalls](#known-pitfalls)
 - [Decision log](#decision-log)
+- [Open topics](#open-topics)
 - [Entity inventory](#entity-inventory)
 
 ## Goals and principles
@@ -44,6 +48,56 @@ plain, hand-editable YAML that follows the patterns described below.
   [Safety status sensors](#safety-status-sensors)), not dashboard templating.
   Automations and notifications can reuse it.
 
+## Working on this dashboard
+
+This section is for anyone continuing the work: a person, a fresh chat with an
+AI assistant, or an agent such as Claude Code. Together with the repository,
+this file is meant to be enough context; nothing else is required.
+
+### Inputs to ask for
+
+| Input                    | Why                                          | How to get it                                                                                                                                                                                             |
+| ------------------------ | -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Entity list              | Entity IDs change; never guess them          | In Home Assistant, Developer Tools, Template: `{{ states \| map(attribute='entity_id') \| list \| to_json }}`. Save the output as `entities.json` (disabled entities are not included, which is intended) |
+| Screenshots              | Layout problems only show on real screens    | Desktop and phone, light and dark, of the tabs that changed                                                                                                                                               |
+| Home Assistant version   | Options and defaults change between releases | Settings, About                                                                                                                                                                                           |
+| Design canvas (optional) | Earlier drafts and the rules card            | `https://claude.ai/artifact/3KUkasKywFM6q8rLmuCige`, readable from the owner's Claude account                                                                                                             |
+
+### Working agreements
+
+- **Native first.** Prefer built-in cards and features. Add a custom card only
+  when nothing native can do the job, and check that it is actively
+  maintained. No `card-mod`, no custom CSS.
+- **Discuss, then sketch, then implement.** For design changes, present
+  options with pros and cons, then sketch them (desktop 1280 px and phone
+  390 px; light and dark when colours change) before touching the YAML.
+- **Measure instead of guessing.** Check contrast ratios, sizes and text
+  lengths with numbers; verify options in the current Home Assistant and card
+  documentation rather than from memory (for example, `lovelace: mode: yaml`
+  was removed in 2026.8).
+- **Consistency over filling space.** The same element sits in the same place
+  and has the same size in every tab; an empty area is better than a tab that
+  looks different.
+- **Logic in the backend.** Anything combining several entities is a template
+  sensor; the dashboard only displays it.
+- **Validate before delivering**, then deliver complete files with a list of
+  what changed and which reload or restart is needed (see
+  [Deploying and reloading](#deploying-and-reloading)).
+- **Keep this file current** in the same change: rules, decision log, open
+  topics and the generated inventory.
+
+### Tools in the repository
+
+| Command                                                          | Purpose                                                                                                                                 |
+| ---------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `python3 scripts/validate_dashboard.py --entities entities.json` | Checks every layout rule in this file, template safety (unique IDs, template loops, `this`), Jinja syntax, and that every entity exists |
+| `python3 scripts/dashboard_inventory.py`                         | Regenerates the [Entity inventory](#entity-inventory) and aligns all tables in this file                                                |
+| `yamllint -c .yamllint.yml .`                                    | YAML style, as used by the repository's CI                                                                                              |
+| `markdownlint -c .markdownlint.yaml DASHBOARD.md`                | This file's style, including aligned tables                                                                                             |
+
+Both scripts need PyYAML; the validator also compiles templates when Jinja2
+is installed.
+
 ## Files and loading
 
 | Path                                                     | Purpose                                                                                              |
@@ -57,6 +111,8 @@ plain, hand-editable YAML that follows the patterns described below.
 | `sites/vie/configuration/template/dashboard_status.yaml` | Template sensors behind the A/C and battery summaries                                                |
 | `sites/vie/configuration/packages/energy.yaml`           | Daily utility meters behind the Solar & Energy panel                                                 |
 | `sites/vie/configuration/template/energy.yaml`           | Own-use and produced-today template sensors                                                          |
+| `scripts/validate_dashboard.py`                          | Checks the layout rules, templates and entity IDs                                                    |
+| `scripts/dashboard_inventory.py`                         | Regenerates the entity inventory in this file                                                        |
 
 `common/` and `sites/vie/` are merged into one Home Assistant configuration
 directory at deploy time by `lifecycle/configuration.sh`.
@@ -536,7 +592,7 @@ worst case with three units is 34 characters and always fits a phone.
                 content: " "
               - type: custom:modern-circular-gauge
                 entity: sensor.pv_power_photovoltaics_fronius_power_flow
-                name: Solar power
+                name: Solar
                 min: 0
                 max: 5000
                 show_icon: false
@@ -562,11 +618,15 @@ Why it is built like this:
 - **One stacked card per half** keeps each block together: on phones the
   whole Now block comes before the whole Today block. Separate cards in the
   section grid would interleave on phones.
-- **The gauge sits between two empty Markdown cards.** The gauge sizes itself
-  by width and has no size option; inside a stack nothing limits it, so on its
-  own it would fill the whole half. A horizontal stack splits its width
-  equally, so the gauge gets one third. The empty cards are invisible because
-  cards have no border and the panel's background.
+- **The gauge sits between two empty Markdown cards**, one on each side. The
+  gauge sizes itself by width and has no size option; inside a stack nothing
+  limits it, so on its own it would fill the whole half. A horizontal stack
+  splits its width equally, so the gauge gets one third. One fifth was tried
+  and rejected: the gauges became too small on phones and their names were
+  cut off. The empty cards are invisible because cards have no border and the
+  panel's background.
+- **Gauge names are short** ("Solar", "Produced"): the NOW and TODAY headings
+  already carry the time range, and longer names get cut off on phones.
 - **Vertical tiles** fit three items side by side, even on phones. Keep tile
   names short ("Own use", not "Used at home"): on phones each tile is about
   115 px wide.
@@ -722,14 +782,16 @@ repository's layout:
 - `sites/vie/configuration/template/energy.yaml`: the three derived template
   sensors, next to all other template entities.
 
-| Entity                        | What                     | Source                                             |
-| ----------------------------- | ------------------------ | -------------------------------------------------- |
-| `sensor.solar_energy_today`   | Daily utility meter, Wh  | `sensor.pv_inverter_energy_total_fronius_inverter` |
-| `sensor.grid_import_today`    | Daily utility meter, kWh | `sensor.energy_meter_tpi`                          |
-| `sensor.grid_export_today`    | Daily utility meter, kWh | `sensor.energy_meter_tpo`                          |
-| `sensor.solar_produced_today` | Produced today in kWh    | `sensor.solar_energy_today` / 1000                 |
-| `sensor.solar_own_use_power`  | Own use now, W           | solar power − export power, never below 0          |
-| `sensor.solar_own_use_today`  | Own use today, kWh       | produced today − exported today, never below 0     |
+| Entity                        | What                            | Source                                             |
+| ----------------------------- | ------------------------------- | -------------------------------------------------- |
+| `sensor.solar_energy_today`   | Daily utility meter, Wh         | `sensor.pv_inverter_energy_total_fronius_inverter` |
+| `sensor.grid_import_today`    | Daily utility meter, kWh        | `sensor.energy_meter_tpi`                          |
+| `sensor.grid_export_today`    | Daily utility meter, kWh        | `sensor.energy_meter_tpo`                          |
+| `sensor.grid_exported_today`  | Exported today for display, kWh | `sensor.grid_export_today` (unknown counts as 0)   |
+| `sensor.grid_imported_today`  | Imported today for display, kWh | `sensor.grid_import_today` (unknown counts as 0)   |
+| `sensor.solar_produced_today` | Produced today in kWh           | `sensor.solar_energy_today` / 1000                 |
+| `sensor.solar_own_use_power`  | Own use now, W                  | solar power − export power, never below 0          |
+| `sensor.solar_own_use_today`  | Own use today, kWh              | produced today − exported today, never below 0     |
 
 Rules:
 
@@ -742,8 +804,17 @@ Rules:
 - "Own use" is the solar energy consumed in the house (*Eigenverbrauch*). The
   house's total consumption is own use plus import.
 - The Today gauge's maximum is 35 kWh, a long summer day for 5 kWp.
-- The utility meters start counting when they are created, so the first day
-  after deploying is incomplete.
+- **Values survive restarts.** Utility meters restore their state and keep
+  counting; a reset missed while Home Assistant was down is caught up at
+  start. They only start from zero when first created or when their
+  `unique_id` changes, so never change these IDs.
+- **Missing values:** `unknown` means nothing has been counted yet and is shown
+  as 0; `unavailable` means a fault and stays unavailable, so a broken meter is
+  never hidden behind a 0. The dashboard reads the display sensors, never the
+  raw meters.
+- **First deploy:** new meters count only from that moment. To fill in the
+  current day once, run `utility_meter.calibrate` on each meter with the
+  Energy dashboard's values (`sensor.solar_energy_today` is in Wh).
 
 ## Selecting entities from an entity list
 
@@ -896,50 +967,89 @@ registration breaks every dashboard.
 
 Before committing:
 
-1. `yamllint -c .yamllint.yml .` passes.
-2. Every entity ID in views and templates exists in a current entity export
-   and is not disabled.
-3. Every view: first card of each section is a `heading` in capitals with
-   `heading_style: subtitle`; a status pill row, if any, is the second card;
-   Battery levels is the last section.
-4. No card uses width `8` or `9` (see [Width rule](#width-rule)).
-5. No hex colours in view files (`grep -rn "#[0-9a-fA-F]\{6\}" views/` finds
-   nothing).
-6. All `unique_id` values in `template/` are unique; existing ones unchanged.
-7. Every safety `summary` falls back to exactly `All clear`.
-8. `markdownlint -c .markdownlint.yaml DASHBOARD.md` passes after editing this
-   document.
+1. `python3 scripts/validate_dashboard.py --entities entities.json` reports no
+   errors. It covers the layout rules (headings, pill rows, widths, slot rule,
+   battery row), template safety (unique IDs, template loops, `this`, the
+   "All clear" fallback), Jinja syntax, hex colours in views, and entity IDs.
+2. `yamllint -c .yamllint.yml .` passes.
+3. Templates with new logic are tested with realistic states, including
+   `unknown` and `unavailable`.
+4. `python3 scripts/dashboard_inventory.py` has regenerated the inventory, and
+   `markdownlint -c .markdownlint.yaml DASHBOARD.md` passes.
+5. Screenshots of the changed tabs (desktop and phone; light and dark when
+   colours changed) look as designed.
+
+## Known pitfalls
+
+Each of these happened during development. Check here first when something
+looks wrong.
+
+| Symptom                                                            | Cause                                                                          | Fix                                                                    |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------- |
+| No dashboard loads at all, not even the default                    | A custom card registers a frontend element twice (`vacuum-card`)               | Remove it from `extra_module_url.yaml`; add custom cards one at a time |
+| New template entities never appear                                 | `template:` included with `!include_dir_merge_named`, which ignores list files | Use `!include_dir_merge_list`                                          |
+| `lovelace: mode: yaml` has no effect                               | Removed in Home Assistant 2026.8                                               | Register the dashboard under `dashboards:` with the key `lovelace`     |
+| Dashboard edits do not show                                        | Included view files are cached, or an old copy is deployed                     | Dashboard menu, Refresh; compare checksums of the deployed files       |
+| Cards scattered in odd positions                                   | Masonry view reorders by height                                                | Use `type: sections`                                                   |
+| "Template loop detected" in the log, state and attributes disagree | A template sensor iterates its own domain (`states.sensor`)                    | Make it trigger-based                                                  |
+| A value lags one update behind                                     | Template reads `this`                                                          | Compute every field from live states                                   |
+| Pills float or rows look ragged on phones                          | Widths below 12 keep their size on the phone's 12-unit grid                    | Use only 6, 12 or `full`                                               |
+| Info under rings detaches from its ring on phones                  | Grid order pairs cards by position, which changes when wrapping                | Put the info into the ring (templated `name`) or into one stacked card |
+| Gauge huge inside a stack                                          | The gauge sizes itself by width                                                | Put it between invisible spacer cards                                  |
+| Pill background invisible                                          | Chip background equals card background                                         | Set `mush-chip-background` in the theme                                |
+| Panels blend into the page                                         | Section background equals page background                                      | Set `ha-section-background-color`                                      |
+| Heading badge cannot show three states                             | Badges have no templates or visibility                                         | Use a Mushroom template chip in a pill row                             |
+| Sankey shows only one branch                                       | `remaining_parent_state` misbehaves                                            | Give the node explicit `add_entities` and `subtract_entities`          |
+| Today values `unknown` after deploying                             | New utility meters have no reading yet                                         | Display sensors treat unknown as 0; `utility_meter.calibrate` once     |
+| Daily solar value lost at night                                    | The inverter's day counter is unavailable while it sleeps                      | Use a daily utility meter on the inverter's total                      |
+| `as_timestamp got invalid input 'None'`                            | A sun attribute is missing at startup                                          | Pass a default: `as_timestamp(value, none)`                            |
+| Coloured text hard to read                                         | Palette colours on the pill background stay below 4.5:1                        | Keep text neutral; colour only icons                                   |
 
 ## Decision log
 
-| Decision                                       | Reason                                                                                                                           |
-| ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| `sections` views instead of masonry            | Masonry reorders cards by height; sections keep the designed order                                                               |
-| Native `tile` cards                            | Consistent shape, real toggles and cover controls                                                                                |
-| Flat rows and chip sections via two themes     | Native way to group items without custom CSS                                                                                     |
-| No shadows on section panels                   | Needs `card-mod` targeting frontend internals, which breaks on updates; depth comes from surface contrast                        |
-| Status pill on its own row under the heading   | Correct on phones and keeps all headings aligned on desktop; replaced pills sharing the heading row                              |
-| Status logic in template sensors               | Reusable in automations; the dashboard stays declarative                                                                         |
-| Gauge icons hidden                             | The gauge offers no palette-safe icon colour; the mockups had no icon                                                            |
-| A/C shown as ring label plus summary pill      | Pills under rings detached from their rings on phones; the label is part of the ring, the pill carries counts per mode           |
-| Camera removed from Living Room                | Too dominant for its value                                                                                                       |
-| `vacuum-card` not loaded                       | Breaks the whole frontend (duplicate `ha-icon-button`)                                                                           |
-| Shutter position and tilt only in the dialog   | Keeps rows compact; sliders are rarely needed                                                                                    |
-| Dark mode uses its own desaturated palette     | Saturated colours glare on dark surfaces                                                                                         |
-| Widths limited to 6, 12 and full               | Phones use a 12-unit grid; 8 and 9 left ragged rows                                                                              |
-| Batteries summary on Overview                  | Low batteries are the most common silent failure; auto-discovered, no list to maintain                                           |
-| Battery status sensor is trigger-based         | It reads all sensors and is one itself; state tracking caused a template loop                                                    |
-| Solar & Energy split into Now and Today        | Same values in two time ranges, compared side by side                                                                            |
-| Daily utility meters for today's values        | The inverter's day counter is unavailable at night; all meters reset together at midnight                                        |
-| Gauge between invisible spacer cards           | The gauge has no size option and would fill its stack; spacers use only native cards                                             |
-| No stack-in-card for chip-styled halves        | Unmaintained dependency; the flat halves are separated by subtitles and spacing                                                  |
-| Media and vacuum share a Devices panel         | Keeps the Living Room's extra controls in one full-width row                                                                     |
-| Neutral pill text, coloured icons              | Coloured text fails contrast; green is reserved for all clear                                                                    |
-| Shutters left of Safety in every room          | Same place in every tab; Living Room's three shutters stack in the slot next to its 2×2 Safety grid                              |
-| Living Room devices above the slot row         | Controls first, status last; every tab ends with Shutters and Safety, then Batteries                                             |
-| Batteries always their own full-width last row | Safety is acted on, batteries only glanced at; rejected a compact battery panel beside Safety because it blurred that separation |
-| Safety tiles always width 12                   | Consistent tile sizes across tabs; panels wrap instead of stretching tiles                                                       |
-| Garden door shown in Garden and Living Room    | The door belongs to both spaces; the Garden tab now follows the same slot row as every room                                      |
+| Decision                                         | Reason                                                                                                                           |
+| ------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
+| `sections` views instead of masonry              | Masonry reorders cards by height; sections keep the designed order                                                               |
+| Native `tile` cards                              | Consistent shape, real toggles and cover controls                                                                                |
+| Flat rows and chip sections via two themes       | Native way to group items without custom CSS                                                                                     |
+| No shadows on section panels                     | Needs `card-mod` targeting frontend internals, which breaks on updates; depth comes from surface contrast                        |
+| Status pill on its own row under the heading     | Correct on phones and keeps all headings aligned on desktop; replaced pills sharing the heading row                              |
+| Status logic in template sensors                 | Reusable in automations; the dashboard stays declarative                                                                         |
+| Gauge icons hidden                               | The gauge offers no palette-safe icon colour; the mockups had no icon                                                            |
+| A/C shown as ring label plus summary pill        | Pills under rings detached from their rings on phones; the label is part of the ring, the pill carries counts per mode           |
+| Camera removed from Living Room                  | Too dominant for its value                                                                                                       |
+| `vacuum-card` not loaded                         | Breaks the whole frontend (duplicate `ha-icon-button`)                                                                           |
+| Shutter position and tilt only in the dialog     | Keeps rows compact; sliders are rarely needed                                                                                    |
+| Dark mode uses its own desaturated palette       | Saturated colours glare on dark surfaces                                                                                         |
+| Widths limited to 6, 12 and full                 | Phones use a 12-unit grid; 8 and 9 left ragged rows                                                                              |
+| Batteries summary on Overview                    | Low batteries are the most common silent failure; auto-discovered, no list to maintain                                           |
+| Battery status sensor is trigger-based           | It reads all sensors and is one itself; state tracking caused a template loop                                                    |
+| Solar & Energy split into Now and Today          | Same values in two time ranges, compared side by side                                                                            |
+| Daily utility meters for today's values          | The inverter's day counter is unavailable at night; all meters reset together at midnight                                        |
+| Gauge between invisible spacer cards (one third) | The gauge has no size option and would fill its stack; one fifth was too small on phones; spacers use only native cards          |
+| Unknown shown as 0, unavailable kept             | Unknown means nothing counted yet; unavailable means a fault that must stay visible                                              |
+| No stack-in-card for chip-styled halves          | Unmaintained dependency; the flat halves are separated by subtitles and spacing                                                  |
+| Media and vacuum share a Devices panel           | Keeps the Living Room's extra controls in one full-width row                                                                     |
+| Neutral pill text, coloured icons                | Coloured text fails contrast; green is reserved for all clear                                                                    |
+| Shutters left of Safety in every room            | Same place in every tab; Living Room's three shutters stack in the slot next to its 2×2 Safety grid                              |
+| Living Room devices above the slot row           | Controls first, status last; every tab ends with Shutters and Safety, then Batteries                                             |
+| Batteries always their own full-width last row   | Safety is acted on, batteries only glanced at; rejected a compact battery panel beside Safety because it blurred that separation |
+| Safety tiles always width 12                     | Consistent tile sizes across tabs; panels wrap instead of stretching tiles                                                       |
+| Garden door shown in Garden and Living Room      | The door belongs to both spaces; the Garden tab now follows the same slot row as every room                                      |
+
+## Open topics
+
+Ideas that were discussed but are not implemented. Check here before proposing
+something new: it may already have been weighed.
+
+| Topic                                                 | Status              | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| ----------------------------------------------------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Sidebar collapsed to icons by default for all users   | Parked              | Home Assistant stores the sidebar mode per browser, with no server default. Plan: a small own frontend module via `extra_module_url` that collapses the sidebar only when no preference is stored, using the `hass-dock-sidebar` event. Needs the stored value for "collapsed" (browser DevTools, Local Storage, key `dockedSidebar`). The `custom-sidebar` plugin enforces the mode on every reload and has broken with several Home Assistant releases |
+| Climate on the left (phones show it first)            | Open                | Rooms: lighting first because it is the most used control. Overview: Security first because its pill can be urgent. No decision yet                                                                                                                                                                                                                                                                                                                      |
+| Solar gauges smaller than other rings on phones       | Accepted limitation | Possible fix: gauges directly in the section grid (sized by rows) plus screen-size visibility rules to keep the phone order. Risk: medium widths (tablet portrait) can interleave Now and Today. Test on real devices at several widths first                                                                                                                                                                                                            |
+| Energy Flow with individual consumers                 | Future              | Candidates: plug energy sensors and the switches' consumption sensors. Option: Home Assistant's native energy cards (energy sankey with devices and a period selector), which need the devices added to the Energy dashboard                                                                                                                                                                                                                             |
+| `utility_meter/` include folder                       | Future              | Worth it once there are more than the three energy meters                                                                                                                                                                                                                                                                                                                                                                                                |
+| Default dashboard occasionally opens `/home/overview` | Unresolved          | The registration (key `lovelace`), the default setting and the user profile are correct. Suspected client-side caching; next step is a test in a private browser window                                                                                                                                                                                                                                                                                  |
 
 ## Entity inventory
 
@@ -968,14 +1078,14 @@ or update it when views change.
 | Weather Station             | 1    | Pill row                   | `sensor.ecowitt_temp1`, `sensor.ecowitt_temp2`                                                                                                                                                                                                                    |
 | Weather Station             | 1    | South                      | `sensor.ecowitt_temp1`, `sensor.ecowitt_humidity1`                                                                                                                                                                                                                |
 | Weather Station             | 1    | North                      | `sensor.ecowitt_temp2`, `sensor.ecowitt_humidity2`                                                                                                                                                                                                                |
-| Solar and Energy            | 3    | Solar power                | `sensor.pv_power_photovoltaics_fronius_power_flow`                                                                                                                                                                                                                |
+| Solar and Energy            | 3    | Solar                      | `sensor.pv_power_photovoltaics_fronius_power_flow`                                                                                                                                                                                                                |
 | Solar and Energy            | 3    | Own use                    | `sensor.solar_own_use_power`                                                                                                                                                                                                                                      |
 | Solar and Energy            | 3    | Exporting                  | `sensor.energy_meter_po`                                                                                                                                                                                                                                          |
 | Solar and Energy            | 3    | Importing                  | `sensor.energy_meter_p`                                                                                                                                                                                                                                           |
-| Solar and Energy            | 3    | Produced today             | `sensor.solar_produced_today`                                                                                                                                                                                                                                     |
+| Solar and Energy            | 3    | Produced                   | `sensor.solar_produced_today`                                                                                                                                                                                                                                     |
 | Solar and Energy            | 3    | Own use                    | `sensor.solar_own_use_today`                                                                                                                                                                                                                                      |
-| Solar and Energy            | 3    | Exported                   | `sensor.grid_export_today`                                                                                                                                                                                                                                        |
-| Solar and Energy            | 3    | Imported                   | `sensor.grid_import_today`                                                                                                                                                                                                                                        |
+| Solar and Energy            | 3    | Exported                   | `sensor.grid_exported_today`                                                                                                                                                                                                                                      |
+| Solar and Energy            | 3    | Imported                   | `sensor.grid_imported_today`                                                                                                                                                                                                                                      |
 | Energy Flow                 | 3    | Sankey                     | `sensor.pv_power_photovoltaics_fronius_power_flow`, `sensor.energy_meter_p`, `sensor.energy_meter_po`                                                                                                                                                             |
 
 ### Living Room (`living_room.yaml`)

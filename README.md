@@ -41,9 +41,22 @@ The Home Dashboard is a YAML-mode Lovelace dashboard with one tab per room:
 - **Registration**: [`sites/vie/configuration/lovelace/`](sites/vie/configuration/lovelace/) (registered under the key `lovelace`, replacing the built-in Overview; set it as default in Settings > Dashboards).
 - **Themes**: [`common/configuration/frontend/themes.yaml`](common/configuration/frontend/themes.yaml) (light and dark palette).
 - **Safety status sensors**: [`sites/vie/configuration/template/safety_status.yaml`](sites/vie/configuration/template/safety_status.yaml) (template entities behind the status pills).
+- **Dashboard status sensors**: [`sites/vie/configuration/template/dashboard_status.yaml`](sites/vie/configuration/template/dashboard_status.yaml) (A/C and battery summaries).
+- **Energy**: [`sites/vie/configuration/packages/energy.yaml`](sites/vie/configuration/packages/energy.yaml) (daily utility meters) and [`sites/vie/configuration/template/energy.yaml`](sites/vie/configuration/template/energy.yaml) (own-use and produced-today sensors).
+- **Scripts**: [`scripts/validate_dashboard.py`](scripts/validate_dashboard.py) (checks the layout rules, templates and entity IDs) and [`scripts/dashboard_inventory.py`](scripts/dashboard_inventory.py) (regenerates the entity inventory in `DASHBOARD.md`).
 
-[`DASHBOARD.md`](DASHBOARD.md) is the complete reference: design system, layout rules, copy-paste card patterns, how the safety status sensors work, how to map entities, and step-by-step recipes for adding lights, sensors, or rooms.
-Keep it up to date whenever views or safety sensors change.
+[`DASHBOARD.md`](DASHBOARD.md) is the complete reference: design system, layout rules, copy-paste card patterns, how the status and energy sensors work, how to map entities, step-by-step recipes for adding lights, sensors, or rooms, known pitfalls, and open topics.
+Together with this repository, it is the full context for continuing the work, also in fresh AI sessions or with Claude Code.
+
+Keep it up to date whenever views or sensors change:
+
+```sh
+python3 scripts/validate_dashboard.py --entities entities.json
+python3 scripts/dashboard_inventory.py
+markdownlint -c .markdownlint.yaml DASHBOARD.md
+```
+
+`entities.json` is the entity list exported from Home Assistant (see [`DASHBOARD.md`](DASHBOARD.md), "Working on this dashboard").
 
 ## Lifecycle Scripts
 
