@@ -338,6 +338,8 @@ sections:
             cards:
               - type: markdown
                 content: " "
+              - type: markdown
+                content: " "
               - type: custom:modern-circular-gauge
                 entity: sensor.pv_power_photovoltaics_fronius_power_flow
                 name: Solar power
@@ -348,6 +350,8 @@ sections:
                   color: "var(--amber-color)"
                 gauge_background_style:
                   color: var(--divider-color)
+              - type: markdown
+                content: " "
               - type: markdown
                 content: " "
           - type: horizontal-stack
@@ -381,6 +385,8 @@ sections:
             cards:
               - type: markdown
                 content: " "
+              - type: markdown
+                content: " "
               - type: custom:modern-circular-gauge
                 entity: sensor.solar_produced_today
                 name: Produced today
@@ -393,6 +399,8 @@ sections:
                   color: var(--divider-color)
               - type: markdown
                 content: " "
+              - type: markdown
+                content: " "
           - type: horizontal-stack
             cards:
               - type: tile
@@ -402,13 +410,13 @@ sections:
                 color: amber
                 vertical: true
               - type: tile
-                entity: sensor.grid_export_today
+                entity: sensor.grid_exported_today
                 name: Exported
                 icon: mdi:transmission-tower-export
                 color: green
                 vertical: true
               - type: tile
-                entity: sensor.grid_import_today
+                entity: sensor.grid_imported_today
                 name: Imported
                 icon: mdi:transmission-tower-import
                 color: red

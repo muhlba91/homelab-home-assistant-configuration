@@ -1,16 +1,36 @@
 ---
-# Own use = solar produced minus exported (solar consumed in the house).
-# Reads specific entities (no domain iteration), so no template loop.
+# Home Dashboard energy sensors (Overview > Solar & Energy).
 # Inputs: the daily utility meters in packages/energy.yaml.
+# Reads specific entities (no domain iteration), so no template loop.
+#
+# Missing values: a meter that is `unknown` has not counted anything yet, so
+# it counts as 0. A meter that is `unavailable` is broken, so the sensor is
+# unavailable too, instead of showing a misleading 0.
 - sensor:
     - unique_id: b4943639-2127-4a34-a55d-d5136004af96
       name: "Solar: Produced Today"
       default_entity_id: sensor.solar_produced_today
       unit_of_measurement: kWh
       device_class: energy
-      availability: "{{ has_value('sensor.solar_energy_today') }}"
+      availability: "{{ not is_state('sensor.solar_energy_today', 'unavailable') }}"
       state: >-
         {{ (states('sensor.solar_energy_today') | float(0) / 1000) | round(2) }}
+    - unique_id: 9cb22dcf-fafa-49b0-b988-733a4c845c86
+      name: "Grid: Exported Today"
+      default_entity_id: sensor.grid_exported_today
+      unit_of_measurement: kWh
+      device_class: energy
+      availability: "{{ not is_state('sensor.grid_export_today', 'unavailable') }}"
+      state: >-
+        {{ states('sensor.grid_export_today') | float(0) | round(2) }}
+    - unique_id: 0ef8eb4e-9858-49a9-9f3d-1406548755b6
+      name: "Grid: Imported Today"
+      default_entity_id: sensor.grid_imported_today
+      unit_of_measurement: kWh
+      device_class: energy
+      availability: "{{ not is_state('sensor.grid_import_today', 'unavailable') }}"
+      state: >-
+        {{ states('sensor.grid_import_today') | float(0) | round(2) }}
     - unique_id: 6fa9b827-6ff3-4397-af3d-6c6f32f821af
       name: "Solar: Own Use"
       default_entity_id: sensor.solar_own_use_power
@@ -28,7 +48,8 @@
       unit_of_measurement: kWh
       device_class: energy
       availability: >-
-        {{ has_value('sensor.solar_energy_today') and has_value('sensor.grid_export_today') }}
+        {{ not is_state('sensor.solar_energy_today', 'unavailable')
+        and not is_state('sensor.grid_export_today', 'unavailable') }}
       state: >-
         {%- set produced = states('sensor.solar_energy_today') | float(0) / 1000 -%}
         {%- set export = states('sensor.grid_export_today') | float(0) -%}
