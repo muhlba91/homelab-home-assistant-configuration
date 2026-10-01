@@ -1,0 +1,24 @@
+---
+# Daily utility meters for the Home Dashboard (Overview > Solar & Energy, "Today" block).
+# utility_meter has no include folder, so it lives in a package (like auth_oidc).
+# The derived sensors are in template/energy.yaml.
+# Daily utility meters use the same sources as the Energy dashboard and reset
+# together at local midnight. They keep their value while the inverter sleeps
+# at night (unavailable states are ignored), unlike the inverter's own day
+# counter.
+utility_meter:
+  solar_energy_today:
+    unique_id: ba9c5b8d-6097-4b38-8c35-810e6e11f14a
+    name: "Solar: Energy Today"
+    source: sensor.pv_inverter_energy_total_fronius_inverter
+    cycle: daily
+  grid_import_today:
+    unique_id: 9c3c2880-2385-488e-a4d8-75f15ccb1a7d
+    name: "Grid: Import Today"
+    source: sensor.energy_meter_tpi
+    cycle: daily
+  grid_export_today:
+    unique_id: c5272368-82fb-4024-8f1b-99cc9c5d133e
+    name: "Grid: Export Today"
+    source: sensor.energy_meter_tpo
+    cycle: daily

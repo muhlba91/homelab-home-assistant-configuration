@@ -55,6 +55,8 @@ plain, hand-editable YAML that follows the patterns described below.
 | `sites/vie/configuration/dashboards/views/*.yaml`        | One file per tab (view)                                                                              |
 | `sites/vie/configuration/template/safety_status.yaml`    | Template binary sensors behind the safety pills                                                      |
 | `sites/vie/configuration/template/dashboard_status.yaml` | Template sensors behind the A/C and battery summaries                                                |
+| `sites/vie/configuration/packages/energy.yaml`           | Daily utility meters behind the Solar & Energy panel                                                 |
+| `sites/vie/configuration/template/energy.yaml`           | Own-use and produced-today template sensors                                                          |
 
 `common/` and `sites/vie/` are merged into one Home Assistant configuration
 directory at deploy time by `lifecycle/configuration.sh`.
@@ -518,6 +520,57 @@ worst case with three units is 34 characters and always fits a phone.
           columns: 6
 ```
 
+### Solar half block (Now and Today)
+
+```yaml
+      - type: vertical-stack
+        grid_options:
+          columns: 18
+        cards:
+          - type: heading
+            heading: NOW
+            heading_style: subtitle
+          - type: horizontal-stack
+            cards:
+              - type: markdown
+                content: " "
+              - type: custom:modern-circular-gauge
+                entity: sensor.pv_power_photovoltaics_fronius_power_flow
+                name: Solar power
+                min: 0
+                max: 5000
+                show_icon: false
+                gauge_foreground_style:
+                  color: 'var(--amber-color)'
+                gauge_background_style:
+                  color: var(--divider-color)
+              - type: markdown
+                content: " "
+          - type: horizontal-stack
+            cards:
+              - type: tile
+                entity: sensor.solar_own_use_power
+                name: Own use
+                icon: mdi:home-lightning-bolt
+                color: amber
+                vertical: true
+              # Exporting and Importing tiles follow the same pattern
+```
+
+Why it is built like this:
+
+- **One stacked card per half** keeps each block together: on phones the
+  whole Now block comes before the whole Today block. Separate cards in the
+  section grid would interleave on phones.
+- **The gauge sits between two empty Markdown cards.** The gauge sizes itself
+  by width and has no size option; inside a stack nothing limits it, so on its
+  own it would fill the whole half. A horizontal stack splits its width
+  equally, so the gauge gets one third. The empty cards are invisible because
+  cards have no border and the panel's background.
+- **Vertical tiles** fit three items side by side, even on phones. Keep tile
+  names short ("Own use", not "Used at home"): on phones each tile is about
+  115 px wide.
+
 ## Views
 
 Tabs in order (defined in `ui-lovelace.yaml`): Overview, Living Room, Office,
@@ -531,7 +584,7 @@ includes the entrance room, Utility includes the storage room.
 | --- | --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1   | Security and safety (2), Outdoor forecast (1) | Status pill `binary_sensor.house_safety_status`; alarm and front door tiles; smoke, water leak, doors and batteries summaries. Forecast: sunrise or sunset pill, condition row, humidity, pressure and wind row |
 | 2   | Indoor climate (2), Weather station (1)       | A/C summary pill `sensor.house_ac_status`; one ring per room sensor with a templated A/C label. Temperature difference pill; South and North rings                                                              |
-| 3   | Solar and energy (3)                          | Solar gauge (12 columns, 3 rows) and three stacked stat tiles (24 columns each)                                                                                                                                 |
+| 3   | Solar and energy (3)                          | Two half blocks, **Now** and **Today**: each a gauge (solar power in W, produced today in kWh) and one row of three vertical tiles (own use, exported, imported)                                                |
 | 4   | Energy flow (3)                               | Sankey: Solar and Grid import into House and Grid export                                                                                                                                                        |
 
 Smoke, water leak and doors summaries are Mushroom template cards with a
@@ -645,8 +698,52 @@ Rules:
   `on`. Unavailable batteries are ignored, not counted as low.
 - Every field computes from live states. Never use `this` in these templates:
   it refers to the sensor's previous value and lags one update behind.
-- Templates over a whole domain (`states.sensor`) are rate-limited by Home
-  Assistant to one update per minute. That is fine for batteries.
+- `sensor.house_battery_status` is a **trigger-based** template sensor: it
+  recalculates every 5 minutes, at Home Assistant start, and on template
+  reload. It must stay trigger-based: it reads every sensor and is a sensor
+  itself, so as a state-tracking template it re-triggers on its own changes.
+  Home Assistant then logs "Template loop detected" and skips renders, which
+  leaves state and summary out of sync.
+- `sensor.house_ac_status` can stay state-tracking: it reads `climate`
+  entities and is not one itself.
+- General rule: a template entity must never iterate over its own domain
+  unless it is trigger-based.
+
+## Energy sensors
+
+The Solar & Energy panel's backend is split by type, following the
+repository's layout:
+
+- `sites/vie/configuration/packages/energy.yaml`: the three daily utility
+  meters. `utility_meter` has no include folder in `configuration.yaml`, so it
+  lives in a package (loaded by `homeassistant: packages:`), the same as
+  `auth_oidc`. If more meters are added later, consider a dedicated
+  `utility_meter/` folder instead.
+- `sites/vie/configuration/template/energy.yaml`: the three derived template
+  sensors, next to all other template entities.
+
+| Entity                        | What                     | Source                                             |
+| ----------------------------- | ------------------------ | -------------------------------------------------- |
+| `sensor.solar_energy_today`   | Daily utility meter, Wh  | `sensor.pv_inverter_energy_total_fronius_inverter` |
+| `sensor.grid_import_today`    | Daily utility meter, kWh | `sensor.energy_meter_tpi`                          |
+| `sensor.grid_export_today`    | Daily utility meter, kWh | `sensor.energy_meter_tpo`                          |
+| `sensor.solar_produced_today` | Produced today in kWh    | `sensor.solar_energy_today` / 1000                 |
+| `sensor.solar_own_use_power`  | Own use now, W           | solar power − export power, never below 0          |
+| `sensor.solar_own_use_today`  | Own use today, kWh       | produced today − exported today, never below 0     |
+
+Rules:
+
+- The meters use the **same sources as the Energy dashboard**, so the values
+  match it (own use = Energy dashboard's self-consumed solar).
+- Use the daily utility meters, not the devices' own day counters: the
+  inverter's counter is unavailable at night (about 19:30 to 06:30), and the
+  inverter and the grid meter reset at slightly different times. The utility
+  meters keep their value overnight and reset together at local midnight.
+- "Own use" is the solar energy consumed in the house (*Eigenverbrauch*). The
+  house's total consumption is own use plus import.
+- The Today gauge's maximum is 35 kWh, a long summer day for 5 kWp.
+- The utility meters start counting when they are created, so the first day
+  after deploying is incomplete.
 
 ## Selecting entities from an entity list
 
@@ -831,6 +928,11 @@ Before committing:
 | Dark mode uses its own desaturated palette     | Saturated colours glare on dark surfaces                                                                                         |
 | Widths limited to 6, 12 and full               | Phones use a 12-unit grid; 8 and 9 left ragged rows                                                                              |
 | Batteries summary on Overview                  | Low batteries are the most common silent failure; auto-discovered, no list to maintain                                           |
+| Battery status sensor is trigger-based         | It reads all sensors and is one itself; state tracking caused a template loop                                                    |
+| Solar & Energy split into Now and Today        | Same values in two time ranges, compared side by side                                                                            |
+| Daily utility meters for today's values        | The inverter's day counter is unavailable at night; all meters reset together at midnight                                        |
+| Gauge between invisible spacer cards           | The gauge has no size option and would fill its stack; spacers use only native cards                                             |
+| No stack-in-card for chip-styled halves        | Unmaintained dependency; the flat halves are separated by subtitles and spacing                                                  |
 | Media and vacuum share a Devices panel         | Keeps the Living Room's extra controls in one full-width row                                                                     |
 | Neutral pill text, coloured icons              | Coloured text fails contrast; green is reserved for all clear                                                                    |
 | Shutters left of Safety in every room          | Same place in every tab; Living Room's three shutters stack in the slot next to its 2×2 Safety grid                              |
@@ -867,9 +969,13 @@ or update it when views change.
 | Weather Station             | 1    | South                      | `sensor.ecowitt_temp1`, `sensor.ecowitt_humidity1`                                                                                                                                                                                                                |
 | Weather Station             | 1    | North                      | `sensor.ecowitt_temp2`, `sensor.ecowitt_humidity2`                                                                                                                                                                                                                |
 | Solar and Energy            | 3    | Solar power                | `sensor.pv_power_photovoltaics_fronius_power_flow`                                                                                                                                                                                                                |
-| Solar and Energy            | 3    | Produced today             | `sensor.pv_energy_day_fronius_power_flow`                                                                                                                                                                                                                         |
-| Solar and Energy            | 3    | Exporting to grid          | `sensor.energy_meter_po`                                                                                                                                                                                                                                          |
-| Solar and Energy            | 3    | Importing from grid        | `sensor.energy_meter_p`                                                                                                                                                                                                                                           |
+| Solar and Energy            | 3    | Own use                    | `sensor.solar_own_use_power`                                                                                                                                                                                                                                      |
+| Solar and Energy            | 3    | Exporting                  | `sensor.energy_meter_po`                                                                                                                                                                                                                                          |
+| Solar and Energy            | 3    | Importing                  | `sensor.energy_meter_p`                                                                                                                                                                                                                                           |
+| Solar and Energy            | 3    | Produced today             | `sensor.solar_produced_today`                                                                                                                                                                                                                                     |
+| Solar and Energy            | 3    | Own use                    | `sensor.solar_own_use_today`                                                                                                                                                                                                                                      |
+| Solar and Energy            | 3    | Exported                   | `sensor.grid_export_today`                                                                                                                                                                                                                                        |
+| Solar and Energy            | 3    | Imported                   | `sensor.grid_import_today`                                                                                                                                                                                                                                        |
 | Energy Flow                 | 3    | Sankey                     | `sensor.pv_power_photovoltaics_fronius_power_flow`, `sensor.energy_meter_p`, `sensor.energy_meter_po`                                                                                                                                                             |
 
 ### Living Room (`living_room.yaml`)

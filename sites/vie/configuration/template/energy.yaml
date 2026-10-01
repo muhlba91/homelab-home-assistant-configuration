@@ -1,0 +1,35 @@
+---
+# Own use = solar produced minus exported (solar consumed in the house).
+# Reads specific entities (no domain iteration), so no template loop.
+# Inputs: the daily utility meters in packages/energy.yaml.
+- sensor:
+    - unique_id: b4943639-2127-4a34-a55d-d5136004af96
+      name: "Solar: Produced Today"
+      default_entity_id: sensor.solar_produced_today
+      unit_of_measurement: kWh
+      device_class: energy
+      availability: "{{ has_value('sensor.solar_energy_today') }}"
+      state: >-
+        {{ (states('sensor.solar_energy_today') | float(0) / 1000) | round(2) }}
+    - unique_id: 6fa9b827-6ff3-4397-af3d-6c6f32f821af
+      name: "Solar: Own Use"
+      default_entity_id: sensor.solar_own_use_power
+      unit_of_measurement: W
+      device_class: power
+      state_class: measurement
+      availability: "{{ has_value('sensor.energy_meter_po') }}"
+      state: >-
+        {%- set pv = states('sensor.pv_power_photovoltaics_fronius_power_flow') | float(0) -%}
+        {%- set export = states('sensor.energy_meter_po') | float(0) -%}
+        {{ [pv - export, 0] | max | round(0) | int }}
+    - unique_id: f69d238b-cbb7-4b7b-b9be-3020008e9856
+      name: "Solar: Own Use Today"
+      default_entity_id: sensor.solar_own_use_today
+      unit_of_measurement: kWh
+      device_class: energy
+      availability: >-
+        {{ has_value('sensor.solar_energy_today') and has_value('sensor.grid_export_today') }}
+      state: >-
+        {%- set produced = states('sensor.solar_energy_today') | float(0) / 1000 -%}
+        {%- set export = states('sensor.grid_export_today') | float(0) -%}
+        {{ [produced - export, 0] | max | round(2) }}

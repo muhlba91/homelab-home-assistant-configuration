@@ -327,40 +327,92 @@ sections:
       - type: heading
         heading: SOLAR & ENERGY
         heading_style: subtitle
-      - type: custom:modern-circular-gauge
-        entity: sensor.pv_power_photovoltaics_fronius_power_flow
-        name: Solar power
-        min: 0
-        max: 5000
-        show_icon: false
-        gauge_foreground_style:
-          color: "var(--amber-color)"
-        gauge_background_style:
-          color: var(--divider-color)
+      - type: vertical-stack
         grid_options:
-          columns: 12
-          rows: 3
-      - type: tile
-        entity: sensor.pv_energy_day_fronius_power_flow
-        name: Produced today
-        icon: mdi:solar-power
-        color: amber
+          columns: 18
+        cards:
+          - type: heading
+            heading: NOW
+            heading_style: subtitle
+          - type: horizontal-stack
+            cards:
+              - type: markdown
+                content: " "
+              - type: custom:modern-circular-gauge
+                entity: sensor.pv_power_photovoltaics_fronius_power_flow
+                name: Solar power
+                min: 0
+                max: 5000
+                show_icon: false
+                gauge_foreground_style:
+                  color: "var(--amber-color)"
+                gauge_background_style:
+                  color: var(--divider-color)
+              - type: markdown
+                content: " "
+          - type: horizontal-stack
+            cards:
+              - type: tile
+                entity: sensor.solar_own_use_power
+                name: Own use
+                icon: mdi:home-lightning-bolt
+                color: amber
+                vertical: true
+              - type: tile
+                entity: sensor.energy_meter_po
+                name: Exporting
+                icon: mdi:transmission-tower-export
+                color: green
+                vertical: true
+              - type: tile
+                entity: sensor.energy_meter_p
+                name: Importing
+                icon: mdi:transmission-tower-import
+                color: red
+                vertical: true
+      - type: vertical-stack
         grid_options:
-          columns: 24
-      - type: tile
-        entity: sensor.energy_meter_po
-        name: Exporting to grid
-        icon: mdi:transmission-tower-export
-        color: green
-        grid_options:
-          columns: 24
-      - type: tile
-        entity: sensor.energy_meter_p
-        name: Importing from grid
-        icon: mdi:transmission-tower-import
-        color: red
-        grid_options:
-          columns: 24
+          columns: 18
+        cards:
+          - type: heading
+            heading: TODAY
+            heading_style: subtitle
+          - type: horizontal-stack
+            cards:
+              - type: markdown
+                content: " "
+              - type: custom:modern-circular-gauge
+                entity: sensor.solar_produced_today
+                name: Produced today
+                min: 0
+                max: 35
+                show_icon: false
+                gauge_foreground_style:
+                  color: "var(--amber-color)"
+                gauge_background_style:
+                  color: var(--divider-color)
+              - type: markdown
+                content: " "
+          - type: horizontal-stack
+            cards:
+              - type: tile
+                entity: sensor.solar_own_use_today
+                name: Own use
+                icon: mdi:home-lightning-bolt
+                color: amber
+                vertical: true
+              - type: tile
+                entity: sensor.grid_export_today
+                name: Exported
+                icon: mdi:transmission-tower-export
+                color: green
+                vertical: true
+              - type: tile
+                entity: sensor.grid_import_today
+                name: Imported
+                icon: mdi:transmission-tower-import
+                color: red
+                vertical: true
 
   - type: grid
     background:
