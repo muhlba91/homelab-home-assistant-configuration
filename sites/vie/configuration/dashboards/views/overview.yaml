@@ -7,6 +7,33 @@ type: sections
 max_columns: 3
 sections:
   - type: grid
+    background:
+      color: purple
+      opacity: 25
+    column_span: 3
+    visibility:
+      - condition: state
+        entity: switch.presence_simulation
+        state: "on"
+    cards:
+      - type: heading
+        heading: PRESENCE SIMULATION
+        heading_style: subtitle
+      - type: tile
+        entity: switch.presence_simulation
+        name: Presence simulation is on
+        icon: mdi:account-clock
+        color: purple
+        state_content:
+          - state
+          - last_changed
+        features_position: inline
+        features:
+          - type: toggle
+        grid_options:
+          columns: full
+
+  - type: grid
     theme: family_dashboard_chips
     background:
       opacity: 100

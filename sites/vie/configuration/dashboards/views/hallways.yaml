@@ -71,6 +71,16 @@ sections:
           - type: toggle
         grid_options:
           columns: full
+      - type: tile
+        entity: switch.presence_simulation
+        name: Presence simulation
+        icon: mdi:account-clock
+        color: purple
+        features_position: inline
+        features:
+          - type: toggle
+        grid_options:
+          columns: full
 
   - type: grid
     theme: family_dashboard_chips

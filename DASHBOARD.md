@@ -249,7 +249,7 @@ Both must always carry the same colour.
 | `amber`  | `#c98a1d` | `#c29a5e` | Lights, solar, sun                                   |
 | `orange` | `#d97a2b` | `#d98c5f` | Attention (something open), medium battery           |
 | `red`    | `#d1404b` | `#e07a82` | Alert (smoke, leak, alarm), grid import, low battery |
-| `purple` | `#7658e0` | `#a394e3` | Media                                                |
+| `purple` | `#7658e0` | `#a394e3` | Media, special modes (presence simulation)           |
 | `grey`   | `#8a8e97` | `#7d828c` | Neutral, inactive                                    |
 
 `yellow` and `deep-orange` are mapped to amber and orange, so Home Assistant's
@@ -296,7 +296,8 @@ places in every tab:
    system and vacuum) as a full-width row.
 3. **The slot row**: **Shutters** (left, span 1) and **Safety** (right,
    span 2). Rooms without a shutter put their other room control in the left
-   slot (Hallways: **Front door**). Multiple shutters stack in the slot.
+   slot (Hallways: **Front door**, with the lock, the keypad chirps and the
+   presence simulation switch). Multiple shutters stack in the slot.
 4. **Battery levels**: always its own full-width last row, always chip theme.
 
 Controls come first, status last. Safety is what people act on; batteries are
@@ -576,6 +577,49 @@ worst case with three units is 34 characters and always fits a phone.
           columns: 6
 ```
 
+### Conditional banner (presence simulation)
+
+```yaml
+  - type: grid
+    background:
+      color: purple
+      opacity: 25
+    column_span: 3
+    visibility:
+      - condition: state
+        entity: switch.presence_simulation
+        state: "on"
+    cards:
+      - type: heading
+        heading: PRESENCE SIMULATION
+        heading_style: subtitle
+      - type: tile
+        entity: switch.presence_simulation
+        name: Presence simulation is on
+        icon: mdi:account-clock
+        color: purple
+        state_content:
+          - state
+          - last_changed
+        features_position: inline
+        features:
+          - type: toggle
+        grid_options:
+          columns: full
+```
+
+- **Section visibility** shows the whole row only while the switch is on;
+  when it is off, the row disappears without leaving a gap.
+- **Tinted section background** (`color` plus `opacity`) instead of a
+  gradient: gradients would need custom CSS. The colour is a palette token,
+  so it follows light and dark mode.
+- **Purple** marks a special mode. It is not one of the status colours
+  (green, orange, red), so the band never reads as an alarm.
+- `state_content: [state, last_changed]` shows how long the simulation has
+  been running; the inline toggle switches it off.
+- The banner is the first section of the Overview. Use the same pattern for
+  any future mode that should be impossible to overlook while it is active.
+
 ### Solar half block (Now and Today)
 
 ```yaml
@@ -642,6 +686,7 @@ includes the entrance room, Utility includes the storage room.
 
 | Row | Sections (`column_span`)                      | Content                                                                                                                                                                                                         |
 | --- | --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0   | Presence simulation (3), only while it is on  | Purple band with one tile: "Presence simulation is on", time since it started, inline toggle to switch it off                                                                                                   |
 | 1   | Security and safety (2), Outdoor forecast (1) | Status pill `binary_sensor.house_safety_status`; alarm and front door tiles; smoke, water leak, doors and batteries summaries. Forecast: sunrise or sunset pill, condition row, humidity, pressure and wind row |
 | 2   | Indoor climate (2), Weather station (1)       | A/C summary pill `sensor.house_ac_status`; one ring per room sensor with a templated A/C label. Temperature difference pill; South and North rings                                                              |
 | 3   | Solar and energy (3)                          | Two half blocks, **Now** and **Today**: each a gauge (solar power in W, produced today in kWh) and one row of three vertical tiles (own use, exported, imported)                                                |
@@ -833,20 +878,21 @@ General:
 
 By entity type:
 
-| Kind             | Pattern in this installation                                                                                                                                       | Where it goes                              |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------ |
-| Lights           | `switch.fs*_1`, `switch.fds*_*` (relay switches, not `light.*`)                                                                                                    | Lighting                                   |
-| Kitchen light    | Use proxy `switch.fs12_1`, never the physical `switch.fs9_1` (an automation mirrors them)                                                                          | Living Room lighting                       |
-| Shutters         | `cover.*`                                                                                                                                                          | Shutters                                   |
-| Air conditioners | `climate.*_air_conditioner`                                                                                                                                        | A/C section, Overview A/C pill             |
-| Room climate     | `sensor.<room>_<room>_temperature_humidity_temperature` and `_humidity`                                                                                            | Climate section, Overview ring             |
-| Smoke            | `binary_sensor.ass<N>_smoke_detected`, battery `sensor.ass<N>_battery`                                                                                             | Safety, Battery, safety status (alarm)     |
-| Water leak       | `binary_sensor.ffs1_water_alarm_water_leak_detected`, `binary_sensor.ffs2_water_leak_detected`, battery `sensor.ffs<N>_battery_level`                              | Safety, Battery, safety status (alarm)     |
-| Motion           | `binary_sensor.fms<N>_home_security_motion_detection`, `binary_sensor.ring_rms1`, `binary_sensor.living_room_ring_motion_sensor`                                   | Safety, Battery                            |
-| Contacts         | `binary_sensor.ring_rcs<N>`, battery `sensor.ring_rcs<N>_*_battery`                                                                                                | Safety, Battery, safety status (attention) |
-| Weather station  | `sensor.ecowitt_temp<N>`, `sensor.ecowitt_humidity<N>`, `binary_sensor.ecowitt_batt<N>` (1 is South, 2 is North)                                                   | Garden, Overview                           |
-| Forecast         | `weather.home` (met.no)                                                                                                                                            | Overview forecast                          |
-| Solar and grid   | `sensor.pv_power_photovoltaics_fronius_power_flow`, `sensor.pv_energy_day_fronius_power_flow`, `sensor.energy_meter_po` (export), `sensor.energy_meter_p` (import) | Overview                                   |
+| Kind                | Pattern in this installation                                                                                                                                       | Where it goes                                                 |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------- |
+| Lights              | `switch.fs*_1`, `switch.fds*_*` (relay switches, not `light.*`)                                                                                                    | Lighting                                                      |
+| Kitchen light       | Use proxy `switch.fs12_1`, never the physical `switch.fs9_1` (an automation mirrors them)                                                                          | Living Room lighting                                          |
+| Shutters            | `cover.*`                                                                                                                                                          | Shutters                                                      |
+| Air conditioners    | `climate.*_air_conditioner`                                                                                                                                        | A/C section, Overview A/C pill                                |
+| Room climate        | `sensor.<room>_<room>_temperature_humidity_temperature` and `_humidity`                                                                                            | Climate section, Overview ring                                |
+| Smoke               | `binary_sensor.ass<N>_smoke_detected`, battery `sensor.ass<N>_battery`                                                                                             | Safety, Battery, safety status (alarm)                        |
+| Water leak          | `binary_sensor.ffs1_water_alarm_water_leak_detected`, `binary_sensor.ffs2_water_leak_detected`, battery `sensor.ffs<N>_battery_level`                              | Safety, Battery, safety status (alarm)                        |
+| Motion              | `binary_sensor.fms<N>_home_security_motion_detection`, `binary_sensor.ring_rms1`, `binary_sensor.living_room_ring_motion_sensor`                                   | Safety, Battery                                               |
+| Contacts            | `binary_sensor.ring_rcs<N>`, battery `sensor.ring_rcs<N>_*_battery`                                                                                                | Safety, Battery, safety status (attention)                    |
+| Weather station     | `sensor.ecowitt_temp<N>`, `sensor.ecowitt_humidity<N>`, `binary_sensor.ecowitt_batt<N>` (1 is South, 2 is North)                                                   | Garden, Overview                                              |
+| Forecast            | `weather.home` (met.no)                                                                                                                                            | Overview forecast                                             |
+| Solar and grid      | `sensor.pv_power_photovoltaics_fronius_power_flow`, `sensor.pv_energy_day_fronius_power_flow`, `sensor.energy_meter_po` (export), `sensor.energy_meter_p` (import) | Overview                                                      |
+| Presence simulation | `switch.presence_simulation` (custom integration `slashback100/presence_simulation`)                                                                               | Overview banner while on; switched on in Hallways, Front door |
 
 Never use for room climate: temperatures reported by air conditioners, leak
 detectors or smoke detectors.
@@ -1007,35 +1053,37 @@ looks wrong.
 
 ## Decision log
 
-| Decision                                         | Reason                                                                                                                           |
-| ------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
-| `sections` views instead of masonry              | Masonry reorders cards by height; sections keep the designed order                                                               |
-| Native `tile` cards                              | Consistent shape, real toggles and cover controls                                                                                |
-| Flat rows and chip sections via two themes       | Native way to group items without custom CSS                                                                                     |
-| No shadows on section panels                     | Needs `card-mod` targeting frontend internals, which breaks on updates; depth comes from surface contrast                        |
-| Status pill on its own row under the heading     | Correct on phones and keeps all headings aligned on desktop; replaced pills sharing the heading row                              |
-| Status logic in template sensors                 | Reusable in automations; the dashboard stays declarative                                                                         |
-| Gauge icons hidden                               | The gauge offers no palette-safe icon colour; the mockups had no icon                                                            |
-| A/C shown as ring label plus summary pill        | Pills under rings detached from their rings on phones; the label is part of the ring, the pill carries counts per mode           |
-| Camera removed from Living Room                  | Too dominant for its value                                                                                                       |
-| `vacuum-card` not loaded                         | Breaks the whole frontend (duplicate `ha-icon-button`)                                                                           |
-| Shutter position and tilt only in the dialog     | Keeps rows compact; sliders are rarely needed                                                                                    |
-| Dark mode uses its own desaturated palette       | Saturated colours glare on dark surfaces                                                                                         |
-| Widths limited to 6, 12 and full                 | Phones use a 12-unit grid; 8 and 9 left ragged rows                                                                              |
-| Batteries summary on Overview                    | Low batteries are the most common silent failure; auto-discovered, no list to maintain                                           |
-| Battery status sensor is trigger-based           | It reads all sensors and is one itself; state tracking caused a template loop                                                    |
-| Solar & Energy split into Now and Today          | Same values in two time ranges, compared side by side                                                                            |
-| Daily utility meters for today's values          | The inverter's day counter is unavailable at night; all meters reset together at midnight                                        |
-| Gauge between invisible spacer cards (one third) | The gauge has no size option and would fill its stack; one fifth was too small on phones; spacers use only native cards          |
-| Unknown shown as 0, unavailable kept             | Unknown means nothing counted yet; unavailable means a fault that must stay visible                                              |
-| No stack-in-card for chip-styled halves          | Unmaintained dependency; the flat halves are separated by subtitles and spacing                                                  |
-| Media and vacuum share a Devices panel           | Keeps the Living Room's extra controls in one full-width row                                                                     |
-| Neutral pill text, coloured icons                | Coloured text fails contrast; green is reserved for all clear                                                                    |
-| Shutters left of Safety in every room            | Same place in every tab; Living Room's three shutters stack in the slot next to its 2×2 Safety grid                              |
-| Living Room devices above the slot row           | Controls first, status last; every tab ends with Shutters and Safety, then Batteries                                             |
-| Batteries always their own full-width last row   | Safety is acted on, batteries only glanced at; rejected a compact battery panel beside Safety because it blurred that separation |
-| Safety tiles always width 12                     | Consistent tile sizes across tabs; panels wrap instead of stretching tiles                                                       |
-| Garden door shown in Garden and Living Room      | The door belongs to both spaces; the Garden tab now follows the same slot row as every room                                      |
+| Decision                                           | Reason                                                                                                                           |
+| -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `sections` views instead of masonry                | Masonry reorders cards by height; sections keep the designed order                                                               |
+| Native `tile` cards                                | Consistent shape, real toggles and cover controls                                                                                |
+| Flat rows and chip sections via two themes         | Native way to group items without custom CSS                                                                                     |
+| No shadows on section panels                       | Needs `card-mod` targeting frontend internals, which breaks on updates; depth comes from surface contrast                        |
+| Status pill on its own row under the heading       | Correct on phones and keeps all headings aligned on desktop; replaced pills sharing the heading row                              |
+| Status logic in template sensors                   | Reusable in automations; the dashboard stays declarative                                                                         |
+| Gauge icons hidden                                 | The gauge offers no palette-safe icon colour; the mockups had no icon                                                            |
+| A/C shown as ring label plus summary pill          | Pills under rings detached from their rings on phones; the label is part of the ring, the pill carries counts per mode           |
+| Camera removed from Living Room                    | Too dominant for its value                                                                                                       |
+| `vacuum-card` not loaded                           | Breaks the whole frontend (duplicate `ha-icon-button`)                                                                           |
+| Shutter position and tilt only in the dialog       | Keeps rows compact; sliders are rarely needed                                                                                    |
+| Dark mode uses its own desaturated palette         | Saturated colours glare on dark surfaces                                                                                         |
+| Widths limited to 6, 12 and full                   | Phones use a 12-unit grid; 8 and 9 left ragged rows                                                                              |
+| Batteries summary on Overview                      | Low batteries are the most common silent failure; auto-discovered, no list to maintain                                           |
+| Battery status sensor is trigger-based             | It reads all sensors and is one itself; state tracking caused a template loop                                                    |
+| Solar & Energy split into Now and Today            | Same values in two time ranges, compared side by side                                                                            |
+| Daily utility meters for today's values            | The inverter's day counter is unavailable at night; all meters reset together at midnight                                        |
+| Gauge between invisible spacer cards (one third)   | The gauge has no size option and would fill its stack; one fifth was too small on phones; spacers use only native cards          |
+| Unknown shown as 0, unavailable kept               | Unknown means nothing counted yet; unavailable means a fault that must stay visible                                              |
+| No stack-in-card for chip-styled halves            | Unmaintained dependency; the flat halves are separated by subtitles and spacing                                                  |
+| Presence simulation banner on the Overview         | Visible only while active, as the first row; impossible to overlook, gone when off                                               |
+| Presence simulation switch in Hallways, Front door | Rarely needed; placed where you leave the house, next to the lock and the alarm keypad, costing no Overview space                |
+| Media and vacuum share a Devices panel             | Keeps the Living Room's extra controls in one full-width row                                                                     |
+| Neutral pill text, coloured icons                  | Coloured text fails contrast; green is reserved for all clear                                                                    |
+| Shutters left of Safety in every room              | Same place in every tab; Living Room's three shutters stack in the slot next to its 2×2 Safety grid                              |
+| Living Room devices above the slot row             | Controls first, status last; every tab ends with Shutters and Safety, then Batteries                                             |
+| Batteries always their own full-width last row     | Safety is acted on, batteries only glanced at; rejected a compact battery panel beside Safety because it blurred that separation |
+| Safety tiles always width 12                       | Consistent tile sizes across tabs; panels wrap instead of stretching tiles                                                       |
+| Garden door shown in Garden and Living Room        | The door belongs to both spaces; the Garden tab now follows the same slot row as every room                                      |
 
 ## Open topics
 
@@ -1049,6 +1097,7 @@ something new: it may already have been weighed.
 | Solar gauges smaller than other rings on phones       | Accepted limitation | Possible fix: gauges directly in the section grid (sized by rows) plus screen-size visibility rules to keep the phone order. Risk: medium widths (tablet portrait) can interleave Now and Today. Test on real devices at several widths first                                                                                                                                                                                                            |
 | Energy Flow with individual consumers                 | Future              | Candidates: plug energy sensors and the switches' consumption sensors. Option: Home Assistant's native energy cards (energy sankey with devices and a period selector), which need the devices added to the Energy dashboard                                                                                                                                                                                                                             |
 | `utility_meter/` include folder                       | Future              | Worth it once there are more than the three energy meters                                                                                                                                                                                                                                                                                                                                                                                                |
+| Start presence simulation automatically               | Idea                | An automation could turn it on when the alarm is armed away and off when disarmed, making the switch mostly unnecessary                                                                                                                                                                                                                                                                                                                                  |
 | Default dashboard occasionally opens `/home/overview` | Unresolved          | The registration (key `lovelace`), the default setting and the user profile are correct. Suspected client-side caching; next step is a test in a private browser window                                                                                                                                                                                                                                                                                  |
 
 ## Entity inventory
@@ -1060,6 +1109,7 @@ or update it when views change.
 
 | Section                     | Span | Name                       | Entities                                                                                                                                                                                                                                                          |
 | --------------------------- | ---- | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Presence Simulation         | 3    | Presence simulation is on  | `switch.presence_simulation`                                                                                                                                                                                                                                      |
 | Security and Safety (chips) | 2    | Pill row                   | `binary_sensor.house_safety_status`                                                                                                                                                                                                                               |
 | Security and Safety (chips) | 2    | Alarm                      | `alarm_control_panel.ring_control_panel`                                                                                                                                                                                                                          |
 | Security and Safety (chips) | 2    | Front Door                 | `lock.entrance_door_lock`                                                                                                                                                                                                                                         |
@@ -1169,26 +1219,27 @@ or update it when views change.
 
 ### Hallways (`hallways.yaml`)
 
-| Section                | Span | Name           | Entities                                            |
-| ---------------------- | ---- | -------------- | --------------------------------------------------- |
-| Lighting               | 3    | Hallway        | `switch.fs4_1`                                      |
-| Lighting               | 3    | Hallway 2      | `switch.fds1_2`                                     |
-| Lighting               | 3    | Entrance       | `switch.fs2_1`                                      |
-| Front Door             | 1    | Front Door     | `lock.entrance_door_lock`                           |
-| Front Door             | 1    | Keypad chirps  | `switch.alarm_keypad_chirps`                        |
-| Safety (chips)         | 2    | Pill row       | `binary_sensor.hallways_safety_status`              |
-| Safety (chips)         | 2    | Hallway smoke  | `binary_sensor.ass7_smoke_detected`                 |
-| Safety (chips)         | 2    | Entrance smoke | `binary_sensor.ass4_smoke_detected`                 |
-| Safety (chips)         | 2    | Front door     | `binary_sensor.ring_rcs1`                           |
-| Safety (chips)         | 2    | Ring motion    | `binary_sensor.ring_rms1`                           |
-| Safety (chips)         | 2    | Fibaro motion  | `binary_sensor.fms2_home_security_motion_detection` |
-| Battery Levels (chips) | 3    | Hallway smoke  | `sensor.ass7_battery`                               |
-| Battery Levels (chips) | 3    | Entrance smoke | `sensor.ass4_battery`                               |
-| Battery Levels (chips) | 3    | Front door     | `sensor.ring_rcs1_front_door_battery`               |
-| Battery Levels (chips) | 3    | Ring motion    | `sensor.ring_rms1_entrance_room_battery`            |
-| Battery Levels (chips) | 3    | Fibaro motion  | `sensor.fms2_battery_level`                         |
-| Battery Levels (chips) | 3    | Keypad         | `sensor.ring_keypad_battery`                        |
-| Battery Levels (chips) | 3    | Door lock      | `sensor.entrance_room_entrance_door_lock_battery`   |
+| Section                | Span | Name                | Entities                                            |
+| ---------------------- | ---- | ------------------- | --------------------------------------------------- |
+| Lighting               | 3    | Hallway             | `switch.fs4_1`                                      |
+| Lighting               | 3    | Hallway 2           | `switch.fds1_2`                                     |
+| Lighting               | 3    | Entrance            | `switch.fs2_1`                                      |
+| Front Door             | 1    | Front Door          | `lock.entrance_door_lock`                           |
+| Front Door             | 1    | Keypad chirps       | `switch.alarm_keypad_chirps`                        |
+| Front Door             | 1    | Presence simulation | `switch.presence_simulation`                        |
+| Safety (chips)         | 2    | Pill row            | `binary_sensor.hallways_safety_status`              |
+| Safety (chips)         | 2    | Hallway smoke       | `binary_sensor.ass7_smoke_detected`                 |
+| Safety (chips)         | 2    | Entrance smoke      | `binary_sensor.ass4_smoke_detected`                 |
+| Safety (chips)         | 2    | Front door          | `binary_sensor.ring_rcs1`                           |
+| Safety (chips)         | 2    | Ring motion         | `binary_sensor.ring_rms1`                           |
+| Safety (chips)         | 2    | Fibaro motion       | `binary_sensor.fms2_home_security_motion_detection` |
+| Battery Levels (chips) | 3    | Hallway smoke       | `sensor.ass7_battery`                               |
+| Battery Levels (chips) | 3    | Entrance smoke      | `sensor.ass4_battery`                               |
+| Battery Levels (chips) | 3    | Front door          | `sensor.ring_rcs1_front_door_battery`               |
+| Battery Levels (chips) | 3    | Ring motion         | `sensor.ring_rms1_entrance_room_battery`            |
+| Battery Levels (chips) | 3    | Fibaro motion       | `sensor.fms2_battery_level`                         |
+| Battery Levels (chips) | 3    | Keypad              | `sensor.ring_keypad_battery`                        |
+| Battery Levels (chips) | 3    | Door lock           | `sensor.entrance_room_entrance_door_lock_battery`   |
 
 ### Garden (`garden.yaml`)
 
