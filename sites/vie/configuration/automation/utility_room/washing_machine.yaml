@@ -1,11 +1,32 @@
 ---
+# Washing machine notifications (ntfy).
+# All three trigger on sensor.washing_machine_phase (template/washing_machine.yaml),
+# the same definition the dashboard uses. `to` plus `not_from` keeps pause and
+# resume, error and resume, and Home Assistant restarts from sending a second
+# notification.
+# Icons: first tag = device, second tag = state. Times are local.
+
 - alias: "Utility Room: Washing Machine: Started"
   triggers:
     - trigger: state
-      entity_id: sensor.washing_machine_run_state
-      to: "Washing"
+      entity_id: sensor.washing_machine_phase
+      to: running
+      not_from:
+        - paused
+        - error
+        - unknown
+        - unavailable
   conditions: []
   actions:
+    # The machine first reports a preliminary estimate and then
+    # settles on the real one. Wait until the settings are there, then let the
+    # estimate settle before notifying.
+    - wait_template: >-
+        {{ states('sensor.lg_washer_temperature') | is_number
+        and states('sensor.lg_washer_spin') | is_number
+        and states('sensor.lg_washer_remaining_time') | float(0) > 0 }}
+      timeout: "00:03:00"
+      continue_on_timeout: true
     - delay:
         seconds: 60
     - action: rest_command.ntfy_notify
@@ -17,18 +38,25 @@
           - arrows_counterclockwise
         markdown: false
         message: |-
+          {%- set end_state = states('sensor.washing_machine_end_time') -%}
+          {%- set end = as_datetime(end_state) if end_state not in ['unknown', 'unavailable', 'none', 'None', ''] else none -%}
+          {%- set left = states('sensor.lg_washer_remaining_time') | int(0) -%}
+          {%- set temp = states('sensor.lg_washer_temperature') -%}
+          {%- set spin = states('sensor.lg_washer_spin') -%}
           Started: {{ as_local(trigger.to_state.last_changed).strftime('%Y-%m-%d %H:%M:%S') }}
-          Estimated Time: {{ states('sensor.washing_machine_initial_time') }}
-          Course: {{ states('sensor.washing_machine_current_course') }}
-          Water Temperature: {{ states('sensor.washing_machine_water_temp') }}
-          Spin Speed: {{ states('sensor.washing_machine_spin_speed') }}
+          Done at: {{ (as_local(end).strftime('%H:%M') ~ (' (' ~ left ~ ' min left)' if left > 0 else '')) if end is not none else 'unknown' }}
+          Temperature: {{ (temp | int(0) ~ ' °C') if temp | is_number else 'unknown' }}
+          Spin: {{ (spin | int(0) ~ ' rpm') if spin | is_number else 'unknown' }}
   mode: single
 
 - alias: "Utility Room: Washing Machine: Completed"
   triggers:
     - trigger: state
-      entity_id: binary_sensor.washing_machine_wash_completed
-      to: "on"
+      entity_id: sensor.washing_machine_phase
+      to: finished
+      not_from:
+        - unknown
+        - unavailable
   conditions: []
   actions:
     - action: rest_command.ntfy_notify
@@ -41,4 +69,41 @@
         markdown: false
         message: |-
           Completed: {{ as_local(trigger.to_state.last_changed).strftime('%Y-%m-%d %H:%M:%S') }}
+  mode: single
+
+- alias: "Utility Room: Washing Machine: Error"
+  triggers:
+    - trigger: state
+      entity_id: sensor.washing_machine_phase
+      to: error
+      not_from:
+        - unknown
+        - unavailable
+  conditions: []
+  actions:
+    # The error flag can switch on before the message has been updated.
+    - wait_template: >-
+        {{ states('sensor.lg_washer_error_message') not in ['OK', 'unknown', 'unavailable'] }}
+      timeout: "00:01:00"
+      continue_on_timeout: true
+    - action: rest_command.ntfy_notify
+      data:
+        topic: tuxnet-home
+        title: Washing Machine ERROR
+        tags:
+          - womans_clothes
+          - warning
+        priority: high
+        markdown: false
+        # The machine's message carries the code in brackets, for example
+        # "Water drain error (OE)": split it into code and message.
+        message: |-
+          {%- set raw = states('sensor.lg_washer_error_message') -%}
+          {%- set known = raw not in ['OK', 'unknown', 'unavailable'] -%}
+          {%- set found = raw | regex_findall('[(]([^)]+)[)] *$') -%}
+          Occurred: {{ as_local(trigger.to_state.last_changed).strftime('%Y-%m-%d %H:%M:%S') }}
+          Error code: {{ found[0] if known and found else 'unknown' }}
+          {%- if known %}
+          Error: {{ raw | regex_replace(' *[(][^)]*[)] *$', '') }}
+          {%- endif %}
   mode: single

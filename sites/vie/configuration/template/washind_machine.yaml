@@ -11,6 +11,9 @@
       name: "Washing Machine: Phase"
       default_entity_id: sensor.washing_machine_phase
       icon: mdi:washing-machine
+      # Unavailable while the integration is: when it recovers, the notification
+      # automations (`not_from: unavailable`) do not mistake it for a new cycle.
+      availability: "{{ not is_state('sensor.lg_washer_status', 'unavailable') }}"
       state: >-
         {%- set s = states('sensor.lg_washer_status') -%}
         {%- if is_state('binary_sensor.lg_washer_error', 'on') or s == 'Error' -%}error
@@ -38,11 +41,12 @@
         {%- set h = states('sensor.lg_washer_reserve_time') -%}
         {{ 'Starts in ' ~ (h | int) ~ ' h' if h | is_number and h | int > 0 else 'Delayed start' }}
         {%- elif phase == 'finished' -%}Finished
+        {%- elif phase in ['unavailable', 'unknown'] -%}Unavailable
         {%- elif s in ['Ready'] -%}Ready
         {%- else -%}Off{%- endif -%}
       icon: >-
         {%- set phase = states('sensor.washing_machine_phase') -%}
-        {{ {'error': 'mdi:washing-machine-alert', 'idle': 'mdi:washing-machine-off'}.get(phase, 'mdi:washing-machine') }}
+        {{ {'error': 'mdi:washing-machine-alert', 'idle': 'mdi:washing-machine-off', 'unavailable': 'mdi:washing-machine-off'}.get(phase, 'mdi:washing-machine') }}
       attributes:
         color: >-
           {{ {'running': 'blue', 'paused': 'orange', 'error': 'red', 'finished': 'green'}.get(states('sensor.washing_machine_phase'), 'grey') }}

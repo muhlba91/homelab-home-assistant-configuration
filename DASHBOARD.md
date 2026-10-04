@@ -101,20 +101,21 @@ is installed.
 
 ## Files and loading
 
-| Path                                                     | Purpose                                                                                              |
-| -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `common/configuration/configuration.yaml`                | Loads `lovelace: !include_dir_merge_named lovelace` and `template: !include_dir_merge_list template` |
-| `common/configuration/frontend/themes.yaml`              | Themes `family_dashboard` and `family_dashboard_chips` (light and dark)                              |
-| `sites/vie/configuration/lovelace/dashboards.yaml`       | Registers the dashboard under the key `lovelace`: it replaces the built-in Overview                  |
-| `sites/vie/configuration/ui-lovelace.yaml`               | Dashboard root: title and the ordered `!include` list of views                                       |
-| `sites/vie/configuration/dashboards/views/*.yaml`        | One file per tab (view)                                                                              |
-| `sites/vie/configuration/template/safety_status.yaml`    | Template binary sensors behind the safety pills                                                      |
-| `sites/vie/configuration/template/dashboard_status.yaml` | Template sensors behind the A/C and battery summaries                                                |
-| `sites/vie/configuration/packages/energy.yaml`           | Daily utility meters behind the Solar & Energy panel                                                 |
-| `sites/vie/configuration/template/energy.yaml`           | Own-use and produced-today template sensors                                                          |
-| `sites/vie/configuration/template/washing_machine.yaml`  | Phase, status, end time and active sensors behind the washing machine panel                          |
-| `scripts/validate_dashboard.py`                          | Checks the layout rules, templates and entity IDs                                                    |
-| `scripts/dashboard_inventory.py`                         | Regenerates the entity inventory in this file                                                        |
+| Path                                                                   | Purpose                                                                                              |
+| ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `common/configuration/configuration.yaml`                              | Loads `lovelace: !include_dir_merge_named lovelace` and `template: !include_dir_merge_list template` |
+| `common/configuration/frontend/themes.yaml`                            | Themes `family_dashboard` and `family_dashboard_chips` (light and dark)                              |
+| `sites/vie/configuration/lovelace/dashboards.yaml`                     | Registers the dashboard under the key `lovelace`: it replaces the built-in Overview                  |
+| `sites/vie/configuration/ui-lovelace.yaml`                             | Dashboard root: title and the ordered `!include` list of views                                       |
+| `sites/vie/configuration/dashboards/views/*.yaml`                      | One file per tab (view)                                                                              |
+| `sites/vie/configuration/template/safety_status.yaml`                  | Template binary sensors behind the safety pills                                                      |
+| `sites/vie/configuration/template/dashboard_status.yaml`               | Template sensors behind the A/C and battery summaries                                                |
+| `sites/vie/configuration/packages/energy.yaml`                         | Daily utility meters behind the Solar & Energy panel                                                 |
+| `sites/vie/configuration/template/energy.yaml`                         | Own-use and produced-today template sensors                                                          |
+| `sites/vie/configuration/template/washing_machine.yaml`                | Phase, status, end time and active sensors behind the washing machine panel                          |
+| `sites/vie/configuration/automation/utility_room/washing_machine.yaml` | ntfy notifications: cycle started, completed, error                                                  |
+| `scripts/validate_dashboard.py`                                        | Checks the layout rules, templates and entity IDs                                                    |
+| `scripts/dashboard_inventory.py`                                       | Regenerates the entity inventory in this file                                                        |
 
 `common/` and `sites/vie/` are merged into one Home Assistant configuration
 directory at deploy time by `lifecycle/configuration.sh`.
@@ -915,14 +916,15 @@ the dashboard shows.
 | `sensor.washing_machine_end_time`      | Timestamp when the cycle ends; trigger-based                                                                                |
 | `binary_sensor.washing_machine_active` | On while running, paused or in error; shows the Overview row                                                                |
 
-| Phase     | Raw status values                                                                                         | Pill                           | Overview row |
-| --------- | --------------------------------------------------------------------------------------------------------- | ------------------------------ | ------------ |
-| running   | Measuring, Pre-wash, Washing, Rinsing, Spinning, Drying, Cooling, Rinse hold, Refreshing, Steam softening | blue, "Washing · 11 min left"  | shown        |
-| paused    | Paused, Auto DT Open Pause                                                                                | orange, "Paused · 11 min left" | shown        |
-| error     | Error, or `binary_sensor.lg_washer_error` on                                                              | red, the error message         | shown        |
-| scheduled | Delayed                                                                                                   | grey, "Starts in 3 h"          | hidden       |
-| finished  | End                                                                                                       | green, "Finished"              | hidden       |
-| idle      | Off, Ready, Demo, unknown, unavailable                                                                    | grey, "Off" or "Ready"         | hidden       |
+| Phase       | Raw status values                                                                                         | Pill                           | Overview row |
+| ----------- | --------------------------------------------------------------------------------------------------------- | ------------------------------ | ------------ |
+| running     | Measuring, Pre-wash, Washing, Rinsing, Spinning, Drying, Cooling, Rinse hold, Refreshing, Steam softening | blue, "Washing · 11 min left"  | shown        |
+| paused      | Paused, Auto DT Open Pause                                                                                | orange, "Paused · 11 min left" | shown        |
+| error       | Error, or `binary_sensor.lg_washer_error` on                                                              | red, the error message         | shown        |
+| scheduled   | Delayed                                                                                                   | grey, "Starts in 3 h"          | hidden       |
+| finished    | End                                                                                                       | green, "Finished"              | hidden       |
+| idle        | Off, Ready, Demo, unknown                                                                                 | grey, "Off" or "Ready"         | hidden       |
+| unavailable | The integration is unavailable                                                                            | grey, "Unavailable"            | hidden       |
 
 Rules:
 
@@ -946,6 +948,44 @@ Rules:
   not appear.
 - **New status values** from an integration update fall into "idle" until
   they are added to the phase sensor.
+- **The phase sensor is unavailable while the integration is.** When it
+  recovers, the notification automations (`not_from: unavailable`) do not
+  mistake the recovery for a new cycle. A status of `unknown` stays "idle",
+  because it is the normal state of a machine that is switched off.
+
+### Notifications
+
+`sites/vie/configuration/automation/utility_room/washing_machine.yaml` sends
+three ntfy notifications through `rest_command.ntfy_notify`. All three trigger
+on `sensor.washing_machine_phase`, so notifications and dashboard always agree
+on what "started", "finished" and "error" mean.
+
+| Notification | Title                       | Icons (tags)                                | Priority | Message                                                 |
+| ------------ | --------------------------- | ------------------------------------------- | -------- | ------------------------------------------------------- |
+| Started      | `Washing Machine STARTED`   | `womans_clothes`, `arrows_counterclockwise` | default  | Started, done at (with minutes left), temperature, spin |
+| Completed    | `Washing Machine COMPLETED` | `womans_clothes`, `white_check_mark`        | default  | Completed time                                          |
+| Error        | `Washing Machine ERROR`     | `womans_clothes`, `warning`                 | high     | Time, error code, error message when available          |
+
+Rules:
+
+- **Convention:** the first icon marks the device, the second the state; the
+  title is the device name plus the state in capitals.
+- **Times are local.** Event times use the format of the other notifications
+  (`YYYY-MM-DD HH:MM:SS`); the estimated end is `HH:MM`.
+- **Started** fires when the phase becomes `running` from idle, scheduled or
+  finished. `not_from: [paused, error, unknown, unavailable]` stops pause and
+  resume, error and resume, an integration dropout and a Home Assistant
+  restart from sending a second notification. It then waits (up to 3 minutes)
+  until temperature, spin and remaining time are available, plus 60 seconds:
+  the machine first reports a preliminary estimate (about 52 minutes) and then
+  settles on the real one.
+- **Error** waits up to 15 seconds for the error message, because the error
+  flag can switch on first. The machine's message carries the code in
+  brackets ("Water drain error (OE)"), which is split into code and message.
+  Messages without a code ("EEPROM error") give code `unknown`; without any
+  message, only the code line is sent.
+- **Not notified:** a cycle that is cancelled by switching the machine off, and
+  energy use (decided: not useful in a notification).
 
 ## Selecting entities from an entity list
 
@@ -1067,15 +1107,16 @@ consumption.
 These places contain explicit entity lists. Update all of them when adding,
 removing or renaming a safety-relevant entity.
 
-| Location                                           | Contents                                                            |
-| -------------------------------------------------- | ------------------------------------------------------------------- |
-| `template/safety_status.yaml`, house sensor        | Smoke (7), leak (2), contacts (3), alarm panel                      |
-| `template/safety_status.yaml`, room sensors        | That room's alarms and contacts                                     |
-| `views/overview.yaml`, "Smoke" summary             | Smoke sensors                                                       |
-| `views/overview.yaml`, "Water leaks" summary       | Leak sensors                                                        |
-| `views/overview.yaml`, "Doors and windows" summary | Contacts                                                            |
-| `views/overview.yaml`, Indoor climate              | One ring per room; each ring label names its room's air conditioner |
-| `template/washing_machine.yaml`, phase sensor      | Raw status values per phase; add new ones after integration updates |
+| Location                                           | Contents                                                                                                        |
+| -------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `template/safety_status.yaml`, house sensor        | Smoke (7), leak (2), contacts (3), alarm panel                                                                  |
+| `template/safety_status.yaml`, room sensors        | That room's alarms and contacts                                                                                 |
+| `views/overview.yaml`, "Smoke" summary             | Smoke sensors                                                                                                   |
+| `views/overview.yaml`, "Water leaks" summary       | Leak sensors                                                                                                    |
+| `views/overview.yaml`, "Doors and windows" summary | Contacts                                                                                                        |
+| `views/overview.yaml`, Indoor climate              | One ring per room; each ring label names its room's air conditioner                                             |
+| `template/washing_machine.yaml`, phase sensor      | Raw status values per phase; add new ones after integration updates                                             |
+| `automation/utility_room/washing_machine.yaml`     | The `lg_washer` entities (temperature, spin, remaining time, error message) and the `washing_machine_*` sensors |
 
 Air conditioners and batteries are **not** listed anywhere: the
 [dashboard status sensors](#dashboard-status-sensors) discover them.
@@ -1118,81 +1159,86 @@ Before committing:
 Each of these happened during development. Check here first when something
 looks wrong.
 
-| Symptom                                                            | Cause                                                                          | Fix                                                                    |
-| ------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------- |
-| No dashboard loads at all, not even the default                    | A custom card registers a frontend element twice (`vacuum-card`)               | Remove it from `extra_module_url.yaml`; add custom cards one at a time |
-| New template entities never appear                                 | `template:` included with `!include_dir_merge_named`, which ignores list files | Use `!include_dir_merge_list`                                          |
-| `lovelace: mode: yaml` has no effect                               | Removed in Home Assistant 2026.8                                               | Register the dashboard under `dashboards:` with the key `lovelace`     |
-| Dashboard edits do not show                                        | Included view files are cached, or an old copy is deployed                     | Dashboard menu, Refresh; compare checksums of the deployed files       |
-| Cards scattered in odd positions                                   | Masonry view reorders by height                                                | Use `type: sections`                                                   |
-| "Template loop detected" in the log, state and attributes disagree | A template sensor iterates its own domain (`states.sensor`)                    | Make it trigger-based                                                  |
-| A value lags one update behind                                     | Template reads `this`                                                          | Compute every field from live states                                   |
-| Pills float or rows look ragged on phones                          | Widths below 12 keep their size on the phone's 12-unit grid                    | Use only 6, 12 or `full`                                               |
-| Info under rings detaches from its ring on phones                  | Grid order pairs cards by position, which changes when wrapping                | Put the info into the ring (templated `name`) or into one stacked card |
-| Gauge huge inside a stack                                          | The gauge sizes itself by width                                                | Put it between invisible spacer cards                                  |
-| Pill background invisible                                          | Chip background equals card background                                         | Set `mush-chip-background` in the theme                                |
-| Panels blend into the page                                         | Section background equals page background                                      | Set `ha-section-background-color`                                      |
-| Heading badge cannot show three states                             | Badges have no templates or visibility                                         | Use a Mushroom template chip in a pill row                             |
-| Sankey shows only one branch                                       | `remaining_parent_state` misbehaves                                            | Give the node explicit `add_entities` and `subtract_entities`          |
-| Today values `unknown` after deploying                             | New utility meters have no reading yet                                         | Display sensors treat unknown as 0; `utility_meter.calibrate` once     |
-| Daily solar value lost at night                                    | The inverter's day counter is unavailable while it sleeps                      | Use a daily utility meter on the inverter's total                      |
-| `as_timestamp got invalid input 'None'`                            | A sun attribute is missing at startup                                          | Pass a default: `as_timestamp(value, none)`                            |
-| Coloured text hard to read                                         | Palette colours on the pill background stay below 4.5:1                        | Keep text neutral; colour only icons                                   |
+| Symptom                                                               | Cause                                                                          | Fix                                                                                                                  |
+| --------------------------------------------------------------------- | ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
+| No dashboard loads at all, not even the default                       | A custom card registers a frontend element twice (`vacuum-card`)               | Remove it from `extra_module_url.yaml`; add custom cards one at a time                                               |
+| New template entities never appear                                    | `template:` included with `!include_dir_merge_named`, which ignores list files | Use `!include_dir_merge_list`                                                                                        |
+| `lovelace: mode: yaml` has no effect                                  | Removed in Home Assistant 2026.8                                               | Register the dashboard under `dashboards:` with the key `lovelace`                                                   |
+| Dashboard edits do not show                                           | Included view files are cached, or an old copy is deployed                     | Dashboard menu, Refresh; compare checksums of the deployed files                                                     |
+| Cards scattered in odd positions                                      | Masonry view reorders by height                                                | Use `type: sections`                                                                                                 |
+| "Template loop detected" in the log, state and attributes disagree    | A template sensor iterates its own domain (`states.sensor`)                    | Make it trigger-based                                                                                                |
+| A value lags one update behind                                        | Template reads `this`                                                          | Compute every field from live states                                                                                 |
+| Pills float or rows look ragged on phones                             | Widths below 12 keep their size on the phone's 12-unit grid                    | Use only 6, 12 or `full`                                                                                             |
+| Info under rings detaches from its ring on phones                     | Grid order pairs cards by position, which changes when wrapping                | Put the info into the ring (templated `name`) or into one stacked card                                               |
+| Gauge huge inside a stack                                             | The gauge sizes itself by width                                                | Put it between invisible spacer cards                                                                                |
+| Pill background invisible                                             | Chip background equals card background                                         | Set `mush-chip-background` in the theme                                                                              |
+| Panels blend into the page                                            | Section background equals page background                                      | Set `ha-section-background-color`                                                                                    |
+| Heading badge cannot show three states                                | Badges have no templates or visibility                                         | Use a Mushroom template chip in a pill row                                                                           |
+| Sankey shows only one branch                                          | `remaining_parent_state` misbehaves                                            | Give the node explicit `add_entities` and `subtract_entities`                                                        |
+| Today values `unknown` after deploying                                | New utility meters have no reading yet                                         | Display sensors treat unknown as 0; `utility_meter.calibrate` once                                                   |
+| Daily solar value lost at night                                       | The inverter's day counter is unavailable while it sleeps                      | Use a daily utility meter on the inverter's total                                                                    |
+| `as_timestamp got invalid input 'None'`                               | A sun attribute is missing at startup                                          | Pass a default: `as_timestamp(value, none)`                                                                          |
+| A notification is sent twice (after pause, error, restart or dropout) | A state trigger fires on every transition into the state                       | Use `to` plus `not_from` with the states that must not count; make a template sensor unavailable while its source is |
+| Coloured text hard to read                                            | Palette colours on the pill background stay below 4.5:1                        | Keep text neutral; colour only icons                                                                                 |
 
 ## Decision log
 
-| Decision                                                    | Reason                                                                                                                           |
-| ----------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| `sections` views instead of masonry                         | Masonry reorders cards by height; sections keep the designed order                                                               |
-| Native `tile` cards                                         | Consistent shape, real toggles and cover controls                                                                                |
-| Flat rows and chip sections via two themes                  | Native way to group items without custom CSS                                                                                     |
-| No shadows on section panels                                | Needs `card-mod` targeting frontend internals, which breaks on updates; depth comes from surface contrast                        |
-| Status pill on its own row under the heading                | Correct on phones and keeps all headings aligned on desktop; replaced pills sharing the heading row                              |
-| Status logic in template sensors                            | Reusable in automations; the dashboard stays declarative                                                                         |
-| Gauge icons hidden                                          | The gauge offers no palette-safe icon colour; the mockups had no icon                                                            |
-| A/C shown as ring label plus summary pill                   | Pills under rings detached from their rings on phones; the label is part of the ring, the pill carries counts per mode           |
-| Camera removed from Living Room                             | Too dominant for its value                                                                                                       |
-| `vacuum-card` not loaded                                    | Breaks the whole frontend (duplicate `ha-icon-button`)                                                                           |
-| Shutter position and tilt only in the dialog                | Keeps rows compact; sliders are rarely needed                                                                                    |
-| Dark mode uses its own desaturated palette                  | Saturated colours glare on dark surfaces                                                                                         |
-| Widths limited to 6, 12 and full                            | Phones use a 12-unit grid; 8 and 9 left ragged rows                                                                              |
-| Batteries summary on Overview                               | Low batteries are the most common silent failure; auto-discovered, no list to maintain                                           |
-| Battery status sensor is trigger-based                      | It reads all sensors and is one itself; state tracking caused a template loop                                                    |
-| Solar & Energy split into Now and Today                     | Same values in two time ranges, compared side by side                                                                            |
-| Daily utility meters for today's values                     | The inverter's day counter is unavailable at night; all meters reset together at midnight                                        |
-| Gauge between invisible spacer cards (one third)            | The gauge has no size option and would fill its stack; one fifth was too small on phones; spacers use only native cards          |
-| Unknown shown as 0, unavailable kept                        | Unknown means nothing counted yet; unavailable means a fault that must stay visible                                              |
-| No stack-in-card for chip-styled halves                     | Unmaintained dependency; the flat halves are separated by subtitles and spacing                                                  |
-| Presence simulation banner on the Overview                  | Visible only while active, as the first row; impossible to overlook, gone when off                                               |
-| Presence simulation switch in Hallways, Front door          | Rarely needed; placed where you leave the house, next to the lock and the alarm keypad, costing no Overview space                |
-| Washing machine panel as pills only                         | A tile row with three large items protruded and looked sparse; pills keep the panel one line high, idle or running               |
-| Washing machine on the Overview only during an active cycle | Below Security: Security stays first, and the row is still on a phone's first screen                                             |
-| Temperature and spin before course                          | Course is rarely changed; temperature and spin change often. The course is left out on the Overview                              |
-| Washing machine end time trigger-based                      | Stays steady during the countdown and follows real re-estimates                                                                  |
-| Media and vacuum share a Devices panel                      | Keeps the Living Room's extra controls in one full-width row                                                                     |
-| Neutral pill text, coloured icons                           | Coloured text fails contrast; green is reserved for all clear                                                                    |
-| Shutters left of Safety in every room                       | Same place in every tab; Living Room's three shutters stack in the slot next to its 2×2 Safety grid                              |
-| Living Room devices above the slot row                      | Controls first, status last; every tab ends with Shutters and Safety, then Batteries                                             |
-| Batteries always their own full-width last row              | Safety is acted on, batteries only glanced at; rejected a compact battery panel beside Safety because it blurred that separation |
-| Safety tiles always width 12                                | Consistent tile sizes across tabs; panels wrap instead of stretching tiles                                                       |
-| Garden door shown in Garden and Living Room                 | The door belongs to both spaces; the Garden tab now follows the same slot row as every room                                      |
+| Decision                                                       | Reason                                                                                                                                          |
+| -------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sections` views instead of masonry                            | Masonry reorders cards by height; sections keep the designed order                                                                              |
+| Native `tile` cards                                            | Consistent shape, real toggles and cover controls                                                                                               |
+| Flat rows and chip sections via two themes                     | Native way to group items without custom CSS                                                                                                    |
+| No shadows on section panels                                   | Needs `card-mod` targeting frontend internals, which breaks on updates; depth comes from surface contrast                                       |
+| Status pill on its own row under the heading                   | Correct on phones and keeps all headings aligned on desktop; replaced pills sharing the heading row                                             |
+| Status logic in template sensors                               | Reusable in automations; the dashboard stays declarative                                                                                        |
+| Gauge icons hidden                                             | The gauge offers no palette-safe icon colour; the mockups had no icon                                                                           |
+| A/C shown as ring label plus summary pill                      | Pills under rings detached from their rings on phones; the label is part of the ring, the pill carries counts per mode                          |
+| Camera removed from Living Room                                | Too dominant for its value                                                                                                                      |
+| `vacuum-card` not loaded                                       | Breaks the whole frontend (duplicate `ha-icon-button`)                                                                                          |
+| Shutter position and tilt only in the dialog                   | Keeps rows compact; sliders are rarely needed                                                                                                   |
+| Dark mode uses its own desaturated palette                     | Saturated colours glare on dark surfaces                                                                                                        |
+| Widths limited to 6, 12 and full                               | Phones use a 12-unit grid; 8 and 9 left ragged rows                                                                                             |
+| Batteries summary on Overview                                  | Low batteries are the most common silent failure; auto-discovered, no list to maintain                                                          |
+| Battery status sensor is trigger-based                         | It reads all sensors and is one itself; state tracking caused a template loop                                                                   |
+| Solar & Energy split into Now and Today                        | Same values in two time ranges, compared side by side                                                                                           |
+| Daily utility meters for today's values                        | The inverter's day counter is unavailable at night; all meters reset together at midnight                                                       |
+| Gauge between invisible spacer cards (one third)               | The gauge has no size option and would fill its stack; one fifth was too small on phones; spacers use only native cards                         |
+| Unknown shown as 0, unavailable kept                           | Unknown means nothing counted yet; unavailable means a fault that must stay visible                                                             |
+| No stack-in-card for chip-styled halves                        | Unmaintained dependency; the flat halves are separated by subtitles and spacing                                                                 |
+| Presence simulation banner on the Overview                     | Visible only while active, as the first row; impossible to overlook, gone when off                                                              |
+| Presence simulation switch in Hallways, Front door             | Rarely needed; placed where you leave the house, next to the lock and the alarm keypad, costing no Overview space                               |
+| Washing machine panel as pills only                            | A tile row with three large items protruded and looked sparse; pills keep the panel one line high, idle or running                              |
+| Washing machine on the Overview only during an active cycle    | Below Security: Security stays first, and the row is still on a phone's first screen                                                            |
+| Temperature and spin before course                             | Course is rarely changed; temperature and spin change often. The course is left out on the Overview                                             |
+| Washing machine end time trigger-based                         | Stays steady during the countdown and follows real re-estimates                                                                                 |
+| Washing machine notifications trigger on the phase sensor      | The same definition as the dashboard; the status values are listed in one place                                                                 |
+| Started notification waits for the settled estimate            | The machine briefly reports about 52 minutes before settling on the real one                                                                    |
+| Phase sensor unavailable while the integration is              | Recovery from a dropout must not look like a new cycle                                                                                          |
+| No washing machine energy on the dashboard or in notifications | The counter resets per run and holds the last value between runs; not actionable. It could go into the Energy dashboard as an individual device |
+| Media and vacuum share a Devices panel                         | Keeps the Living Room's extra controls in one full-width row                                                                                    |
+| Neutral pill text, coloured icons                              | Coloured text fails contrast; green is reserved for all clear                                                                                   |
+| Shutters left of Safety in every room                          | Same place in every tab; Living Room's three shutters stack in the slot next to its 2×2 Safety grid                                             |
+| Living Room devices above the slot row                         | Controls first, status last; every tab ends with Shutters and Safety, then Batteries                                                            |
+| Batteries always their own full-width last row                 | Safety is acted on, batteries only glanced at; rejected a compact battery panel beside Safety because it blurred that separation                |
+| Safety tiles always width 12                                   | Consistent tile sizes across tabs; panels wrap instead of stretching tiles                                                                      |
+| Garden door shown in Garden and Living Room                    | The door belongs to both spaces; the Garden tab now follows the same slot row as every room                                                     |
 
 ## Open topics
 
 Ideas that were discussed but are not implemented. Check here before proposing
 something new: it may already have been weighed.
 
-| Topic                                                 | Status              | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| ----------------------------------------------------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Sidebar collapsed to icons by default for all users   | Parked              | Home Assistant stores the sidebar mode per browser, with no server default. Plan: a small own frontend module via `extra_module_url` that collapses the sidebar only when no preference is stored, using the `hass-dock-sidebar` event. Needs the stored value for "collapsed" (browser DevTools, Local Storage, key `dockedSidebar`). The `custom-sidebar` plugin enforces the mode on every reload and has broken with several Home Assistant releases |
-| Climate on the left (phones show it first)            | Open                | Rooms: lighting first because it is the most used control. Overview: Security first because its pill can be urgent. No decision yet                                                                                                                                                                                                                                                                                                                      |
-| Solar gauges smaller than other rings on phones       | Accepted limitation | Possible fix: gauges directly in the section grid (sized by rows) plus screen-size visibility rules to keep the phone order. Risk: medium widths (tablet portrait) can interleave Now and Today. Test on real devices at several widths first                                                                                                                                                                                                            |
-| Energy Flow with individual consumers                 | Future              | Candidates: plug energy sensors and the switches' consumption sensors. Option: Home Assistant's native energy cards (energy sankey with devices and a period selector), which need the devices added to the Energy dashboard                                                                                                                                                                                                                             |
-| `utility_meter/` include folder                       | Future              | Worth it once there are more than the three energy meters                                                                                                                                                                                                                                                                                                                                                                                                |
-| Start presence simulation automatically               | Idea                | An automation could turn it on when the alarm is armed away and off when disarmed, making the switch mostly unnecessary                                                                                                                                                                                                                                                                                                                                  |
-| Washing machine automations                           | To do               | `automation.utility_room_washing_machine_started` and `..._completed` still use the old, disabled `washing_machine_*` entities and are silently broken. Migrate them to the `lg_washer` entities or to `sensor.washing_machine_phase`                                                                                                                                                                                                                    |
-| Washing machine energy per run                        | Untested            | `sensor.lg_washer_energy` increases; whether it resets per run is unknown. Check before showing it                                                                                                                                                                                                                                                                                                                                                       |
-| Default dashboard occasionally opens `/home/overview` | Unresolved          | The registration (key `lovelace`), the default setting and the user profile are correct. Suspected client-side caching; next step is a test in a private browser window                                                                                                                                                                                                                                                                                  |
+| Topic                                                     | Status              | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| --------------------------------------------------------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Sidebar collapsed to icons by default for all users       | Parked              | Home Assistant stores the sidebar mode per browser, with no server default. Plan: a small own frontend module via `extra_module_url` that collapses the sidebar only when no preference is stored, using the `hass-dock-sidebar` event. Needs the stored value for "collapsed" (browser DevTools, Local Storage, key `dockedSidebar`). The `custom-sidebar` plugin enforces the mode on every reload and has broken with several Home Assistant releases |
+| Climate on the left (phones show it first)                | Open                | Rooms: lighting first because it is the most used control. Overview: Security first because its pill can be urgent. No decision yet                                                                                                                                                                                                                                                                                                                      |
+| Solar gauges smaller than other rings on phones           | Accepted limitation | Possible fix: gauges directly in the section grid (sized by rows) plus screen-size visibility rules to keep the phone order. Risk: medium widths (tablet portrait) can interleave Now and Today. Test on real devices at several widths first                                                                                                                                                                                                            |
+| Energy Flow with individual consumers                     | Future              | Candidates: plug energy sensors and the switches' consumption sensors. Option: Home Assistant's native energy cards (energy sankey with devices and a period selector), which need the devices added to the Energy dashboard                                                                                                                                                                                                                             |
+| `utility_meter/` include folder                           | Future              | Worth it once there are more than the three energy meters                                                                                                                                                                                                                                                                                                                                                                                                |
+| Start presence simulation automatically                   | Idea                | An automation could turn it on when the alarm is armed away and off when disarmed, making the switch mostly unnecessary                                                                                                                                                                                                                                                                                                                                  |
+| Washing machine energy                                    | Optional            | `sensor.lg_washer_energy` resets when a run starts and keeps its final value until the next run (confirmed). It is the machine's own figure, not metered. Not shown anywhere on purpose; it could be added to the Energy dashboard as an individual device                                                                                                                                                                                               |
+| Outdoor forecast: today's min and max, age of the reading | Under discussion    | The current temperature can be hours old. Wanted: today's low and high and the time of the last measurement, without making the tile taller. Needs the attributes of the weather entity first, to see which time stamp the integration provides                                                                                                                                                                                                          |
+| Default dashboard occasionally opens `/home/overview`     | Unresolved          | The registration (key `lovelace`), the default setting and the user profile are correct. Suspected client-side caching; next step is a test in a private browser window                                                                                                                                                                                                                                                                                  |
 
 ## Entity inventory
 
