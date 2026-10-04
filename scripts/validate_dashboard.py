@@ -32,6 +32,10 @@ ENTITY_RE = re.compile(
     r"\b(?:sensor|binary_sensor|switch|cover|climate|lock|alarm_control_panel|"
     r"camera|vacuum|weather|sun|light|fan|media_player)\.[a-z0-9_]+")
 HEX_RE = re.compile(r"#[0-9a-fA-F]{6}\b")
+# Action names (`action: weather.get_forecasts`) look like entity IDs but are not.
+ACTION_RE = re.compile(r"^\s*-?\s*(?:action|service):\s*\S+\s*$", re.M)
+# YAML comments may mention entities and actions freely.
+COMMENT_RE = re.compile(r"(^|\s)#.*$", re.M)
 
 errors, warnings = [], []
 
@@ -184,7 +188,8 @@ def check_entities(defined, export):
     files = (glob.glob(f"{VIEWS}/*.yaml") + glob.glob(f"{SITE}/template/*.yaml")
              + glob.glob(f"{SITE}/packages/*.yaml"))
     for path in sorted(files):
-        for eid in sorted(set(ENTITY_RE.findall(open(path, encoding="utf-8").read()))):
+        text = COMMENT_RE.sub(r"\1", ACTION_RE.sub("", open(path, encoding="utf-8").read()))
+        for eid in sorted(set(ENTITY_RE.findall(text))):
             if eid not in known and eid not in defined:
                 err(os.path.basename(path), f"unknown or disabled entity {eid}")
 

@@ -1,0 +1,72 @@
+---
+# Weather for the Overview's Outdoor (Forecast) tile. Source: weather.home
+# (Met.no). Met.no is a forecast service: its "current" values are the model's
+# values for the current hour, not a measurement, and the entity has no
+# observation time stamp. The age of the data is therefore taken from the
+# entity itself (last_updated: when any of its values last changed).
+
+# Today's low and high. Forecasts are no longer attributes of the weather
+# entity; they must be requested with weather.get_forecasts, so this block is
+# trigger-based: it refreshes whenever the weather entity changes, every 30
+# minutes, and on template reload. If a request fails, the sensors keep their
+# last values. Today's entry is found by its local date; without one the
+# sensors are unknown instead of showing another day's values.
+# (The two sensors repeat the same small search on purpose: it avoids relying
+# on variables crossing from the actions into the entity templates.)
+- triggers:
+    - trigger: state
+      entity_id: weather.home
+    - trigger: time_pattern
+      minutes: "/30"
+    - trigger: event
+      event_type: event_template_reloaded
+  actions:
+    - action: weather.get_forecasts
+      target:
+        entity_id: weather.home
+      data:
+        type: daily
+      response_variable: forecast
+  sensor:
+    - unique_id: 19ffaef7-1bfb-4d37-beca-ca7b74d514b9
+      name: "Weather: Today Low"
+      default_entity_id: sensor.weather_today_low
+      unit_of_measurement: "°C"
+      device_class: temperature
+      state: >-
+        {%- set ns = namespace(v=none) -%}
+        {%- for d in forecast['weather.home'].forecast -%}
+        {%- if ns.v is none and as_local(as_datetime(d.datetime)).date() == now().date() -%}{%- set ns.v = d.templow -%}{%- endif -%}
+        {%- endfor -%}
+        {{ ns.v }}
+    - unique_id: 6fcddb55-daea-4fe3-92df-cfb653767271
+      name: "Weather: Today High"
+      default_entity_id: sensor.weather_today_high
+      unit_of_measurement: "°C"
+      device_class: temperature
+      state: >-
+        {%- set ns = namespace(v=none) -%}
+        {%- for d in forecast['weather.home'].forecast -%}
+        {%- if ns.v is none and as_local(as_datetime(d.datetime)).date() == now().date() -%}{%- set ns.v = d.temperature -%}{%- endif -%}
+        {%- endfor -%}
+        {{ ns.v }}
+
+# Age of the data.
+- sensor:
+    - unique_id: 6c90ff82-1200-4fb3-ad4f-cd43354ea9f9
+      name: "Weather: Updated"
+      default_entity_id: sensor.weather_updated
+      device_class: timestamp
+      availability: "{{ states('weather.home') not in ['unavailable', 'unknown'] }}"
+      state: >-
+        {{ states.weather.home.last_updated.isoformat() if states.weather.home is not none else none }}
+  binary_sensor:
+    # Stale: nothing has changed for more than 90 minutes (5400 seconds), or the
+    # weather entity is unavailable.
+    - unique_id: 49d458fd-ab55-4a1c-adac-f83a7bb1a4a3
+      name: "Weather: Data Stale"
+      default_entity_id: binary_sensor.weather_data_stale
+      device_class: problem
+      state: >-
+        {%- set w = states.weather.home -%}
+        {{ w is none or w.state in ['unavailable', 'unknown'] or (now() - w.last_updated).total_seconds() > 5400 }}

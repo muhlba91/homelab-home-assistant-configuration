@@ -139,6 +139,17 @@ sections:
               {% else %}Sunrise {{ ts | timestamp_custom('%H:%M') }}{% endif %}
             tap_action:
               action: more-info
+          - type: template
+            entity: weather.home
+            icon: >-
+              {{ 'mdi:clock-alert-outline' if is_state('binary_sensor.weather_data_stale', 'on') else 'mdi:clock-outline' }}
+            icon_color: "{{ 'orange' if is_state('binary_sensor.weather_data_stale', 'on') else 'grey' }}"
+            content: >-
+              {% set u = states('sensor.weather_updated') %}
+              {% if u in ['unknown', 'unavailable'] %}Weather unavailable
+              {% else %}{% set d = as_local(as_datetime(u)) %}Updated {{ d.strftime('%H:%M') if d.date() == now().date() else d.strftime('%a %H:%M') }}{% endif %}
+            tap_action:
+              action: more-info
         grid_options:
           columns: full
       - type: custom:mushroom-template-card
@@ -146,7 +157,10 @@ sections:
         primary: >-
           {{ state_translated('weather.home') }} · {{ state_attr('weather.home', 'temperature') }}
           {{ state_attr('weather.home', 'temperature_unit') }}
-        secondary: Now
+        secondary: >-
+          {% set lo = states('sensor.weather_today_low') %}
+          {% set hi = states('sensor.weather_today_high') %}
+          {% if lo | is_number and hi | is_number %}Today ↓{{ lo | float | round(0) | int }}° ↑{{ hi | float | round(0) | int }}°{% else %}Today's range unavailable{% endif %}
         icon: >-
           {% set map = {'clear-night': 'weather-night', 'partlycloudy': 'weather-partly-cloudy',
           'exceptional': 'alert-circle-outline'} %}
