@@ -1,0 +1,98 @@
+---
+# Washing machine (Utility > Washing machine panel, Overview row while active).
+# Source: the LG washer integration (its lg_washer entities). Course, doses and
+# initial time keep the last run's value; spin and temperature are unknown
+# when idle. The dashboard therefore shows settings only while a cycle is
+# active, and hides stale values.
+
+# Phase: the only place the raw status values are grouped.
+- sensor:
+    - unique_id: 26b1adc8-c335-4aea-bc22-546826943f07
+      name: "Washing Machine: Phase"
+      default_entity_id: sensor.washing_machine_phase
+      icon: mdi:washing-machine
+      state: >-
+        {%- set s = states('sensor.lg_washer_status') -%}
+        {%- if is_state('binary_sensor.lg_washer_error', 'on') or s == 'Error' -%}error
+        {%- elif s in ['Measuring', 'Pre-wash', 'Washing', 'Rinsing', 'Spinning', 'Drying', 'Cooling',
+        'Rinse hold', 'Refreshing', 'Steam softening'] -%}running
+        {%- elif s in ['Paused', 'Auto DT Open Pause'] -%}paused
+        {%- elif s == 'Delayed' -%}scheduled
+        {%- elif s == 'End' -%}finished
+        {%- else -%}idle{%- endif -%}
+
+    # Pill text (state), colour, icon and the Overview row text.
+    - unique_id: 355043bd-c2f2-44fc-860d-632b92fecf64
+      name: "Washing Machine: Status"
+      default_entity_id: sensor.washing_machine_status
+      state: >-
+        {%- set phase = states('sensor.washing_machine_phase') -%}
+        {%- set s = states('sensor.lg_washer_status') -%}
+        {%- set r = states('sensor.lg_washer_remaining_time') -%}
+        {%- set left = ' · ' ~ (r | int) ~ ' min left' if r | is_number and r | int > 0 else '' -%}
+        {%- if phase == 'error' -%}
+        {{ states('sensor.lg_washer_error_message') if states('sensor.lg_washer_error_message') not in ['OK', 'unknown', 'unavailable'] else 'Error' }}
+        {%- elif phase == 'running' -%}{{ s ~ left }}
+        {%- elif phase == 'paused' -%}{{ 'Paused' ~ left }}
+        {%- elif phase == 'scheduled' -%}
+        {%- set h = states('sensor.lg_washer_reserve_time') -%}
+        {{ 'Starts in ' ~ (h | int) ~ ' h' if h | is_number and h | int > 0 else 'Delayed start' }}
+        {%- elif phase == 'finished' -%}Finished
+        {%- elif s in ['Ready'] -%}Ready
+        {%- else -%}Off{%- endif -%}
+      icon: >-
+        {%- set phase = states('sensor.washing_machine_phase') -%}
+        {{ {'error': 'mdi:washing-machine-alert', 'idle': 'mdi:washing-machine-off'}.get(phase, 'mdi:washing-machine') }}
+      attributes:
+        color: >-
+          {{ {'running': 'blue', 'paused': 'orange', 'error': 'red', 'finished': 'green'}.get(states('sensor.washing_machine_phase'), 'grey') }}
+        overview: >-
+          {%- set phase = states('sensor.washing_machine_phase') -%}
+          {%- set parts = [] -%}
+          {%- set end = as_timestamp(states('sensor.washing_machine_end_time'), none) -%}
+          {%- set t = states('sensor.lg_washer_temperature') -%}
+          {%- set spin = states('sensor.lg_washer_spin') -%}
+          {%- set r = states('sensor.lg_washer_remaining_time') -%}
+          {%- if phase == 'error' -%}
+          {%- set parts = parts + [states('sensor.lg_washer_error_message') if states('sensor.lg_washer_error_message') not in ['OK', 'unknown', 'unavailable'] else 'Error'] -%}
+          {%- elif phase == 'paused' -%}
+          {%- set parts = parts + ['Paused' ~ (' · ' ~ (r | int) ~ ' min left' if r | is_number and r | int > 0 else '')] -%}
+          {%- else -%}
+          {%- set parts = parts + [states('sensor.lg_washer_status')] -%}
+          {%- if end is not none -%}{%- set parts = parts + ['done at ' ~ (end | timestamp_custom('%H:%M'))] -%}{%- endif -%}
+          {%- endif -%}
+          {%- if t | is_number -%}{%- set parts = parts + [(t | int) ~ ' °C'] -%}{%- endif -%}
+          {%- if spin | is_number -%}{%- set parts = parts + [(spin | int) ~ ' rpm'] -%}{%- endif -%}
+          {{ parts | join(' · ') }}
+
+- binary_sensor:
+    # Active cycle: drives the Overview row's visibility.
+    - unique_id: 350cb3ed-e53d-4a0c-990c-362e9023f26e
+      name: "Washing Machine: Active"
+      default_entity_id: binary_sensor.washing_machine_active
+      icon: mdi:washing-machine
+      state: >-
+        {{ states('sensor.washing_machine_phase') in ['running', 'paused', 'error'] }}
+
+# End time: trigger-based on purpose. It is recalculated only when the machine
+# changes its estimate (or the phase changes), so "done at" stays steady while
+# the remaining time counts down, and still follows real jumps.
+- triggers:
+    - trigger: state
+      entity_id: sensor.lg_washer_remaining_time
+    - trigger: state
+      entity_id: sensor.washing_machine_phase
+    - trigger: homeassistant
+      event: start
+    - trigger: event
+      event_type: event_template_reloaded
+  sensor:
+    - unique_id: f953a2a6-5187-4ba3-b6f3-7a9153a8fb20
+      name: "Washing Machine: End Time"
+      default_entity_id: sensor.washing_machine_end_time
+      device_class: timestamp
+      state: >-
+        {%- set r = states('sensor.lg_washer_remaining_time') -%}
+        {%- if is_state('sensor.washing_machine_phase', 'running') and r | is_number and r | float > 0 -%}
+        {{ (now() + timedelta(minutes=r | float)).replace(second=0, microsecond=0).isoformat() }}
+        {%- else -%}{{ none }}{%- endif -%}

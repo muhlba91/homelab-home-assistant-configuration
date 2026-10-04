@@ -36,6 +36,102 @@ sections:
           columns: 12
 
   - type: grid
+    background:
+      opacity: 100
+    column_span: 3
+    cards:
+      - type: heading
+        heading: WASHING MACHINE
+        heading_style: subtitle
+      - type: custom:mushroom-chips-card
+        alignment: start
+        chips:
+          - type: template
+            entity: sensor.washing_machine_status
+            content: "{{ states('sensor.washing_machine_status') }}"
+            icon: "{{ state_attr('sensor.washing_machine_status', 'icon') }}"
+            icon_color: "{{ state_attr('sensor.washing_machine_status', 'color') }}"
+            tap_action:
+              action: more-info
+          - type: conditional
+            conditions:
+              - condition: state
+                entity: binary_sensor.washing_machine_active
+                state: "on"
+              - condition: state
+                entity: sensor.washing_machine_end_time
+                state_not: unknown
+            chip:
+              type: template
+              icon: mdi:clock-outline
+              icon_color: grey
+              content: "Done at {{ as_timestamp(states('sensor.washing_machine_end_time')) | timestamp_custom('%H:%M') }}"
+          - type: conditional
+            conditions:
+              - condition: state
+                entity: binary_sensor.washing_machine_active
+                state: "on"
+              - condition: state
+                entity: sensor.lg_washer_temperature
+                state_not: unknown
+            chip:
+              type: template
+              icon: mdi:thermometer
+              icon_color: grey
+              content: "{{ states('sensor.lg_washer_temperature') | int }} °C"
+          - type: conditional
+            conditions:
+              - condition: state
+                entity: binary_sensor.washing_machine_active
+                state: "on"
+              - condition: state
+                entity: sensor.lg_washer_spin
+                state_not: unknown
+            chip:
+              type: template
+              icon: mdi:autorenew
+              icon_color: grey
+              content: "{{ states('sensor.lg_washer_spin') | int }} rpm"
+          - type: conditional
+            conditions:
+              - condition: state
+                entity: binary_sensor.washing_machine_active
+                state: "on"
+            chip:
+              type: template
+              icon: mdi:washing-machine
+              icon_color: grey
+              content: "{{ states('sensor.lg_washer_course') }}"
+          - type: conditional
+            conditions:
+              - condition: state
+                entity: binary_sensor.washing_machine_active
+                state: "on"
+              - condition: state
+                entity: binary_sensor.lg_washer_pre_wash
+                state: "on"
+            chip:
+              type: template
+              icon: mdi:water-sync
+              icon_color: grey
+              content: Pre-wash
+          - type: conditional
+            conditions:
+              - condition: state
+                entity: binary_sensor.washing_machine_active
+                state: "on"
+              - condition: state
+                entity: binary_sensor.lg_washer_intensive_wash
+                state: "on"
+            chip:
+              type: template
+              icon: mdi:washing-machine-alert
+              icon_color: grey
+              content: Intensive
+        grid_options:
+          columns: full
+
+  - type: grid
     theme: family_dashboard_chips
     background:
       opacity: 100

@@ -173,6 +173,30 @@ sections:
   - type: grid
     background:
       opacity: 100
+    column_span: 3
+    visibility:
+      - condition: state
+        entity: binary_sensor.washing_machine_active
+        state: "on"
+    cards:
+      - type: heading
+        heading: WASHING MACHINE
+        heading_style: subtitle
+      - type: custom:mushroom-template-card
+        entity: sensor.washing_machine_status
+        primary: Washing machine
+        secondary: "{{ state_attr('sensor.washing_machine_status', 'overview') }}"
+        icon: "{{ state_attr('sensor.washing_machine_status', 'icon') }}"
+        icon_color: "{{ state_attr('sensor.washing_machine_status', 'color') }}"
+        tap_action:
+          action: navigate
+          navigation_path: /lovelace/utility
+        grid_options:
+          columns: full
+
+  - type: grid
+    background:
+      opacity: 100
     column_span: 2
     cards:
       - type: heading

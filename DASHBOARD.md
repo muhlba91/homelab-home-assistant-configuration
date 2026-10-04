@@ -21,6 +21,7 @@ plain, hand-editable YAML that follows the patterns described below.
 - [Safety status sensors](#safety-status-sensors)
 - [Dashboard status sensors](#dashboard-status-sensors)
 - [Energy sensors](#energy-sensors)
+- [Washing machine](#washing-machine)
 - [Selecting entities from an entity list](#selecting-entities-from-an-entity-list)
 - [Recipes](#recipes)
 - [Hard-coded entity lists](#hard-coded-entity-lists)
@@ -111,6 +112,7 @@ is installed.
 | `sites/vie/configuration/template/dashboard_status.yaml` | Template sensors behind the A/C and battery summaries                                                |
 | `sites/vie/configuration/packages/energy.yaml`           | Daily utility meters behind the Solar & Energy panel                                                 |
 | `sites/vie/configuration/template/energy.yaml`           | Own-use and produced-today template sensors                                                          |
+| `sites/vie/configuration/template/washing_machine.yaml`  | Phase, status, end time and active sensors behind the washing machine panel                          |
 | `scripts/validate_dashboard.py`                          | Checks the layout rules, templates and entity IDs                                                    |
 | `scripts/dashboard_inventory.py`                         | Regenerates the entity inventory in this file                                                        |
 
@@ -292,8 +294,8 @@ places in every tab:
 1. **Row 1**: **Lighting**, then **Air conditioner**, then **Climate** where
    present (Garden: **Weather station**). Rooms without either use a
    full-width Lighting row with the lights side by side.
-2. Extra controls, only where they exist: **Devices** (Living Room: media
-   system and vacuum) as a full-width row.
+2. Extra controls, only where they exist, as a full-width row: **Devices**
+   (Living Room: media system and vacuum), **Washing machine** (Utility).
 3. **The slot row**: **Shutters** (left, span 1) and **Safety** (right,
    span 2). Rooms without a shutter put their other room control in the left
    slot (Hallways: **Front door**, with the lock, the keypad chirps and the
@@ -306,14 +308,15 @@ Safety row.
 
 Row layout per room (numbers are `column_span` values):
 
-| Room               | Row 1                         | Row 2                  | Row 3                                | Row 4     |
-| ------------------ | ----------------------------- | ---------------------- | ------------------------------------ | --------- |
-| Office, Bedroom    | Lighting 1, A/C 1, Climate 1  | Shutters 1, Safety 2   | Battery 3                            |           |
-| Tea Room           | Lighting 1, Climate 2         | Shutters 1, Safety 2   | Battery 3                            |           |
-| Living Room        | Lighting 1, A/C 1, Climate 1  | Devices 3              | Shutters 1 (three stacked), Safety 2 | Battery 3 |
-| Bathrooms, Utility | Lighting 3                    | Shutters 1, Safety 2   | Battery 3                            |           |
-| Hallways           | Lighting 3                    | Front door 1, Safety 2 | Battery 3                            |           |
-| Garden             | Lighting 1, Weather station 2 | Shutters 1, Safety 2   | Battery 3                            |           |
+| Room            | Row 1                         | Row 2                  | Row 3                                | Row 4     |
+| --------------- | ----------------------------- | ---------------------- | ------------------------------------ | --------- |
+| Office, Bedroom | Lighting 1, A/C 1, Climate 1  | Shutters 1, Safety 2   | Battery 3                            |           |
+| Tea Room        | Lighting 1, Climate 2         | Shutters 1, Safety 2   | Battery 3                            |           |
+| Living Room     | Lighting 1, A/C 1, Climate 1  | Devices 3              | Shutters 1 (three stacked), Safety 2 | Battery 3 |
+| Bathrooms       | Lighting 3                    | Shutters 1, Safety 2   | Battery 3                            |           |
+| Utility         | Lighting 3                    | Washing machine 3      | Shutters 1, Safety 2                 | Battery 3 |
+| Hallways        | Lighting 3                    | Front door 1, Safety 2 | Battery 3                            |           |
+| Garden          | Lighting 1, Weather station 2 | Shutters 1, Safety 2   | Battery 3                            |           |
 
 Panels end where their content ends; Home Assistant does not stretch panels
 in a row to equal height.
@@ -620,6 +623,42 @@ worst case with three units is 34 characters and always fits a phone.
 - The banner is the first section of the Overview. Use the same pattern for
   any future mode that should be impossible to overlook while it is active.
 
+### Status pills with conditional chips (washing machine)
+
+```yaml
+      - type: custom:mushroom-chips-card
+        alignment: start
+        chips:
+          - type: template
+            entity: sensor.washing_machine_status
+            content: "{{ states('sensor.washing_machine_status') }}"
+            icon: "{{ state_attr('sensor.washing_machine_status', 'icon') }}"
+            icon_color: "{{ state_attr('sensor.washing_machine_status', 'color') }}"
+          - type: conditional
+            conditions:
+              - condition: state
+                entity: binary_sensor.washing_machine_active
+                state: "on"
+              - condition: state
+                entity: sensor.lg_washer_temperature
+                state_not: unknown
+            chip:
+              type: template
+              icon: mdi:thermometer
+              icon_color: grey
+              content: "{{ states('sensor.lg_washer_temperature') | int }} °C"
+          # further conditional chips: Done at, spin, course, Pre-wash, Intensive
+        grid_options:
+          columns: full
+```
+
+- A device panel can consist of **only a pill row**: one line on desktop,
+  wrapping on phones, and the same height whether idle or running.
+- **The first pill is the coloured status**; data pills are neutral
+  (`icon_color: grey`), so the status always leads.
+- Conditional chips use the current `condition: state` format. They are
+  evaluated by Home Assistant's own conditional logic.
+
 ### Solar half block (Now and Today)
 
 ```yaml
@@ -684,13 +723,14 @@ includes the entrance room, Utility includes the storage room.
 
 ### Overview
 
-| Row | Sections (`column_span`)                      | Content                                                                                                                                                                                                         |
-| --- | --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 0   | Presence simulation (3), only while it is on  | Purple band with one tile: "Presence simulation is on", time since it started, inline toggle to switch it off                                                                                                   |
-| 1   | Security and safety (2), Outdoor forecast (1) | Status pill `binary_sensor.house_safety_status`; alarm and front door tiles; smoke, water leak, doors and batteries summaries. Forecast: sunrise or sunset pill, condition row, humidity, pressure and wind row |
-| 2   | Indoor climate (2), Weather station (1)       | A/C summary pill `sensor.house_ac_status`; one ring per room sensor with a templated A/C label. Temperature difference pill; South and North rings                                                              |
-| 3   | Solar and energy (3)                          | Two half blocks, **Now** and **Today**: each a gauge (solar power in W, produced today in kWh) and one row of three vertical tiles (own use, exported, imported)                                                |
-| 4   | Energy flow (3)                               | Sankey: Solar and Grid import into House and Grid export                                                                                                                                                        |
+| Row | Sections (`column_span`)                         | Content                                                                                                                                                                                                         |
+| --- | ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0   | Presence simulation (3), only while it is on     | Purple band with one tile: "Presence simulation is on", time since it started, inline toggle to switch it off                                                                                                   |
+| 1   | Security and safety (2), Outdoor forecast (1)    | Status pill `binary_sensor.house_safety_status`; alarm and front door tiles; smoke, water leak, doors and batteries summaries. Forecast: sunrise or sunset pill, condition row, humidity, pressure and wind row |
+| 1a  | Washing machine (3), only during an active cycle | One row: status, end time, temperature and spin; tapping it opens the Utility tab                                                                                                                               |
+| 2   | Indoor climate (2), Weather station (1)          | A/C summary pill `sensor.house_ac_status`; one ring per room sensor with a templated A/C label. Temperature difference pill; South and North rings                                                              |
+| 3   | Solar and energy (3)                             | Two half blocks, **Now** and **Today**: each a gauge (solar power in W, produced today in kWh) and one row of three vertical tiles (own use, exported, imported)                                                |
+| 4   | Energy flow (3)                                  | Sankey: Solar and Grid import into House and Grid export                                                                                                                                                        |
 
 Smoke, water leak and doors summaries are Mushroom template cards with a
 hard-coded entity list each (see
@@ -861,6 +901,52 @@ Rules:
   current day once, run `utility_meter.calibrate` on each meter with the
   Energy dashboard's values (`sensor.solar_energy_today` is in Wh).
 
+## Washing machine
+
+The LG washer integration provides the raw entities (`sensor.lg_washer_status`,
+`sensor.lg_washer_remaining_time` and so on).
+`sites/vie/configuration/template/washing_machine.yaml` turns them into what
+the dashboard shows.
+
+| Entity                                 | What                                                                                                                        |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `sensor.washing_machine_phase`         | The raw status grouped into one of six phases (below). The **only** place the status values are listed                      |
+| `sensor.washing_machine_status`        | Pill text as its state ("Washing · 11 min left"); attributes `color`, and `overview` (the Overview row text); icon by phase |
+| `sensor.washing_machine_end_time`      | Timestamp when the cycle ends; trigger-based                                                                                |
+| `binary_sensor.washing_machine_active` | On while running, paused or in error; shows the Overview row                                                                |
+
+| Phase     | Raw status values                                                                                         | Pill                           | Overview row |
+| --------- | --------------------------------------------------------------------------------------------------------- | ------------------------------ | ------------ |
+| running   | Measuring, Pre-wash, Washing, Rinsing, Spinning, Drying, Cooling, Rinse hold, Refreshing, Steam softening | blue, "Washing · 11 min left"  | shown        |
+| paused    | Paused, Auto DT Open Pause                                                                                | orange, "Paused · 11 min left" | shown        |
+| error     | Error, or `binary_sensor.lg_washer_error` on                                                              | red, the error message         | shown        |
+| scheduled | Delayed                                                                                                   | grey, "Starts in 3 h"          | hidden       |
+| finished  | End                                                                                                       | green, "Finished"              | hidden       |
+| idle      | Off, Ready, Demo, unknown, unavailable                                                                    | grey, "Off" or "Ready"         | hidden       |
+
+Rules:
+
+- **Stale values are never shown.** Course, doses and initial time keep the
+  last run's values; spin and temperature become unknown after a run. The
+  panel shows settings only while a cycle is active, and leaves out any value
+  that is unknown.
+- **Pill order: status, time, settings, markers**: status and minutes left;
+  "Done at"; temperature; spin; course (rarely changed, so last); Pre-wash and
+  Intensive only when on. Other flags (extra rinse, steam, TurboWash) are not
+  shown on purpose.
+- **"Done at" and "min left" never repeat each other**: minutes left are in
+  the status pill, the end time in its own pill.
+- **The end time is trigger-based.** It is recalculated only when the remaining
+  time or the phase changes, so it stays steady while the countdown runs and
+  still follows the machine's re-estimates (up or down). Computing
+  "now + remaining" on every render would shift by a minute as time passes.
+- **The Overview row** appears only during an active cycle (running, paused,
+  error), directly below the Security row, and leaves out the course. Paused
+  and error count as active because they need someone; a finished cycle does
+  not appear.
+- **New status values** from an integration update fall into "idle" until
+  they are added to the phase sensor.
+
 ## Selecting entities from an entity list
 
 Use these rules when mapping an entity export to the dashboard.
@@ -893,6 +979,7 @@ By entity type:
 | Forecast            | `weather.home` (met.no)                                                                                                                                            | Overview forecast                                             |
 | Solar and grid      | `sensor.pv_power_photovoltaics_fronius_power_flow`, `sensor.pv_energy_day_fronius_power_flow`, `sensor.energy_meter_po` (export), `sensor.energy_meter_p` (import) | Overview                                                      |
 | Presence simulation | `switch.presence_simulation` (custom integration `slashback100/presence_simulation`)                                                                               | Overview banner while on; switched on in Hallways, Front door |
+| Washing machine     | `sensor.lg_washer_*`, `binary_sensor.lg_washer_*` (LG washer integration); the dashboard reads the `washing_machine_*` template sensors                            | Utility panel; Overview row while active                      |
 
 Never use for room climate: temperatures reported by air conditioners, leak
 detectors or smoke detectors.
@@ -988,6 +1075,7 @@ removing or renaming a safety-relevant entity.
 | `views/overview.yaml`, "Water leaks" summary       | Leak sensors                                                        |
 | `views/overview.yaml`, "Doors and windows" summary | Contacts                                                            |
 | `views/overview.yaml`, Indoor climate              | One ring per room; each ring label names its room's air conditioner |
+| `template/washing_machine.yaml`, phase sensor      | Raw status values per phase; add new ones after integration updates |
 
 Air conditioners and batteries are **not** listed anywhere: the
 [dashboard status sensors](#dashboard-status-sensors) discover them.
@@ -1053,37 +1141,41 @@ looks wrong.
 
 ## Decision log
 
-| Decision                                           | Reason                                                                                                                           |
-| -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| `sections` views instead of masonry                | Masonry reorders cards by height; sections keep the designed order                                                               |
-| Native `tile` cards                                | Consistent shape, real toggles and cover controls                                                                                |
-| Flat rows and chip sections via two themes         | Native way to group items without custom CSS                                                                                     |
-| No shadows on section panels                       | Needs `card-mod` targeting frontend internals, which breaks on updates; depth comes from surface contrast                        |
-| Status pill on its own row under the heading       | Correct on phones and keeps all headings aligned on desktop; replaced pills sharing the heading row                              |
-| Status logic in template sensors                   | Reusable in automations; the dashboard stays declarative                                                                         |
-| Gauge icons hidden                                 | The gauge offers no palette-safe icon colour; the mockups had no icon                                                            |
-| A/C shown as ring label plus summary pill          | Pills under rings detached from their rings on phones; the label is part of the ring, the pill carries counts per mode           |
-| Camera removed from Living Room                    | Too dominant for its value                                                                                                       |
-| `vacuum-card` not loaded                           | Breaks the whole frontend (duplicate `ha-icon-button`)                                                                           |
-| Shutter position and tilt only in the dialog       | Keeps rows compact; sliders are rarely needed                                                                                    |
-| Dark mode uses its own desaturated palette         | Saturated colours glare on dark surfaces                                                                                         |
-| Widths limited to 6, 12 and full                   | Phones use a 12-unit grid; 8 and 9 left ragged rows                                                                              |
-| Batteries summary on Overview                      | Low batteries are the most common silent failure; auto-discovered, no list to maintain                                           |
-| Battery status sensor is trigger-based             | It reads all sensors and is one itself; state tracking caused a template loop                                                    |
-| Solar & Energy split into Now and Today            | Same values in two time ranges, compared side by side                                                                            |
-| Daily utility meters for today's values            | The inverter's day counter is unavailable at night; all meters reset together at midnight                                        |
-| Gauge between invisible spacer cards (one third)   | The gauge has no size option and would fill its stack; one fifth was too small on phones; spacers use only native cards          |
-| Unknown shown as 0, unavailable kept               | Unknown means nothing counted yet; unavailable means a fault that must stay visible                                              |
-| No stack-in-card for chip-styled halves            | Unmaintained dependency; the flat halves are separated by subtitles and spacing                                                  |
-| Presence simulation banner on the Overview         | Visible only while active, as the first row; impossible to overlook, gone when off                                               |
-| Presence simulation switch in Hallways, Front door | Rarely needed; placed where you leave the house, next to the lock and the alarm keypad, costing no Overview space                |
-| Media and vacuum share a Devices panel             | Keeps the Living Room's extra controls in one full-width row                                                                     |
-| Neutral pill text, coloured icons                  | Coloured text fails contrast; green is reserved for all clear                                                                    |
-| Shutters left of Safety in every room              | Same place in every tab; Living Room's three shutters stack in the slot next to its 2×2 Safety grid                              |
-| Living Room devices above the slot row             | Controls first, status last; every tab ends with Shutters and Safety, then Batteries                                             |
-| Batteries always their own full-width last row     | Safety is acted on, batteries only glanced at; rejected a compact battery panel beside Safety because it blurred that separation |
-| Safety tiles always width 12                       | Consistent tile sizes across tabs; panels wrap instead of stretching tiles                                                       |
-| Garden door shown in Garden and Living Room        | The door belongs to both spaces; the Garden tab now follows the same slot row as every room                                      |
+| Decision                                                    | Reason                                                                                                                           |
+| ----------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `sections` views instead of masonry                         | Masonry reorders cards by height; sections keep the designed order                                                               |
+| Native `tile` cards                                         | Consistent shape, real toggles and cover controls                                                                                |
+| Flat rows and chip sections via two themes                  | Native way to group items without custom CSS                                                                                     |
+| No shadows on section panels                                | Needs `card-mod` targeting frontend internals, which breaks on updates; depth comes from surface contrast                        |
+| Status pill on its own row under the heading                | Correct on phones and keeps all headings aligned on desktop; replaced pills sharing the heading row                              |
+| Status logic in template sensors                            | Reusable in automations; the dashboard stays declarative                                                                         |
+| Gauge icons hidden                                          | The gauge offers no palette-safe icon colour; the mockups had no icon                                                            |
+| A/C shown as ring label plus summary pill                   | Pills under rings detached from their rings on phones; the label is part of the ring, the pill carries counts per mode           |
+| Camera removed from Living Room                             | Too dominant for its value                                                                                                       |
+| `vacuum-card` not loaded                                    | Breaks the whole frontend (duplicate `ha-icon-button`)                                                                           |
+| Shutter position and tilt only in the dialog                | Keeps rows compact; sliders are rarely needed                                                                                    |
+| Dark mode uses its own desaturated palette                  | Saturated colours glare on dark surfaces                                                                                         |
+| Widths limited to 6, 12 and full                            | Phones use a 12-unit grid; 8 and 9 left ragged rows                                                                              |
+| Batteries summary on Overview                               | Low batteries are the most common silent failure; auto-discovered, no list to maintain                                           |
+| Battery status sensor is trigger-based                      | It reads all sensors and is one itself; state tracking caused a template loop                                                    |
+| Solar & Energy split into Now and Today                     | Same values in two time ranges, compared side by side                                                                            |
+| Daily utility meters for today's values                     | The inverter's day counter is unavailable at night; all meters reset together at midnight                                        |
+| Gauge between invisible spacer cards (one third)            | The gauge has no size option and would fill its stack; one fifth was too small on phones; spacers use only native cards          |
+| Unknown shown as 0, unavailable kept                        | Unknown means nothing counted yet; unavailable means a fault that must stay visible                                              |
+| No stack-in-card for chip-styled halves                     | Unmaintained dependency; the flat halves are separated by subtitles and spacing                                                  |
+| Presence simulation banner on the Overview                  | Visible only while active, as the first row; impossible to overlook, gone when off                                               |
+| Presence simulation switch in Hallways, Front door          | Rarely needed; placed where you leave the house, next to the lock and the alarm keypad, costing no Overview space                |
+| Washing machine panel as pills only                         | A tile row with three large items protruded and looked sparse; pills keep the panel one line high, idle or running               |
+| Washing machine on the Overview only during an active cycle | Below Security: Security stays first, and the row is still on a phone's first screen                                             |
+| Temperature and spin before course                          | Course is rarely changed; temperature and spin change often. The course is left out on the Overview                              |
+| Washing machine end time trigger-based                      | Stays steady during the countdown and follows real re-estimates                                                                  |
+| Media and vacuum share a Devices panel                      | Keeps the Living Room's extra controls in one full-width row                                                                     |
+| Neutral pill text, coloured icons                           | Coloured text fails contrast; green is reserved for all clear                                                                    |
+| Shutters left of Safety in every room                       | Same place in every tab; Living Room's three shutters stack in the slot next to its 2×2 Safety grid                              |
+| Living Room devices above the slot row                      | Controls first, status last; every tab ends with Shutters and Safety, then Batteries                                             |
+| Batteries always their own full-width last row              | Safety is acted on, batteries only glanced at; rejected a compact battery panel beside Safety because it blurred that separation |
+| Safety tiles always width 12                                | Consistent tile sizes across tabs; panels wrap instead of stretching tiles                                                       |
+| Garden door shown in Garden and Living Room                 | The door belongs to both spaces; the Garden tab now follows the same slot row as every room                                      |
 
 ## Open topics
 
@@ -1098,6 +1190,8 @@ something new: it may already have been weighed.
 | Energy Flow with individual consumers                 | Future              | Candidates: plug energy sensors and the switches' consumption sensors. Option: Home Assistant's native energy cards (energy sankey with devices and a period selector), which need the devices added to the Energy dashboard                                                                                                                                                                                                                             |
 | `utility_meter/` include folder                       | Future              | Worth it once there are more than the three energy meters                                                                                                                                                                                                                                                                                                                                                                                                |
 | Start presence simulation automatically               | Idea                | An automation could turn it on when the alarm is armed away and off when disarmed, making the switch mostly unnecessary                                                                                                                                                                                                                                                                                                                                  |
+| Washing machine automations                           | To do               | `automation.utility_room_washing_machine_started` and `..._completed` still use the old, disabled `washing_machine_*` entities and are silently broken. Migrate them to the `lg_washer` entities or to `sensor.washing_machine_phase`                                                                                                                                                                                                                    |
+| Washing machine energy per run                        | Untested            | `sensor.lg_washer_energy` increases; whether it resets per run is unknown. Check before showing it                                                                                                                                                                                                                                                                                                                                                       |
 | Default dashboard occasionally opens `/home/overview` | Unresolved          | The registration (key `lovelace`), the default setting and the user profile are correct. Suspected client-side caching; next step is a test in a private browser window                                                                                                                                                                                                                                                                                  |
 
 ## Entity inventory
@@ -1120,6 +1214,7 @@ or update it when views change.
 | Outdoor (forecast)          | 1    | Pill row                   | `sun.sun`                                                                                                                                                                                                                                                         |
 | Outdoor (forecast)          | 1    | Condition                  | `weather.home`                                                                                                                                                                                                                                                    |
 | Outdoor (forecast)          | 1    | Humidity · Pressure · Wind | `weather.home`                                                                                                                                                                                                                                                    |
+| Washing Machine             | 3    | Washing machine            | `sensor.washing_machine_status`                                                                                                                                                                                                                                   |
 | Indoor Climate              | 2    | Pill row                   | `sensor.house_ac_status`                                                                                                                                                                                                                                          |
 | Indoor Climate              | 2    | Living Room (+ A/C mode)   | `sensor.living_room_living_room_temperature_humidity_temperature`, `sensor.living_room_living_room_temperature_humidity_humidity`, `climate.living_room_air_conditioner`                                                                                          |
 | Indoor Climate              | 2    | Bedroom (+ A/C mode)       | `sensor.bedroom_bedroom_temperature_humidity_temperature`, `sensor.bedroom_bedroom_temperature_humidity_humidity`, `climate.bedroom_air_conditioner`                                                                                                              |
@@ -1258,20 +1353,27 @@ or update it when views change.
 
 ### Utility (`utility.yaml`)
 
-| Section                | Span | Name           | Entities                                            |
-| ---------------------- | ---- | -------------- | --------------------------------------------------- |
-| Lighting               | 3    | Utility Room   | `switch.fs10_1`                                     |
-| Lighting               | 3    | Storage Room   | `switch.fs3_1`                                      |
-| Shutters (chips)       | 1    | Storage Room   | `cover.storage_room`                                |
-| Safety (chips)         | 2    | Pill row       | `binary_sensor.utility_safety_status`               |
-| Safety (chips)         | 2    | Smoke          | `binary_sensor.ass5_smoke_detected`                 |
-| Safety (chips)         | 2    | Leak           | `binary_sensor.ffs2_water_leak_detected`            |
-| Safety (chips)         | 2    | Storage motion | `binary_sensor.fms3_home_security_motion_detection` |
-| Safety (chips)         | 2    | Storage window | `binary_sensor.ring_rcs2`                           |
-| Battery Levels (chips) | 3    | Storage motion | `sensor.fms3_battery_level`                         |
-| Battery Levels (chips) | 3    | Storage window | `sensor.ring_rcs2_front_window_battery`             |
-| Battery Levels (chips) | 3    | Leak           | `sensor.ffs2_battery_level`                         |
-| Battery Levels (chips) | 3    | Smoke          | `sensor.ass5_battery`                               |
+| Section                | Span | Name           | Entities                                                                         |
+| ---------------------- | ---- | -------------- | -------------------------------------------------------------------------------- |
+| Lighting               | 3    | Utility Room   | `switch.fs10_1`                                                                  |
+| Lighting               | 3    | Storage Room   | `switch.fs3_1`                                                                   |
+| Washing Machine        | 3    | Pill row       | `sensor.washing_machine_status`                                                  |
+| Washing Machine        | 3    | Pill row       | `binary_sensor.washing_machine_active`, `sensor.washing_machine_end_time`        |
+| Washing Machine        | 3    | Pill row       | `binary_sensor.washing_machine_active`, `sensor.lg_washer_temperature`           |
+| Washing Machine        | 3    | Pill row       | `binary_sensor.washing_machine_active`, `sensor.lg_washer_spin`                  |
+| Washing Machine        | 3    | Pill row       | `binary_sensor.washing_machine_active`, `sensor.lg_washer_course`                |
+| Washing Machine        | 3    | Pill row       | `binary_sensor.lg_washer_pre_wash`, `binary_sensor.washing_machine_active`       |
+| Washing Machine        | 3    | Pill row       | `binary_sensor.lg_washer_intensive_wash`, `binary_sensor.washing_machine_active` |
+| Shutters (chips)       | 1    | Storage Room   | `cover.storage_room`                                                             |
+| Safety (chips)         | 2    | Pill row       | `binary_sensor.utility_safety_status`                                            |
+| Safety (chips)         | 2    | Smoke          | `binary_sensor.ass5_smoke_detected`                                              |
+| Safety (chips)         | 2    | Leak           | `binary_sensor.ffs2_water_leak_detected`                                         |
+| Safety (chips)         | 2    | Storage motion | `binary_sensor.fms3_home_security_motion_detection`                              |
+| Safety (chips)         | 2    | Storage window | `binary_sensor.ring_rcs2`                                                        |
+| Battery Levels (chips) | 3    | Storage motion | `sensor.fms3_battery_level`                                                      |
+| Battery Levels (chips) | 3    | Storage window | `sensor.ring_rcs2_front_window_battery`                                          |
+| Battery Levels (chips) | 3    | Leak           | `sensor.ffs2_battery_level`                                                      |
+| Battery Levels (chips) | 3    | Smoke          | `sensor.ass5_battery`                                                            |
 
 ### Safety status sensors (`template/safety_status.yaml`)
 
