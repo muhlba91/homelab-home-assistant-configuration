@@ -1,4 +1,7 @@
 ---
+# Overview tab of the Home Dashboard (YAML is the source of truth; edit by hand).
+# Section order, widths and card patterns: DASHBOARD.md, "Layout rules" and
+# "Component catalogue". Validate with scripts/validate_dashboard.py.
 title: Overview
 path: overview
 icon: mdi:home
@@ -68,39 +71,45 @@ sections:
         grid_options:
           columns: 12
       - type: custom:mushroom-template-card
+        entity: group.safety_smoke_detectors
         primary: Smoke
         secondary: >-
-          {% set ids = ['binary_sensor.ass1_smoke_detected', 'binary_sensor.ass2_smoke_detected', 'binary_sensor.ass3_smoke_detected', 'binary_sensor.ass4_smoke_detected', 'binary_sensor.ass5_smoke_detected', 'binary_sensor.ass6_smoke_detected', 'binary_sensor.ass7_smoke_detected'] %}
-          {% set on = ids | select('is_state', 'on') | list | count %}
-          {{ 'All clear (' ~ ids | count ~ ')' if on == 0 else on ~ ' triggered!' }}
+          {% set members = expand('group.safety_smoke_detectors') %}
+          {% set on = members | selectattr('state', 'eq', 'on') | list | count %}
+          {{ 'All clear (' ~ members | count ~ ')' if on == 0 else on ~ ' triggered!' }}
         icon: mdi:smoke-detector
         icon_color: >-
-          {% set ids = ['binary_sensor.ass1_smoke_detected', 'binary_sensor.ass2_smoke_detected', 'binary_sensor.ass3_smoke_detected', 'binary_sensor.ass4_smoke_detected', 'binary_sensor.ass5_smoke_detected', 'binary_sensor.ass6_smoke_detected', 'binary_sensor.ass7_smoke_detected'] %}
-          {{ 'green' if ids | select('is_state', 'on') | list | count == 0 else 'red' }}
+          {{ 'green' if expand('group.safety_smoke_detectors') | selectattr('state', 'eq', 'on') | list | count == 0 else 'red' }}
+        tap_action:
+          action: more-info
         grid_options:
           columns: 6
       - type: custom:mushroom-template-card
+        entity: group.safety_water_leak_sensors
         primary: Water leaks
         secondary: >-
-          {% set ids = ['binary_sensor.ffs1_water_alarm_water_leak_detected', 'binary_sensor.ffs2_water_leak_detected'] %}
-          {% set on = ids | select('is_state', 'on') | list | count %}
-          {{ 'Dry (' ~ ids | count ~ ')' if on == 0 else on ~ ' wet!' }}
+          {% set members = expand('group.safety_water_leak_sensors') %}
+          {% set on = members | selectattr('state', 'eq', 'on') | list | count %}
+          {{ 'Dry (' ~ members | count ~ ')' if on == 0 else on ~ ' wet!' }}
         icon: mdi:water-alert
         icon_color: >-
-          {% set ids = ['binary_sensor.ffs1_water_alarm_water_leak_detected', 'binary_sensor.ffs2_water_leak_detected'] %}
-          {{ 'green' if ids | select('is_state', 'on') | list | count == 0 else 'red' }}
+          {{ 'green' if expand('group.safety_water_leak_sensors') | selectattr('state', 'eq', 'on') | list | count == 0 else 'red' }}
+        tap_action:
+          action: more-info
         grid_options:
           columns: 6
       - type: custom:mushroom-template-card
+        entity: group.safety_doors_and_windows
         primary: Doors & windows
         secondary: >-
-          {% set ids = ['binary_sensor.ring_rcs1', 'binary_sensor.ring_rcs2', 'binary_sensor.ring_rcs3'] %}
-          {% set on = ids | select('is_state', 'on') | list | count %}
-          {{ 'All closed (' ~ ids | count ~ ')' if on == 0 else on ~ ' open' }}
+          {% set members = expand('group.safety_doors_and_windows') %}
+          {% set on = members | selectattr('state', 'eq', 'on') | list | count %}
+          {{ 'All closed (' ~ members | count ~ ')' if on == 0 else on ~ ' open' }}
         icon: mdi:door-open
         icon_color: >-
-          {% set ids = ['binary_sensor.ring_rcs1', 'binary_sensor.ring_rcs2', 'binary_sensor.ring_rcs3'] %}
-          {{ 'green' if ids | select('is_state', 'on') | list | count == 0 else 'orange' }}
+          {{ 'green' if expand('group.safety_doors_and_windows') | selectattr('state', 'eq', 'on') | list | count == 0 else 'orange' }}
+        tap_action:
+          action: more-info
         grid_options:
           columns: 6
       - type: custom:mushroom-template-card
@@ -239,7 +248,7 @@ sections:
         max: 28
         show_icon: false
         gauge_foreground_style:
-          color: "var(--blue-color)"
+          color: 'var(--blue-color)'
         gauge_background_style:
           color: var(--divider-color)
         secondary:
@@ -248,7 +257,7 @@ sections:
           min: 30
           max: 70
           gauge_foreground_style:
-            color: "var(--green-color)"
+            color: 'var(--green-color)'
         grid_options:
           columns: 6
           rows: 3
@@ -263,7 +272,7 @@ sections:
         max: 28
         show_icon: false
         gauge_foreground_style:
-          color: "var(--blue-color)"
+          color: 'var(--blue-color)'
         gauge_background_style:
           color: var(--divider-color)
         secondary:
@@ -272,7 +281,7 @@ sections:
           min: 30
           max: 70
           gauge_foreground_style:
-            color: "var(--green-color)"
+            color: 'var(--green-color)'
         grid_options:
           columns: 6
           rows: 3
@@ -287,7 +296,7 @@ sections:
         max: 28
         show_icon: false
         gauge_foreground_style:
-          color: "var(--blue-color)"
+          color: 'var(--blue-color)'
         gauge_background_style:
           color: var(--divider-color)
         secondary:
@@ -296,7 +305,7 @@ sections:
           min: 30
           max: 70
           gauge_foreground_style:
-            color: "var(--green-color)"
+            color: 'var(--green-color)'
         grid_options:
           columns: 6
           rows: 3
@@ -307,7 +316,7 @@ sections:
         max: 28
         show_icon: false
         gauge_foreground_style:
-          color: "var(--blue-color)"
+          color: 'var(--blue-color)'
         gauge_background_style:
           color: var(--divider-color)
         secondary:
@@ -316,7 +325,7 @@ sections:
           min: 30
           max: 70
           gauge_foreground_style:
-            color: "var(--green-color)"
+            color: 'var(--green-color)'
         grid_options:
           columns: 6
           rows: 3
@@ -350,7 +359,7 @@ sections:
         max: 35
         show_icon: false
         gauge_foreground_style:
-          color: "var(--blue-color)"
+          color: 'var(--blue-color)'
         gauge_background_style:
           color: var(--divider-color)
         secondary:
@@ -359,7 +368,7 @@ sections:
           min: 20
           max: 80
           gauge_foreground_style:
-            color: "var(--green-color)"
+            color: 'var(--green-color)'
         grid_options:
           columns: 6
           rows: 3
@@ -370,7 +379,7 @@ sections:
         max: 35
         show_icon: false
         gauge_foreground_style:
-          color: "var(--blue-color)"
+          color: 'var(--blue-color)'
         gauge_background_style:
           color: var(--divider-color)
         secondary:
@@ -379,7 +388,7 @@ sections:
           min: 20
           max: 80
           gauge_foreground_style:
-            color: "var(--green-color)"
+            color: 'var(--green-color)'
         grid_options:
           columns: 6
           rows: 3
@@ -410,7 +419,7 @@ sections:
                 max: 5000
                 show_icon: false
                 gauge_foreground_style:
-                  color: "var(--amber-color)"
+                  color: 'var(--amber-color)'
                 gauge_background_style:
                   color: var(--divider-color)
               - type: markdown
@@ -453,7 +462,7 @@ sections:
                 max: 35
                 show_icon: false
                 gauge_foreground_style:
-                  color: "var(--amber-color)"
+                  color: 'var(--amber-color)'
                 gauge_background_style:
                   color: var(--divider-color)
               - type: markdown

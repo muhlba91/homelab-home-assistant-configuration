@@ -1,4 +1,8 @@
 ---
+# Home Dashboard themes: family_dashboard (flat panels) and
+# family_dashboard_chips (chip sections), each with light and dark mode.
+# The colour palette is defined here once; views only use colour tokens.
+# See DASHBOARD.md, "Design system".
 themes:
   # Main theme: white panels on a darker page, flat rows inside, one shared palette.
   family_dashboard:

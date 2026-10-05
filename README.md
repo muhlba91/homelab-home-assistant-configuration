@@ -41,8 +41,11 @@ The Home Dashboard is a YAML-mode Lovelace dashboard with one tab per room:
 - **Registration**: [`sites/vie/configuration/lovelace/`](sites/vie/configuration/lovelace/) (registered under the key `lovelace`, replacing the built-in Overview; set it as default in Settings > Dashboards).
 - **Themes**: [`common/configuration/frontend/themes.yaml`](common/configuration/frontend/themes.yaml) (light and dark palette).
 - **Safety status sensors**: [`sites/vie/configuration/template/safety_status.yaml`](sites/vie/configuration/template/safety_status.yaml) (template entities behind the status pills).
+- **Safety groups**: [`sites/vie/configuration/group/safety.yaml`](sites/vie/configuration/group/safety.yaml) (the single list of smoke detectors, leak sensors and door/window contacts).
 - **Dashboard status sensors**: [`sites/vie/configuration/template/dashboard_status.yaml`](sites/vie/configuration/template/dashboard_status.yaml) (A/C and battery summaries).
 - **Energy**: [`sites/vie/configuration/packages/energy.yaml`](sites/vie/configuration/packages/energy.yaml) (daily utility meters) and [`sites/vie/configuration/template/energy.yaml`](sites/vie/configuration/template/energy.yaml) (own-use and produced-today sensors).
+- **Washing machine**: [`sites/vie/configuration/template/washing_machine.yaml`](sites/vie/configuration/template/washing_machine.yaml) (phase, status and end time) and [`sites/vie/configuration/automation/utility_room/washing_machine.yaml`](sites/vie/configuration/automation/utility_room/washing_machine.yaml) (ntfy notifications).
+- **Weather**: [`sites/vie/configuration/template/weather.yaml`](sites/vie/configuration/template/weather.yaml) (today's low and high, age of the forecast data).
 - **Scripts**: [`scripts/validate_dashboard.py`](scripts/validate_dashboard.py) (checks the layout rules, templates and entity IDs) and [`scripts/dashboard_inventory.py`](scripts/dashboard_inventory.py) (regenerates the entity inventory in `DASHBOARD.md`).
 
 [`DASHBOARD.md`](DASHBOARD.md) is the complete reference: design system, layout rules, copy-paste card patterns, how the status and energy sensors work, how to map entities, step-by-step recipes for adding lights, sensors, or rooms, known pitfalls, and open topics.

@@ -1,4 +1,7 @@
 ---
+# House-wide summaries for the Overview: A/C status (Indoor climate pill) and
+# battery status (Security batteries summary). Both discover their entities
+# automatically. See DASHBOARD.md, "Dashboard status sensors".
 - sensor:
     # Summary of all air conditioners (auto-discovered: every climate entity).
     # State: number of running units. Attributes feed the Overview pill.

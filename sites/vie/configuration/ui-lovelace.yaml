@@ -1,4 +1,6 @@
 ---
+# Home Dashboard root: the dashboard title and the tab order. Each tab is one
+# file in dashboards/views/. See DASHBOARD.md, "Views".
 title: Home
 views:
   - !include dashboards/views/overview.yaml

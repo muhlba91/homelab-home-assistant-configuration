@@ -1,4 +1,7 @@
 ---
+# Office tab of the Home Dashboard (YAML is the source of truth; edit by hand).
+# Section order, widths and card patterns: DASHBOARD.md, "Layout rules" and
+# "Component catalogue". Validate with scripts/validate_dashboard.py.
 title: Office
 path: office
 icon: mdi:briefcase

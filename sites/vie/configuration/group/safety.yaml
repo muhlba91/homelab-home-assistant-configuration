@@ -1,0 +1,30 @@
+---
+# Safety groups: the single list of each kind of safety sensor in the house.
+# Read (with expand()) by binary_sensor.house_safety_status in
+# template/safety_status.yaml and by the Overview's Security summaries.
+# Adding a smoke detector, leak sensor or door/window contact to the house
+# means adding it here, plus to its room's safety status sensor.
+# See DASHBOARD.md, "Safety status sensors".
+safety_smoke_detectors:
+  name: "Safety: Smoke Detectors"
+  entities:
+    - binary_sensor.ass1_smoke_detected
+    - binary_sensor.ass2_smoke_detected
+    - binary_sensor.ass3_smoke_detected
+    - binary_sensor.ass4_smoke_detected
+    - binary_sensor.ass5_smoke_detected
+    - binary_sensor.ass6_smoke_detected
+    - binary_sensor.ass7_smoke_detected
+
+safety_water_leak_sensors:
+  name: "Safety: Water Leak Sensors"
+  entities:
+    - binary_sensor.ffs1_water_alarm_water_leak_detected
+    - binary_sensor.ffs2_water_leak_detected
+
+safety_doors_and_windows:
+  name: "Safety: Doors and Windows"
+  entities:
+    - binary_sensor.ring_rcs1
+    - binary_sensor.ring_rcs2
+    - binary_sensor.ring_rcs3

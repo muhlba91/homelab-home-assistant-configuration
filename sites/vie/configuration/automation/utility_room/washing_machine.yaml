@@ -18,7 +18,7 @@
         - unavailable
   conditions: []
   actions:
-    # The machine first reports a preliminary estimate and then
+    # The machine first reports a preliminary estimate (about 52 min) and then
     # settles on the real one. Wait until the settings are there, then let the
     # estimate settle before notifying.
     - wait_template: >-

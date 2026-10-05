@@ -1,4 +1,7 @@
 ---
+# Garden tab of the Home Dashboard (YAML is the source of truth; edit by hand).
+# Section order, widths and card patterns: DASHBOARD.md, "Layout rules" and
+# "Component catalogue". Validate with scripts/validate_dashboard.py.
 title: Garden
 path: garden
 icon: mdi:tree
@@ -54,7 +57,7 @@ sections:
         max: 35
         show_icon: false
         gauge_foreground_style:
-          color: "var(--blue-color)"
+          color: 'var(--blue-color)'
         gauge_background_style:
           color: var(--divider-color)
         secondary:
@@ -63,7 +66,7 @@ sections:
           min: 20
           max: 80
           gauge_foreground_style:
-            color: "var(--green-color)"
+            color: 'var(--green-color)'
         grid_options:
           columns: 12
           rows: 3
@@ -74,7 +77,7 @@ sections:
         max: 35
         show_icon: false
         gauge_foreground_style:
-          color: "var(--blue-color)"
+          color: 'var(--blue-color)'
         gauge_background_style:
           color: var(--divider-color)
         secondary:
@@ -83,7 +86,7 @@ sections:
           min: 20
           max: 80
           gauge_foreground_style:
-            color: "var(--green-color)"
+            color: 'var(--green-color)'
         grid_options:
           columns: 12
           rows: 3

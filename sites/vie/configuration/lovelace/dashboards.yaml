@@ -1,5 +1,9 @@
 ---
 dashboards:
+  # The key "lovelace" replaces the built-in Overview (URL /lovelace).
+  # Which dashboard opens first is a UI setting (system default for all users,
+  # optional per-user override): see DASHBOARD.md, "Registration and default
+  # dashboard".
   lovelace:
     mode: yaml
     filename: ui-lovelace.yaml

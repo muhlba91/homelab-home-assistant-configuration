@@ -56,6 +56,17 @@ This section is for anyone continuing the work: a person, a fresh chat with an
 AI assistant, or an agent such as Claude Code. Together with the repository,
 this file is meant to be enough context; nothing else is required.
 
+### Where to start
+
+Read [Goals and principles](#goals-and-principles), the working agreements
+below, [Layout rules](#layout-rules) and the
+[Component catalogue](#component-catalogue). The Office tab
+(`office.yaml`) is the smallest complete room; the washing machine is the
+template for any appliance panel (see
+[Add an appliance panel](#add-an-appliance-panel)). Before proposing
+something new, check [Open topics](#open-topics) and the
+[Decision log](#decision-log): many ideas have already been weighed.
+
 ### Inputs to ask for
 
 | Input                    | Why                                          | How to get it                                                                                                                                                                                             |
@@ -90,34 +101,35 @@ this file is meant to be enough context; nothing else is required.
 
 ### Tools in the repository
 
-| Command                                                          | Purpose                                                                                                                                                                         |
-| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `python3 scripts/validate_dashboard.py --entities entities.json` | Checks every layout rule in this file, template safety (unique IDs, template loops, `this`), Jinja syntax, and that every entity exists (comments and action names are ignored) |
-| `python3 scripts/dashboard_inventory.py`                         | Regenerates the [Entity inventory](#entity-inventory) and aligns all tables in this file                                                                                        |
-| `yamllint -c .yamllint.yml .`                                    | YAML style, as used by the repository's CI                                                                                                                                      |
-| `markdownlint -c .markdownlint.yaml DASHBOARD.md`                | This file's style, including aligned tables                                                                                                                                     |
+| Command                                                                                  | Purpose                                                                                                                                                                         |
+| ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `python3 scripts/validate_dashboard.py --entities entities.json` (optional `--site vie`) | Checks every layout rule in this file, template safety (unique IDs, template loops, `this`), Jinja syntax, and that every entity exists (comments and action names are ignored) |
+| `python3 scripts/dashboard_inventory.py` (optional `--site vie`)                         | Regenerates the [Entity inventory](#entity-inventory) and aligns all tables in this file                                                                                        |
+| `yamllint -c .yamllint.yml .`                                                            | YAML style, as used by the repository's CI                                                                                                                                      |
+| `markdownlint -c .markdownlint.yaml DASHBOARD.md`                                        | This file's style, including aligned tables                                                                                                                                     |
 
 Both scripts need PyYAML; the validator also compiles templates when Jinja2
 is installed.
 
 ## Files and loading
 
-| Path                                                                   | Purpose                                                                                              |
-| ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `common/configuration/configuration.yaml`                              | Loads `lovelace: !include_dir_merge_named lovelace` and `template: !include_dir_merge_list template` |
-| `common/configuration/frontend/themes.yaml`                            | Themes `family_dashboard` and `family_dashboard_chips` (light and dark)                              |
-| `sites/vie/configuration/lovelace/dashboards.yaml`                     | Registers the dashboard under the key `lovelace`: it replaces the built-in Overview                  |
-| `sites/vie/configuration/ui-lovelace.yaml`                             | Dashboard root: title and the ordered `!include` list of views                                       |
-| `sites/vie/configuration/dashboards/views/*.yaml`                      | One file per tab (view)                                                                              |
-| `sites/vie/configuration/template/safety_status.yaml`                  | Template binary sensors behind the safety pills                                                      |
-| `sites/vie/configuration/template/dashboard_status.yaml`               | Template sensors behind the A/C and battery summaries                                                |
-| `sites/vie/configuration/packages/energy.yaml`                         | Daily utility meters behind the Solar & Energy panel                                                 |
-| `sites/vie/configuration/template/energy.yaml`                         | Own-use and produced-today template sensors                                                          |
-| `sites/vie/configuration/template/washing_machine.yaml`                | Phase, status, end time and active sensors behind the washing machine panel                          |
-| `sites/vie/configuration/template/weather.yaml`                        | Today's low and high and the age of the weather data, for the Outdoor (Forecast) tile                |
-| `sites/vie/configuration/automation/utility_room/washing_machine.yaml` | ntfy notifications: cycle started, completed, error                                                  |
-| `scripts/validate_dashboard.py`                                        | Checks the layout rules, templates and entity IDs                                                    |
-| `scripts/dashboard_inventory.py`                                       | Regenerates the entity inventory in this file                                                        |
+| Path                                                                   | Purpose                                                                                                                                                                                          |
+| ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `common/configuration/configuration.yaml`                              | Loads the folders below: `lovelace:` and `group:` (`!include_dir_merge_named`), `template:` and `automation:` (`!include_dir_merge_list`), and `homeassistant: packages:` (`!include_dir_named`) |
+| `common/configuration/frontend/themes.yaml`                            | Themes `family_dashboard` and `family_dashboard_chips` (light and dark)                                                                                                                          |
+| `sites/vie/configuration/lovelace/dashboards.yaml`                     | Registers the dashboard under the key `lovelace`: it replaces the built-in Overview                                                                                                              |
+| `sites/vie/configuration/ui-lovelace.yaml`                             | Dashboard root: title and the ordered `!include` list of views                                                                                                                                   |
+| `sites/vie/configuration/dashboards/views/*.yaml`                      | One file per tab (view)                                                                                                                                                                          |
+| `sites/vie/configuration/template/safety_status.yaml`                  | Template binary sensors behind the safety pills                                                                                                                                                  |
+| `sites/vie/configuration/group/safety.yaml`                            | The single list of smoke detectors, leak sensors and door/window contacts (read by the house safety sensor and the Overview)                                                                     |
+| `sites/vie/configuration/template/dashboard_status.yaml`               | Template sensors behind the A/C and battery summaries                                                                                                                                            |
+| `sites/vie/configuration/packages/energy.yaml`                         | Daily utility meters behind the Solar & Energy panel                                                                                                                                             |
+| `sites/vie/configuration/template/energy.yaml`                         | Own-use and produced-today template sensors                                                                                                                                                      |
+| `sites/vie/configuration/template/washing_machine.yaml`                | Phase, status, end time and active sensors behind the washing machine panel                                                                                                                      |
+| `sites/vie/configuration/template/weather.yaml`                        | Today's low and high and the age of the weather data, for the Outdoor (Forecast) tile                                                                                                            |
+| `sites/vie/configuration/automation/utility_room/washing_machine.yaml` | ntfy notifications: cycle started, completed, error                                                                                                                                              |
+| `scripts/validate_dashboard.py`                                        | Checks the layout rules, templates and entity IDs                                                                                                                                                |
+| `scripts/dashboard_inventory.py`                                       | Regenerates the entity inventory in this file                                                                                                                                                    |
 
 `common/` and `sites/vie/` are merged into one Home Assistant configuration
 directory at deploy time by `lifecycle/configuration.sh`.
@@ -139,21 +151,28 @@ configuration stays in `.storage/lovelace` and returns if the key is renamed.
 Do not use the top-level `lovelace: mode: yaml`. It was removed in Home
 Assistant 2026.8; YAML dashboards are only defined under `dashboards:`.
 
-Which dashboard opens first is a UI setting, not YAML:
+Which dashboard opens first is a UI setting, not YAML. Since Home Assistant
+2025.12 it is resolved in this order:
 
-1. Settings, Dashboards, open the menu of this dashboard, **Set as default**.
-   This sets the default for all users.
-2. Each user can still choose a personal default in their profile.
+1. The user's own default (Profile, "Default dashboard"), if one is set.
+2. The system default: Settings, Dashboards, open the menu of this
+   dashboard, **Set as default** (administrators only; applies to all users).
+3. A value stored per device by older versions (no longer settable).
+4. The built-in Home dashboard (`/home/...`).
+
+Per-device defaults were removed in 2025.12. If a device opens
+`/home/overview`, neither a user default nor the system default applied for
+that account.
 
 The built-in Home dashboard only appears in the sidebar while it is the
 default, so it disappears once this dashboard is set as default.
 
 ### Template include format
 
-Every file in `template/` is a YAML **list** (it starts with `- binary_sensor:`
-or `- switch:`). This requires `template: !include_dir_merge_list template`.
-With `!include_dir_merge_named`, list files are ignored silently and the
-entities never appear.
+Every file in `template/` is a YAML **list** (it starts with `- sensor:`,
+`- binary_sensor:` or `- triggers:`). This requires
+`template: !include_dir_merge_list template`. With `!include_dir_merge_named`,
+list files are ignored silently and the entities never appear.
 
 ## Dependencies
 
@@ -176,7 +195,15 @@ Do **not** load these:
   breaks the whole frontend, including other dashboards (upstream issue #699).
 - `bubble-card`, `tabbed-card`, `custom-sidebar`: not used, removed.
 
-`advanced-camera-card` is loaded but currently not used by any view.
+Load only cards that a view uses: every module costs load time and can break
+the whole frontend (see `vacuum-card`). To compare, list the cards the views
+use and check `extra_module_url.yaml` against it (cards used by other
+dashboards excepted):
+
+```sh
+grep -rho 'type: custom:[a-z-]*' \
+  sites/*/configuration/dashboards/views | sort -u
+```
 
 ## Design system
 
@@ -730,15 +757,14 @@ includes the entrance room, Utility includes the storage room.
 | --- | ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 0   | Presence simulation (3), only while it is on     | Purple band with one tile: "Presence simulation is on", time since it started, inline toggle to switch it off                                                                                                                                                                                       |
 | 1   | Security and safety (2), Outdoor forecast (1)    | Status pill `binary_sensor.house_safety_status`; alarm and front door tiles; smoke, water leak, doors and batteries summaries. Forecast: sunrise or sunset pill plus a data-age pill ("Updated 10:00", orange when stale), condition row with today's low and high, humidity, pressure and wind row |
-| 1a  | Washing machine (3), only during an active cycle | One row: status, end time, temperature and spin; tapping it opens the Utility tab                                                                                                                                                                                                                   |
-| 2   | Indoor climate (2), Weather station (1)          | A/C summary pill `sensor.house_ac_status`; one ring per room sensor with a templated A/C label. Temperature difference pill; South and North rings                                                                                                                                                  |
-| 3   | Solar and energy (3)                             | Two half blocks, **Now** and **Today**: each a gauge (solar power in W, produced today in kWh) and one row of three vertical tiles (own use, exported, imported)                                                                                                                                    |
-| 4   | Energy flow (3)                                  | Sankey: Solar and Grid import into House and Grid export                                                                                                                                                                                                                                            |
+| 2   | Washing machine (3), only during an active cycle | One row: status, end time, temperature and spin; tapping it opens the Utility tab                                                                                                                                                                                                                   |
+| 3   | Indoor climate (2), Weather station (1)          | A/C summary pill `sensor.house_ac_status`; one ring per room sensor with a templated A/C label. Temperature difference pill; South and North rings                                                                                                                                                  |
+| 4   | Solar and energy (3)                             | Two half blocks, **Now** and **Today**: each a gauge (solar power in W, produced today in kWh) and one row of three vertical tiles (own use, exported, imported)                                                                                                                                    |
+| 5   | Energy flow (3)                                  | Sankey: Solar and Grid import into House and Grid export                                                                                                                                                                                                                                            |
 
-Smoke, water leak and doors summaries are Mushroom template cards with a
-hard-coded entity list each (see
-[Hard-coded entity lists](#hard-coded-entity-lists)). The batteries summary
-reads `sensor.house_battery_status` and needs no list.
+The smoke, water leak and doors summaries count the members of the safety
+groups in `group/safety.yaml`; tapping one opens the group with its members.
+The batteries summary reads `sensor.house_battery_status` and needs no list.
 
 The sankey's House node is computed as solar plus import minus export
 (`add_entities` and `subtract_entities`). Do not replace it with
@@ -811,9 +837,34 @@ alarms (`{% elif is_state('binary_sensor.ring_rcs2', 'on') %}Storage window
 open`) and add an `elif` branch returning `mdi:door-open` to `icon`. Hallways
 and Utility are complete examples.
 
-The house sensor aggregates all smoke and leak sensors as alarms, the alarm
-panel's `triggered` state as an alarm, and all door and window contacts as
-attention items, with counts in the text (`2 door/window open`).
+### House sensor and safety groups
+
+The house sensor does not list entities itself. It reads three groups in
+`sites/vie/configuration/group/safety.yaml`, the only place where the house's
+smoke detectors, leak sensors and door/window contacts are listed:
+
+| Group                             | Class     | Read by                                          |
+| --------------------------------- | --------- | ------------------------------------------------ |
+| `group.safety_smoke_detectors`    | Alarm     | House sensor, Overview "Smoke" summary           |
+| `group.safety_water_leak_sensors` | Alarm     | House sensor, Overview "Water leaks" summary     |
+| `group.safety_doors_and_windows`  | Attention | House sensor, Overview "Doors & windows" summary |
+
+```yaml
+      state: >-
+        {{ is_state('alarm_control_panel.ring_control_panel', 'triggered')
+        or expand('group.safety_smoke_detectors', 'group.safety_water_leak_sensors')
+        | selectattr('state', 'eq', 'on') | list | count > 0 }}
+```
+
+- `expand()` follows each member individually, so the sensor reacts at once
+  (unlike iterating a whole domain, which Home Assistant rate-limits).
+- **Guard:** if any group is empty or missing (for example, the file was not
+  deployed), the pill turns orange with "Safety groups missing" instead of
+  reporting "All clear" while checking nothing. A real alarm still takes
+  priority. The validator also rejects empty groups.
+- Room sensors keep their own short lists, because a room is a deliberate
+  selection (the garden door belongs to two rooms).
+- The house text includes counts (`2 door/window open`).
 
 Current sensors: `house`, `living_room`, `office`, `tea_room`, `bedroom`,
 `bathrooms`, `hallways`, `utility`, `garden`. Every room tab has one, so every
@@ -1063,9 +1114,9 @@ By entity type:
 | Water leak          | `binary_sensor.ffs1_water_alarm_water_leak_detected`, `binary_sensor.ffs2_water_leak_detected`, battery `sensor.ffs<N>_battery_level`                              | Safety, Battery, safety status (alarm)                        |
 | Motion              | `binary_sensor.fms<N>_home_security_motion_detection`, `binary_sensor.ring_rms1`, `binary_sensor.living_room_ring_motion_sensor`                                   | Safety, Battery                                               |
 | Contacts            | `binary_sensor.ring_rcs<N>`, battery `sensor.ring_rcs<N>_*_battery`                                                                                                | Safety, Battery, safety status (attention)                    |
+| Safety groups       | `group.safety_*` in `group/safety.yaml`                                                                                                                            | House safety sensor, Overview summaries                       |
 | Weather station     | `sensor.ecowitt_temp<N>`, `sensor.ecowitt_humidity<N>`, `binary_sensor.ecowitt_batt<N>` (1 is South, 2 is North)                                                   | Garden, Overview                                              |
 | Weather forecast    | `weather.home` (Met.no); the tile also reads the `weather_*` template sensors                                                                                      | Overview, Outdoor (Forecast) tile                             |
-| Forecast            | `weather.home` (met.no)                                                                                                                                            | Overview forecast                                             |
 | Solar and grid      | `sensor.pv_power_photovoltaics_fronius_power_flow`, `sensor.pv_energy_day_fronius_power_flow`, `sensor.energy_meter_po` (export), `sensor.energy_meter_p` (import) | Overview                                                      |
 | Presence simulation | `switch.presence_simulation` (custom integration `slashback100/presence_simulation`)                                                                               | Overview banner while on; switched on in Hallways, Front door |
 | Washing machine     | `sensor.lg_washer_*`, `binary_sensor.lg_washer_*` (LG washer integration); the dashboard reads the `washing_machine_*` template sensors                            | Utility panel; Overview row while active                      |
@@ -1082,9 +1133,10 @@ detectors or smoke detectors.
 
 ### Add a shutter
 
-1. Add a shutter tile to the room's Shutters section (chip theme).
-2. With three or more shutters, make the section `column_span: 3` and cards
-   `columns: 12`.
+1. Add a shutter tile to the room's Shutters section (chip theme, span 1, in
+   the slot left of Safety).
+2. Several shutters stack in that slot (the Living Room has three); the
+   section stays span 1.
 
 ### Add a temperature and humidity sensor
 
@@ -1109,16 +1161,17 @@ detectors or smoke detectors.
 
 1. Add a safety sensor tile and a battery tile to the room.
 2. Add it as an alarm to the room's safety status sensor; create the room
-   sensor (and the heading pill) if the room had none.
-3. Add it to the house sensor's smoke or leak list.
-4. Add it to the Overview "Smoke" or "Water leaks" summary list.
+   sensor (and the status pill row) if the room had none.
+3. Add it to `group.safety_smoke_detectors` or
+   `group.safety_water_leak_sensors` in `group/safety.yaml`. The house sensor
+   and the Overview summaries pick it up; reload Groups.
 
 ### Add a door or window contact
 
 1. Add a safety sensor tile and a battery tile to the room.
 2. Add it as an attention item to the room's safety status sensor.
-3. Add it to the house sensor's contact list and to the Overview
-   "Doors and windows" summary list.
+3. Add it to `group.safety_doors_and_windows` in `group/safety.yaml`; reload
+   Groups.
 
 ### Add a room (new tab)
 
@@ -1131,7 +1184,26 @@ detectors or smoke detectors.
 3. If the room has safety-relevant sensors, add a room safety status sensor
    with a new UUID4 and a [status pill row](#status-pill-row) under the
    Safety heading.
-4. Update the Overview (ring, summaries, house sensor lists).
+4. Update the Overview: a ring in Indoor climate if the room has a climate
+   sensor; new smoke, leak or contact sensors go into the safety groups.
+
+### Add an appliance panel
+
+The washing machine is the template for any appliance with a status (a
+dishwasher, a dryer):
+
+1. A phase sensor that maps the raw status values to a few phases (the only
+   place those values are listed), a status sensor for the pill text, colour
+   and icon, and an "active" binary sensor (see
+   [Washing machine](#washing-machine)).
+2. A section in the room above the slot row, made only of a pill row: the
+   coloured status pill first, then neutral data pills that appear only while
+   active (see
+   [Status pills with conditional chips](#status-pills-with-conditional-chips-washing-machine)).
+3. Optionally an Overview row with section visibility on the active sensor,
+   placed below Security.
+4. Notifications trigger on the phase sensor with `to` and `not_from` (see
+   [Notifications](#notifications)).
 
 ### Add devices to the energy flow
 
@@ -1153,20 +1225,17 @@ consumption.
 
 ## Hard-coded entity lists
 
-These places contain explicit entity lists. Update all of them when adding,
-removing or renaming a safety-relevant entity.
+These places contain explicit entity lists. Each list exists once; update it
+when adding, removing or renaming an entity.
 
-| Location                                           | Contents                                                                                                        |
-| -------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `template/safety_status.yaml`, house sensor        | Smoke (7), leak (2), contacts (3), alarm panel                                                                  |
-| `template/safety_status.yaml`, room sensors        | That room's alarms and contacts                                                                                 |
-| `views/overview.yaml`, "Smoke" summary             | Smoke sensors                                                                                                   |
-| `views/overview.yaml`, "Water leaks" summary       | Leak sensors                                                                                                    |
-| `views/overview.yaml`, "Doors and windows" summary | Contacts                                                                                                        |
-| `views/overview.yaml`, Indoor climate              | One ring per room; each ring label names its room's air conditioner                                             |
-| `template/washing_machine.yaml`, phase sensor      | Raw status values per phase; add new ones after integration updates                                             |
-| `template/weather.yaml`                            | `weather.home`, in the forecast request, the age sensors and the stale check                                    |
-| `automation/utility_room/washing_machine.yaml`     | The `lg_washer` entities (temperature, spin, remaining time, error message) and the `washing_machine_*` sensors |
+| Location                                       | Contents                                                                                                                       |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `group/safety.yaml`                            | Smoke detectors (7), leak sensors (2), door/window contacts (3): the house sensor and the Overview summaries read these groups |
+| `template/safety_status.yaml`, room sensors    | That room's alarms and contacts                                                                                                |
+| `views/overview.yaml`, Indoor climate          | One ring per room; each ring label names its room's air conditioner                                                            |
+| `template/washing_machine.yaml`, phase sensor  | Raw status values per phase; add new ones after integration updates                                                            |
+| `template/weather.yaml`                        | `weather.home`, in the forecast request, the age sensors and the stale check                                                   |
+| `automation/utility_room/washing_machine.yaml` | The `lg_washer` entities (temperature, spin, remaining time, error message) and the `washing_machine_*` sensors                |
 
 Air conditioners and batteries are **not** listed anywhere: the
 [dashboard status sensors](#dashboard-status-sensors) discover them.
@@ -1181,6 +1250,9 @@ old entity ID.
 | Any view file or `ui-lovelace.yaml`       | Dashboard menu, then Refresh (a browser reload alone may serve cached included files)       |
 | `themes.yaml`                             | Developer Tools, YAML, reload Themes                                                        |
 | `template/*.yaml`                         | Developer Tools, YAML, reload Template entities                                             |
+| `group/*.yaml`                            | Developer Tools, YAML, reload Groups                                                        |
+| `automation/*.yaml`                       | Developer Tools, YAML, reload Automations                                                   |
+| `packages/*.yaml`                         | Restart (utility meters cannot be reloaded)                                                 |
 | `lovelace/*.yaml` or `configuration.yaml` | Check configuration, then restart                                                           |
 | Custom card versions                      | Update both `www_components.txt` and `extra_module_url.yaml`, then hard-refresh the browser |
 
@@ -1230,69 +1302,73 @@ looks wrong.
 | `as_timestamp got invalid input 'None'`                               | A sun attribute is missing at startup                                          | Pass a default: `as_timestamp(value, none)`                                                                          |
 | A notification is sent twice (after pause, error, restart or dropout) | A state trigger fires on every transition into the state                       | Use `to` plus `not_from` with the states that must not count; make a template sensor unavailable while its source is |
 | The weather entity has no forecast attribute                          | Forecasts are requested, not stored on the entity                              | Call `weather.get_forecasts` in a trigger-based template sensor                                                      |
+| Overview pill says "Safety groups missing", summaries show (0)        | A safety group is empty or not loaded                                          | Deploy `group/safety.yaml` and reload Groups                                                                         |
 | Coloured text hard to read                                            | Palette colours on the pill background stay below 4.5:1                        | Keep text neutral; colour only icons                                                                                 |
 
 ## Decision log
 
-| Decision                                                       | Reason                                                                                                                                          |
-| -------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| `sections` views instead of masonry                            | Masonry reorders cards by height; sections keep the designed order                                                                              |
-| Native `tile` cards                                            | Consistent shape, real toggles and cover controls                                                                                               |
-| Flat rows and chip sections via two themes                     | Native way to group items without custom CSS                                                                                                    |
-| No shadows on section panels                                   | Needs `card-mod` targeting frontend internals, which breaks on updates; depth comes from surface contrast                                       |
-| Status pill on its own row under the heading                   | Correct on phones and keeps all headings aligned on desktop; replaced pills sharing the heading row                                             |
-| Status logic in template sensors                               | Reusable in automations; the dashboard stays declarative                                                                                        |
-| Gauge icons hidden                                             | The gauge offers no palette-safe icon colour; the mockups had no icon                                                                           |
-| A/C shown as ring label plus summary pill                      | Pills under rings detached from their rings on phones; the label is part of the ring, the pill carries counts per mode                          |
-| Camera removed from Living Room                                | Too dominant for its value                                                                                                                      |
-| `vacuum-card` not loaded                                       | Breaks the whole frontend (duplicate `ha-icon-button`)                                                                                          |
-| Shutter position and tilt only in the dialog                   | Keeps rows compact; sliders are rarely needed                                                                                                   |
-| Dark mode uses its own desaturated palette                     | Saturated colours glare on dark surfaces                                                                                                        |
-| Widths limited to 6, 12 and full                               | Phones use a 12-unit grid; 8 and 9 left ragged rows                                                                                             |
-| Batteries summary on Overview                                  | Low batteries are the most common silent failure; auto-discovered, no list to maintain                                                          |
-| Battery status sensor is trigger-based                         | It reads all sensors and is one itself; state tracking caused a template loop                                                                   |
-| Solar & Energy split into Now and Today                        | Same values in two time ranges, compared side by side                                                                                           |
-| Daily utility meters for today's values                        | The inverter's day counter is unavailable at night; all meters reset together at midnight                                                       |
-| Gauge between invisible spacer cards (one third)               | The gauge has no size option and would fill its stack; one fifth was too small on phones; spacers use only native cards                         |
-| Unknown shown as 0, unavailable kept                           | Unknown means nothing counted yet; unavailable means a fault that must stay visible                                                             |
-| No stack-in-card for chip-styled halves                        | Unmaintained dependency; the flat halves are separated by subtitles and spacing                                                                 |
-| Presence simulation banner on the Overview                     | Visible only while active, as the first row; impossible to overlook, gone when off                                                              |
-| Presence simulation switch in Hallways, Front door             | Rarely needed; placed where you leave the house, next to the lock and the alarm keypad, costing no Overview space                               |
-| Washing machine panel as pills only                            | A tile row with three large items protruded and looked sparse; pills keep the panel one line high, idle or running                              |
-| Washing machine on the Overview only during an active cycle    | Below Security: Security stays first, and the row is still on a phone's first screen                                                            |
-| Temperature and spin before course                             | Course is rarely changed; temperature and spin change often. The course is left out on the Overview                                             |
-| Washing machine end time trigger-based                         | Stays steady during the countdown and follows real re-estimates                                                                                 |
-| Washing machine notifications trigger on the phase sensor      | The same definition as the dashboard; the status values are listed in one place                                                                 |
-| Started notification waits for the settled estimate            | The machine briefly reports about 52 minutes before settling on the real one                                                                    |
-| Phase sensor unavailable while the integration is              | Recovery from a dropout must not look like a new cycle                                                                                          |
-| No washing machine energy on the dashboard or in notifications | The counter resets per run and holds the last value between runs; not actionable. It could go into the Energy dashboard as an individual device |
-| Outdoor forecast shows "Updated", not "Measured"               | Met.no is a forecast service: there is no measurement and no observation time, only the time its values last changed                            |
-| Data age as a pill, today's range on the former "Now" line     | The tile keeps its height; the age qualifies the whole tile (temperature, humidity, pressure and wind come from the same data)                  |
-| Weather data stale after 90 minutes                            | Met.no values are hourly; 90 minutes without any change means no fresh data. One number in one sensor                                           |
-| Media and vacuum share a Devices panel                         | Keeps the Living Room's extra controls in one full-width row                                                                                    |
-| Neutral pill text, coloured icons                              | Coloured text fails contrast; green is reserved for all clear                                                                                   |
-| Shutters left of Safety in every room                          | Same place in every tab; Living Room's three shutters stack in the slot next to its 2×2 Safety grid                                             |
-| Living Room devices above the slot row                         | Controls first, status last; every tab ends with Shutters and Safety, then Batteries                                                            |
-| Batteries always their own full-width last row                 | Safety is acted on, batteries only glanced at; rejected a compact battery panel beside Safety because it blurred that separation                |
-| Safety tiles always width 12                                   | Consistent tile sizes across tabs; panels wrap instead of stretching tiles                                                                      |
-| Garden door shown in Garden and Living Room                    | The door belongs to both spaces; the Garden tab now follows the same slot row as every room                                                     |
+| Area                | Decision                                                       | Reason                                                                                                                                                          |
+| ------------------- | -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Layout              | `sections` views instead of masonry                            | Masonry reorders cards by height; sections keep the designed order                                                                                              |
+| Layout              | Status pill on its own row under the heading                   | Correct on phones and keeps all headings aligned on desktop; replaced pills sharing the heading row                                                             |
+| Layout              | Camera removed from Living Room                                | Too dominant for its value                                                                                                                                      |
+| Layout              | Widths limited to 6, 12 and full                               | Phones use a 12-unit grid; 8 and 9 left ragged rows                                                                                                             |
+| Layout              | Media and vacuum share a Devices panel                         | Keeps the Living Room's extra controls in one full-width row                                                                                                    |
+| Layout              | Shutters left of Safety in every room                          | Same place in every tab; Living Room's three shutters stack in the slot next to its 2×2 Safety grid                                                             |
+| Layout              | Living Room devices above the slot row                         | Controls first, status last; every tab ends with Shutters and Safety, then Batteries                                                                            |
+| Layout              | Batteries always their own full-width last row                 | Safety is acted on, batteries only glanced at; rejected a compact battery panel beside Safety because it blurred that separation                                |
+| Layout              | Safety tiles always width 12                                   | Consistent tile sizes across tabs; panels wrap instead of stretching tiles                                                                                      |
+| Layout              | Garden door shown in Garden and Living Room                    | The door belongs to both spaces; the Garden tab now follows the same slot row as every room                                                                     |
+| Theme               | Flat rows and chip sections via two themes                     | Native way to group items without custom CSS                                                                                                                    |
+| Theme               | No shadows on section panels                                   | Needs `card-mod` targeting frontend internals, which breaks on updates; depth comes from surface contrast                                                       |
+| Theme               | Dark mode uses its own desaturated palette                     | Saturated colours glare on dark surfaces                                                                                                                        |
+| Components          | Native `tile` cards                                            | Consistent shape, real toggles and cover controls                                                                                                               |
+| Components          | Gauge icons hidden                                             | The gauge offers no palette-safe icon colour; the mockups had no icon                                                                                           |
+| Components          | A/C shown as ring label plus summary pill                      | Pills under rings detached from their rings on phones; the label is part of the ring, the pill carries counts per mode                                          |
+| Components          | Shutter position and tilt only in the dialog                   | Keeps rows compact; sliders are rarely needed                                                                                                                   |
+| Components          | Gauge between invisible spacer cards (one third)               | The gauge has no size option and would fill its stack; one fifth was too small on phones; spacers use only native cards                                         |
+| Components          | Neutral pill text, coloured icons                              | Coloured text fails contrast; green is reserved for all clear                                                                                                   |
+| Dependencies        | `vacuum-card` not loaded                                       | Breaks the whole frontend (duplicate `ha-icon-button`)                                                                                                          |
+| Dependencies        | No stack-in-card for chip-styled halves                        | Unmaintained dependency; the flat halves are separated by subtitles and spacing                                                                                 |
+| Status logic        | Status logic in template sensors                               | Reusable in automations; the dashboard stays declarative                                                                                                        |
+| Status logic        | Batteries summary on Overview                                  | Low batteries are the most common silent failure; auto-discovered, no list to maintain                                                                          |
+| Status logic        | Battery status sensor is trigger-based                         | It reads all sensors and is one itself; state tracking caused a template loop                                                                                   |
+| Status logic        | Safety lists as groups, read with `expand()`                   | The lists were copied up to six times across two files; one native group per kind is edited in one place, reacts instantly, and a guard reports a missing group |
+| Energy              | Solar & Energy split into Now and Today                        | Same values in two time ranges, compared side by side                                                                                                           |
+| Energy              | Daily utility meters for today's values                        | The inverter's day counter is unavailable at night; all meters reset together at midnight                                                                       |
+| Energy              | Unknown shown as 0, unavailable kept                           | Unknown means nothing counted yet; unavailable means a fault that must stay visible                                                                             |
+| Presence simulation | Presence simulation banner on the Overview                     | Visible only while active, as the first row; impossible to overlook, gone when off                                                                              |
+| Presence simulation | Presence simulation switch in Hallways, Front door             | Rarely needed; placed where you leave the house, next to the lock and the alarm keypad, costing no Overview space                                               |
+| Washing machine     | Washing machine panel as pills only                            | A tile row with three large items protruded and looked sparse; pills keep the panel one line high, idle or running                                              |
+| Washing machine     | Washing machine on the Overview only during an active cycle    | Below Security: Security stays first, and the row is still on a phone's first screen                                                                            |
+| Washing machine     | Temperature and spin before course                             | Course is rarely changed; temperature and spin change often. The course is left out on the Overview                                                             |
+| Washing machine     | Washing machine end time trigger-based                         | Stays steady during the countdown and follows real re-estimates                                                                                                 |
+| Washing machine     | Washing machine notifications trigger on the phase sensor      | The same definition as the dashboard; the status values are listed in one place                                                                                 |
+| Washing machine     | Started notification waits for the settled estimate            | The machine briefly reports about 52 minutes before settling on the real one                                                                                    |
+| Washing machine     | Phase sensor unavailable while the integration is              | Recovery from a dropout must not look like a new cycle                                                                                                          |
+| Washing machine     | No washing machine energy on the dashboard or in notifications | The counter resets per run and holds the last value between runs; not actionable. It could go into the Energy dashboard as an individual device                 |
+| Weather             | Outdoor forecast shows "Updated", not "Measured"               | Met.no is a forecast service: there is no measurement and no observation time, only the time its values last changed                                            |
+| Weather             | Data age as a pill, today's range on the former "Now" line     | The tile keeps its height; the age qualifies the whole tile (temperature, humidity, pressure and wind come from the same data)                                  |
+| Weather             | Weather data stale after 90 minutes                            | Met.no values are hourly; 90 minutes without any change means no fresh data. One number in one sensor                                                           |
 
 ## Open topics
 
 Ideas that were discussed but are not implemented. Check here before proposing
 something new: it may already have been weighed.
 
-| Topic                                                 | Status              | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| ----------------------------------------------------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Sidebar collapsed to icons by default for all users   | Parked              | Home Assistant stores the sidebar mode per browser, with no server default. Plan: a small own frontend module via `extra_module_url` that collapses the sidebar only when no preference is stored, using the `hass-dock-sidebar` event. Needs the stored value for "collapsed" (browser DevTools, Local Storage, key `dockedSidebar`). The `custom-sidebar` plugin enforces the mode on every reload and has broken with several Home Assistant releases |
-| Climate on the left (phones show it first)            | Open                | Rooms: lighting first because it is the most used control. Overview: Security first because its pill can be urgent. No decision yet                                                                                                                                                                                                                                                                                                                      |
-| Solar gauges smaller than other rings on phones       | Accepted limitation | Possible fix: gauges directly in the section grid (sized by rows) plus screen-size visibility rules to keep the phone order. Risk: medium widths (tablet portrait) can interleave Now and Today. Test on real devices at several widths first                                                                                                                                                                                                            |
-| Energy Flow with individual consumers                 | Future              | Candidates: plug energy sensors and the switches' consumption sensors. Option: Home Assistant's native energy cards (energy sankey with devices and a period selector), which need the devices added to the Energy dashboard                                                                                                                                                                                                                             |
-| `utility_meter/` include folder                       | Future              | Worth it once there are more than the three energy meters                                                                                                                                                                                                                                                                                                                                                                                                |
-| Start presence simulation automatically               | Idea                | An automation could turn it on when the alarm is armed away and off when disarmed, making the switch mostly unnecessary                                                                                                                                                                                                                                                                                                                                  |
-| Washing machine energy                                | Optional            | `sensor.lg_washer_energy` resets when a run starts and keeps its final value until the next run (confirmed). It is the machine's own figure, not metered. Not shown anywhere on purpose; it could be added to the Energy dashboard as an individual device                                                                                                                                                                                               |
-| Outdoor temperature from the weather station          | Idea                | The tile's temperature is a Met.no model value, even when fresh. If it still feels off, show the Ecowitt North reading there instead (a real measurement, with its own update time)                                                                                                                                                                                                                                                                      |
-| Default dashboard occasionally opens `/home/overview` | Unresolved          | The registration (key `lovelace`), the default setting and the user profile are correct. Suspected client-side caching; next step is a test in a private browser window                                                                                                                                                                                                                                                                                  |
+| Topic                                                 | Status              | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ----------------------------------------------------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Sidebar contents and collapsed mode for all users     | Parked              | Since 2025.12 the sidebar's order and hidden items are stored per user and follow that user across devices; there is no system-level setting (a feature request, frontend issue 30024, was not accepted into the issue tracker). Options: each user hides History and Media once via the sidebar's edit mode (no dependency, not enforced), or `custom-sidebar` for a system-wide configuration (a frontend-patching dependency that needs a check after each release). Collapsing to icons by default would need the same kind of module |
+| Climate on the left (phones show it first)            | Open                | Rooms: lighting first because it is the most used control. Overview: Security first because its pill can be urgent. No decision yet                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Solar gauges smaller than other rings on phones       | Accepted limitation | Possible fix: gauges directly in the section grid (sized by rows) plus screen-size visibility rules to keep the phone order. Risk: medium widths (tablet portrait) can interleave Now and Today. Test on real devices at several widths first                                                                                                                                                                                                                                                                                             |
+| Energy Flow with individual consumers                 | Future              | Candidates: plug energy sensors and the switches' consumption sensors. Option: Home Assistant's native energy cards (energy sankey with devices and a period selector), which need the devices added to the Energy dashboard                                                                                                                                                                                                                                                                                                              |
+| `utility_meter/` include folder                       | Future              | Worth it once there are more than the three energy meters                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| Start presence simulation automatically               | Idea                | An automation could turn it on when the alarm is armed away and off when disarmed, making the switch mostly unnecessary                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Washing machine energy                                | Optional            | `sensor.lg_washer_energy` resets when a run starts and keeps its final value until the next run (confirmed). It is the machine's own figure, not metered. Not shown anywhere on purpose; it could be added to the Energy dashboard as an individual device                                                                                                                                                                                                                                                                                |
+| Outdoor temperature from the weather station          | Idea                | The tile's temperature is a Met.no model value, even when fresh. If it still feels off, show the Ecowitt North reading there instead (a real measurement, with its own update time)                                                                                                                                                                                                                                                                                                                                                       |
+| Unused frontend cards                                 | Recommended         | The views use only Mushroom, Modern Circular Gauge and Sankey. The last repository snapshot also loaded timer-bar-card, button-card, apexcharts-card and advanced-camera-card (whose `?v7.17.0` suffix also lacks `=` and differs from the downloaded 8.1.0), and still downloaded vacuum-card and custom-sidebar. Remove what no dashboard uses (see [Dependencies](#dependencies))                                                                                                                                                      |
+| Validator in CI                                       | Recommended         | Run `python3 scripts/validate_dashboard.py` (without `--entities`, there is no entity list in CI) and markdownlint in the verify workflow, pinned like the repository's other actions                                                                                                                                                                                                                                                                                                                                                     |
+| Default dashboard occasionally opens `/home/overview` | Unresolved          | Not caching: since 2025.12 the default is resolved user, then system, then legacy per-device value, then the built-in Home dashboard (see [Registration and default dashboard](#registration-and-default-dashboard)). `/home/overview` means neither a user nor the system default applied. Next step: find which account or device it happens on and check that user's profile default                                                                                                                                                   |
 
 ## Entity inventory
 
@@ -1301,38 +1377,38 @@ or update it when views change.
 
 ### Overview (`overview.yaml`)
 
-| Section                     | Span | Name                                                                                                          | Entities                                                                                                                                                                                                                                                          |                          |       |          |                |       |          |                                                       |                |
-| --------------------------- | ---- | ------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ | ----- | -------- | -------------- | ----- | -------- | ----------------------------------------------------- | -------------- |
-| Presence Simulation         | 3    | Presence simulation is on                                                                                     | `switch.presence_simulation`                                                                                                                                                                                                                                      |                          |       |          |                |       |          |                                                       |                |
-| Security and Safety (chips) | 2    | Pill row                                                                                                      | `binary_sensor.house_safety_status`                                                                                                                                                                                                                               |                          |       |          |                |       |          |                                                       |                |
-| Security and Safety (chips) | 2    | Alarm                                                                                                         | `alarm_control_panel.ring_control_panel`                                                                                                                                                                                                                          |                          |       |          |                |       |          |                                                       |                |
-| Security and Safety (chips) | 2    | Front Door                                                                                                    | `lock.entrance_door_lock`                                                                                                                                                                                                                                         |                          |       |          |                |       |          |                                                       |                |
-| Security and Safety (chips) | 2    | Smoke                                                                                                         | `binary_sensor.ass1_smoke_detected`, `binary_sensor.ass2_smoke_detected`, `binary_sensor.ass3_smoke_detected`, `binary_sensor.ass4_smoke_detected`, `binary_sensor.ass5_smoke_detected`, `binary_sensor.ass6_smoke_detected`, `binary_sensor.ass7_smoke_detected` |                          |       |          |                |       |          |                                                       |                |
-| Security and Safety (chips) | 2    | Water leaks                                                                                                   | `binary_sensor.ffs1_water_alarm_water_leak_detected`, `binary_sensor.ffs2_water_leak_detected`                                                                                                                                                                    |                          |       |          |                |       |          |                                                       |                |
-| Security and Safety (chips) | 2    | Doors & windows                                                                                               | `binary_sensor.ring_rcs1`, `binary_sensor.ring_rcs2`, `binary_sensor.ring_rcs3`                                                                                                                                                                                   |                          |       |          |                |       |          |                                                       |                |
-| Security and Safety (chips) | 2    | Batteries                                                                                                     | `sensor.house_battery_status`                                                                                                                                                                                                                                     |                          |       |          |                |       |          |                                                       |                |
-| Outdoor (forecast)          | 1    | Pill row                                                                                                      | `sun.sun`                                                                                                                                                                                                                                                         |                          |       |          |                |       |          |                                                       |                |
-| Outdoor (forecast)          | 1    | Pill row                                                                                                      | `weather.home`                                                                                                                                                                                                                                                    |                          |       |          |                |       |          |                                                       |                |
-| Outdoor (forecast)          | 1    | {% set lo = states('sensor.weather_today_low') %} {% set hi = states('sensor.weather_today_high') %} {% if lo | is_number and hi                                                                                                                                                                                                                                                  | is_number %}Today ↓{{ lo | float | round(0) | int }}° ↑{{ hi | float | round(0) | int }}°{% else %}Today's range unavailable{% endif %} | `weather.home` |
-| Outdoor (forecast)          | 1    | Humidity · Pressure · Wind                                                                                    | `weather.home`                                                                                                                                                                                                                                                    |                          |       |          |                |       |          |                                                       |                |
-| Washing Machine             | 3    | Washing machine                                                                                               | `sensor.washing_machine_status`                                                                                                                                                                                                                                   |                          |       |          |                |       |          |                                                       |                |
-| Indoor Climate              | 2    | Pill row                                                                                                      | `sensor.house_ac_status`                                                                                                                                                                                                                                          |                          |       |          |                |       |          |                                                       |                |
-| Indoor Climate              | 2    | Living Room (+ A/C mode)                                                                                      | `sensor.living_room_living_room_temperature_humidity_temperature`, `sensor.living_room_living_room_temperature_humidity_humidity`, `climate.living_room_air_conditioner`                                                                                          |                          |       |          |                |       |          |                                                       |                |
-| Indoor Climate              | 2    | Bedroom (+ A/C mode)                                                                                          | `sensor.bedroom_bedroom_temperature_humidity_temperature`, `sensor.bedroom_bedroom_temperature_humidity_humidity`, `climate.bedroom_air_conditioner`                                                                                                              |                          |       |          |                |       |          |                                                       |                |
-| Indoor Climate              | 2    | Office (+ A/C mode)                                                                                           | `sensor.office_office_temperature_humidity_temperature`, `sensor.office_office_temperature_humidity_humidity`, `climate.office_air_conditioner`                                                                                                                   |                          |       |          |                |       |          |                                                       |                |
-| Indoor Climate              | 2    | Tea Room                                                                                                      | `sensor.tea_room_tea_room_temperature_humidity_temperature`, `sensor.tea_room_tea_room_temperature_humidity_humidity`                                                                                                                                             |                          |       |          |                |       |          |                                                       |                |
-| Weather Station             | 1    | Pill row                                                                                                      | `sensor.ecowitt_temp1`, `sensor.ecowitt_temp2`                                                                                                                                                                                                                    |                          |       |          |                |       |          |                                                       |                |
-| Weather Station             | 1    | South                                                                                                         | `sensor.ecowitt_temp1`, `sensor.ecowitt_humidity1`                                                                                                                                                                                                                |                          |       |          |                |       |          |                                                       |                |
-| Weather Station             | 1    | North                                                                                                         | `sensor.ecowitt_temp2`, `sensor.ecowitt_humidity2`                                                                                                                                                                                                                |                          |       |          |                |       |          |                                                       |                |
-| Solar and Energy            | 3    | Solar                                                                                                         | `sensor.pv_power_photovoltaics_fronius_power_flow`                                                                                                                                                                                                                |                          |       |          |                |       |          |                                                       |                |
-| Solar and Energy            | 3    | Own use                                                                                                       | `sensor.solar_own_use_power`                                                                                                                                                                                                                                      |                          |       |          |                |       |          |                                                       |                |
-| Solar and Energy            | 3    | Exporting                                                                                                     | `sensor.energy_meter_po`                                                                                                                                                                                                                                          |                          |       |          |                |       |          |                                                       |                |
-| Solar and Energy            | 3    | Importing                                                                                                     | `sensor.energy_meter_p`                                                                                                                                                                                                                                           |                          |       |          |                |       |          |                                                       |                |
-| Solar and Energy            | 3    | Produced                                                                                                      | `sensor.solar_produced_today`                                                                                                                                                                                                                                     |                          |       |          |                |       |          |                                                       |                |
-| Solar and Energy            | 3    | Own use                                                                                                       | `sensor.solar_own_use_today`                                                                                                                                                                                                                                      |                          |       |          |                |       |          |                                                       |                |
-| Solar and Energy            | 3    | Exported                                                                                                      | `sensor.grid_exported_today`                                                                                                                                                                                                                                      |                          |       |          |                |       |          |                                                       |                |
-| Solar and Energy            | 3    | Imported                                                                                                      | `sensor.grid_imported_today`                                                                                                                                                                                                                                      |                          |       |          |                |       |          |                                                       |                |
-| Energy Flow                 | 3    | Sankey                                                                                                        | `sensor.pv_power_photovoltaics_fronius_power_flow`, `sensor.energy_meter_p`, `sensor.energy_meter_po`                                                                                                                                                             |                          |       |          |                |       |          |                                                       |                |
+| Section                     | Span | Name                                                                                                          | Entities                                                                                                                                                                 |                          |       |          |                |       |          |                                                       |                |
+| --------------------------- | ---- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------ | ----- | -------- | -------------- | ----- | -------- | ----------------------------------------------------- | -------------- |
+| Presence Simulation         | 3    | Presence simulation is on                                                                                     | `switch.presence_simulation`                                                                                                                                             |                          |       |          |                |       |          |                                                       |                |
+| Security and Safety (chips) | 2    | Pill row                                                                                                      | `binary_sensor.house_safety_status`                                                                                                                                      |                          |       |          |                |       |          |                                                       |                |
+| Security and Safety (chips) | 2    | Alarm                                                                                                         | `alarm_control_panel.ring_control_panel`                                                                                                                                 |                          |       |          |                |       |          |                                                       |                |
+| Security and Safety (chips) | 2    | Front Door                                                                                                    | `lock.entrance_door_lock`                                                                                                                                                |                          |       |          |                |       |          |                                                       |                |
+| Security and Safety (chips) | 2    | Smoke                                                                                                         | `group.safety_smoke_detectors`                                                                                                                                           |                          |       |          |                |       |          |                                                       |                |
+| Security and Safety (chips) | 2    | Water leaks                                                                                                   | `group.safety_water_leak_sensors`                                                                                                                                        |                          |       |          |                |       |          |                                                       |                |
+| Security and Safety (chips) | 2    | Doors & windows                                                                                               | `group.safety_doors_and_windows`                                                                                                                                         |                          |       |          |                |       |          |                                                       |                |
+| Security and Safety (chips) | 2    | Batteries                                                                                                     | `sensor.house_battery_status`                                                                                                                                            |                          |       |          |                |       |          |                                                       |                |
+| Outdoor (forecast)          | 1    | Pill row                                                                                                      | `sun.sun`                                                                                                                                                                |                          |       |          |                |       |          |                                                       |                |
+| Outdoor (forecast)          | 1    | Pill row                                                                                                      | `weather.home`                                                                                                                                                           |                          |       |          |                |       |          |                                                       |                |
+| Outdoor (forecast)          | 1    | {% set lo = states('sensor.weather_today_low') %} {% set hi = states('sensor.weather_today_high') %} {% if lo | is_number and hi                                                                                                                                                         | is_number %}Today ↓{{ lo | float | round(0) | int }}° ↑{{ hi | float | round(0) | int }}°{% else %}Today's range unavailable{% endif %} | `weather.home` |
+| Outdoor (forecast)          | 1    | Humidity · Pressure · Wind                                                                                    | `weather.home`                                                                                                                                                           |                          |       |          |                |       |          |                                                       |                |
+| Washing Machine             | 3    | Washing machine                                                                                               | `sensor.washing_machine_status`                                                                                                                                          |                          |       |          |                |       |          |                                                       |                |
+| Indoor Climate              | 2    | Pill row                                                                                                      | `sensor.house_ac_status`                                                                                                                                                 |                          |       |          |                |       |          |                                                       |                |
+| Indoor Climate              | 2    | Living Room (+ A/C mode)                                                                                      | `sensor.living_room_living_room_temperature_humidity_temperature`, `sensor.living_room_living_room_temperature_humidity_humidity`, `climate.living_room_air_conditioner` |                          |       |          |                |       |          |                                                       |                |
+| Indoor Climate              | 2    | Bedroom (+ A/C mode)                                                                                          | `sensor.bedroom_bedroom_temperature_humidity_temperature`, `sensor.bedroom_bedroom_temperature_humidity_humidity`, `climate.bedroom_air_conditioner`                     |                          |       |          |                |       |          |                                                       |                |
+| Indoor Climate              | 2    | Office (+ A/C mode)                                                                                           | `sensor.office_office_temperature_humidity_temperature`, `sensor.office_office_temperature_humidity_humidity`, `climate.office_air_conditioner`                          |                          |       |          |                |       |          |                                                       |                |
+| Indoor Climate              | 2    | Tea Room                                                                                                      | `sensor.tea_room_tea_room_temperature_humidity_temperature`, `sensor.tea_room_tea_room_temperature_humidity_humidity`                                                    |                          |       |          |                |       |          |                                                       |                |
+| Weather Station             | 1    | Pill row                                                                                                      | `sensor.ecowitt_temp1`, `sensor.ecowitt_temp2`                                                                                                                           |                          |       |          |                |       |          |                                                       |                |
+| Weather Station             | 1    | South                                                                                                         | `sensor.ecowitt_temp1`, `sensor.ecowitt_humidity1`                                                                                                                       |                          |       |          |                |       |          |                                                       |                |
+| Weather Station             | 1    | North                                                                                                         | `sensor.ecowitt_temp2`, `sensor.ecowitt_humidity2`                                                                                                                       |                          |       |          |                |       |          |                                                       |                |
+| Solar and Energy            | 3    | Solar                                                                                                         | `sensor.pv_power_photovoltaics_fronius_power_flow`                                                                                                                       |                          |       |          |                |       |          |                                                       |                |
+| Solar and Energy            | 3    | Own use                                                                                                       | `sensor.solar_own_use_power`                                                                                                                                             |                          |       |          |                |       |          |                                                       |                |
+| Solar and Energy            | 3    | Exporting                                                                                                     | `sensor.energy_meter_po`                                                                                                                                                 |                          |       |          |                |       |          |                                                       |                |
+| Solar and Energy            | 3    | Importing                                                                                                     | `sensor.energy_meter_p`                                                                                                                                                  |                          |       |          |                |       |          |                                                       |                |
+| Solar and Energy            | 3    | Produced                                                                                                      | `sensor.solar_produced_today`                                                                                                                                            |                          |       |          |                |       |          |                                                       |                |
+| Solar and Energy            | 3    | Own use                                                                                                       | `sensor.solar_own_use_today`                                                                                                                                             |                          |       |          |                |       |          |                                                       |                |
+| Solar and Energy            | 3    | Exported                                                                                                      | `sensor.grid_exported_today`                                                                                                                                             |                          |       |          |                |       |          |                                                       |                |
+| Solar and Energy            | 3    | Imported                                                                                                      | `sensor.grid_imported_today`                                                                                                                                             |                          |       |          |                |       |          |                                                       |                |
+| Energy Flow                 | 3    | Sankey                                                                                                        | `sensor.pv_power_photovoltaics_fronius_power_flow`, `sensor.energy_meter_p`, `sensor.energy_meter_po`                                                                    |                          |       |          |                |       |          |                                                       |                |
 
 ### Living Room (`living_room.yaml`)
 
@@ -1490,9 +1566,47 @@ or update it when views change.
 | `binary_sensor.bathrooms_safety_status`   | `alarm_control_panel.ring_control_panel`, `binary_sensor.fms1_home_security_motion_detection`                                                                                                                                                                                                                                                                                                               | none                                                                            |
 | `binary_sensor.garden_safety_status`      | none                                                                                                                                                                                                                                                                                                                                                                                                        | `binary_sensor.ring_rcs3`                                                       |
 
-### Dashboard status sensors (`template/dashboard_status.yaml`)
+### Groups (`group/*.yaml`)
 
-| Entity                        | Discovers                                         | Used by                              |
-| ----------------------------- | ------------------------------------------------- | ------------------------------------ |
-| `sensor.house_ac_status`      | All `climate` entities                            | Overview, Indoor climate pill row    |
-| `sensor.house_battery_status` | All battery `sensor` and `binary_sensor` entities | Overview, Security batteries summary |
+| Group                             | Members                                                                                                                                                                                                                                                           |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `group.safety_smoke_detectors`    | `binary_sensor.ass1_smoke_detected`, `binary_sensor.ass2_smoke_detected`, `binary_sensor.ass3_smoke_detected`, `binary_sensor.ass4_smoke_detected`, `binary_sensor.ass5_smoke_detected`, `binary_sensor.ass6_smoke_detected`, `binary_sensor.ass7_smoke_detected` |
+| `group.safety_water_leak_sensors` | `binary_sensor.ffs1_water_alarm_water_leak_detected`, `binary_sensor.ffs2_water_leak_detected`                                                                                                                                                                    |
+| `group.safety_doors_and_windows`  | `binary_sensor.ring_rcs1`, `binary_sensor.ring_rcs2`, `binary_sensor.ring_rcs3`                                                                                                                                                                                   |
+
+### Template entities (`template/*.yaml`)
+
+| Entity                                    | Name                       | File                    | Updates       |
+| ----------------------------------------- | -------------------------- | ----------------------- | ------------- |
+| `sensor.house_ac_status`                  | House: AC Status           | `dashboard_status.yaml` | state-based   |
+| `sensor.house_battery_status`             | House: Battery Status      | `dashboard_status.yaml` | trigger-based |
+| `sensor.solar_produced_today`             | Solar: Produced Today      | `energy.yaml`           | state-based   |
+| `sensor.grid_exported_today`              | Grid: Exported Today       | `energy.yaml`           | state-based   |
+| `sensor.grid_imported_today`              | Grid: Imported Today       | `energy.yaml`           | state-based   |
+| `sensor.solar_own_use_power`              | Solar: Own Use             | `energy.yaml`           | state-based   |
+| `sensor.solar_own_use_today`              | Solar: Own Use Today       | `energy.yaml`           | state-based   |
+| `binary_sensor.house_safety_status`       | House: Safety Status       | `safety_status.yaml`    | state-based   |
+| `binary_sensor.living_room_safety_status` | Living Room: Safety Status | `safety_status.yaml`    | state-based   |
+| `binary_sensor.office_safety_status`      | Office: Safety Status      | `safety_status.yaml`    | state-based   |
+| `binary_sensor.tea_room_safety_status`    | Tea Room: Safety Status    | `safety_status.yaml`    | state-based   |
+| `binary_sensor.bedroom_safety_status`     | Bedroom: Safety Status     | `safety_status.yaml`    | state-based   |
+| `binary_sensor.hallways_safety_status`    | Hallways: Safety Status    | `safety_status.yaml`    | state-based   |
+| `binary_sensor.utility_safety_status`     | Utility: Safety Status     | `safety_status.yaml`    | state-based   |
+| `binary_sensor.bathrooms_safety_status`   | Bathrooms: Safety Status   | `safety_status.yaml`    | state-based   |
+| `binary_sensor.garden_safety_status`      | Garden: Safety Status      | `safety_status.yaml`    | state-based   |
+| `sensor.washing_machine_phase`            | Washing Machine: Phase     | `washing_machine.yaml`  | state-based   |
+| `sensor.washing_machine_status`           | Washing Machine: Status    | `washing_machine.yaml`  | state-based   |
+| `binary_sensor.washing_machine_active`    | Washing Machine: Active    | `washing_machine.yaml`  | state-based   |
+| `sensor.washing_machine_end_time`         | Washing Machine: End Time  | `washing_machine.yaml`  | trigger-based |
+| `sensor.weather_today_low`                | Weather: Today Low         | `weather.yaml`          | trigger-based |
+| `sensor.weather_today_high`               | Weather: Today High        | `weather.yaml`          | trigger-based |
+| `sensor.weather_updated`                  | Weather: Updated           | `weather.yaml`          | state-based   |
+| `binary_sensor.weather_data_stale`        | Weather: Data Stale        | `weather.yaml`          | state-based   |
+
+### Utility meters (`packages/*.yaml`)
+
+| Entity                      | Source                                             | Cycle | File          |
+| --------------------------- | -------------------------------------------------- | ----- | ------------- |
+| `sensor.solar_energy_today` | `sensor.pv_inverter_energy_total_fronius_inverter` | daily | `energy.yaml` |
+| `sensor.grid_import_today`  | `sensor.energy_meter_tpi`                          | daily | `energy.yaml` |
+| `sensor.grid_export_today`  | `sensor.energy_meter_tpo`                          | daily | `energy.yaml` |

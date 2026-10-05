@@ -1,24 +1,41 @@
 ---
+# Safety status sensors: one for the whole house (Overview) and one per room
+# tab. Each drives one status pill: red when on (alarm), orange when off but
+# the summary is not exactly "All clear" (attention), green otherwise.
+# The house sensor reads the lists in group/safety.yaml; room sensors list
+# their own entities. See DASHBOARD.md, "Safety status sensors".
 - binary_sensor:
     - unique_id: 7cdb286b-e59f-4b23-9d4c-a2021288fae3
       name: "House: Safety Status"
       default_entity_id: binary_sensor.house_safety_status
       device_class: safety
+      # The entity lists live in group/safety.yaml. An empty group means a
+      # configuration error: the pill then says so in orange instead of
+      # reporting "All clear" while checking nothing.
       state: >-
-        {{ is_state('alarm_control_panel.ring_control_panel', 'triggered') or (['binary_sensor.ass1_smoke_detected', 'binary_sensor.ass2_smoke_detected', 'binary_sensor.ass3_smoke_detected', 'binary_sensor.ass4_smoke_detected', 'binary_sensor.ass5_smoke_detected', 'binary_sensor.ass6_smoke_detected', 'binary_sensor.ass7_smoke_detected', 'binary_sensor.ffs1_water_alarm_water_leak_detected', 'binary_sensor.ffs2_water_leak_detected'] | select('is_state', 'on') | list | count > 0) }}
+        {{ is_state('alarm_control_panel.ring_control_panel', 'triggered')
+        or expand('group.safety_smoke_detectors', 'group.safety_water_leak_sensors')
+        | selectattr('state', 'eq', 'on') | list | count > 0 }}
       icon: >-
         {% if is_state('alarm_control_panel.ring_control_panel', 'triggered')
-        or (['binary_sensor.ass1_smoke_detected', 'binary_sensor.ass2_smoke_detected', 'binary_sensor.ass3_smoke_detected', 'binary_sensor.ass4_smoke_detected', 'binary_sensor.ass5_smoke_detected', 'binary_sensor.ass6_smoke_detected', 'binary_sensor.ass7_smoke_detected', 'binary_sensor.ffs1_water_alarm_water_leak_detected', 'binary_sensor.ffs2_water_leak_detected'] | select('is_state', 'on') | list | count > 0) %}mdi:alert
-        {% elif ['binary_sensor.ring_rcs1', 'binary_sensor.ring_rcs2', 'binary_sensor.ring_rcs3'] | select('is_state', 'on') | list | count > 0 %}mdi:door-open
+        or expand('group.safety_smoke_detectors', 'group.safety_water_leak_sensors')
+        | selectattr('state', 'eq', 'on') | list | count > 0 %}mdi:alert
+        {% elif (expand('group.safety_smoke_detectors') | count == 0
+        or expand('group.safety_water_leak_sensors') | count == 0
+        or expand('group.safety_doors_and_windows') | count == 0) %}mdi:shield-alert-outline
+        {% elif expand('group.safety_doors_and_windows') | selectattr('state', 'eq', 'on') | list | count > 0 %}mdi:door-open
         {% else %}mdi:shield-check{% endif %}
       attributes:
         summary: >-
-          {% set smoke = ['binary_sensor.ass1_smoke_detected', 'binary_sensor.ass2_smoke_detected', 'binary_sensor.ass3_smoke_detected', 'binary_sensor.ass4_smoke_detected', 'binary_sensor.ass5_smoke_detected', 'binary_sensor.ass6_smoke_detected', 'binary_sensor.ass7_smoke_detected'] | select('is_state', 'on') | list | count %}
-          {% set leak = ['binary_sensor.ffs1_water_alarm_water_leak_detected', 'binary_sensor.ffs2_water_leak_detected'] | select('is_state', 'on') | list | count %}
-          {% set open = ['binary_sensor.ring_rcs1', 'binary_sensor.ring_rcs2', 'binary_sensor.ring_rcs3'] | select('is_state', 'on') | list | count %}
+          {% set smoke = expand('group.safety_smoke_detectors') | selectattr('state', 'eq', 'on') | list | count %}
+          {% set leak = expand('group.safety_water_leak_sensors') | selectattr('state', 'eq', 'on') | list | count %}
+          {% set open = expand('group.safety_doors_and_windows') | selectattr('state', 'eq', 'on') | list | count %}
           {% if is_state('alarm_control_panel.ring_control_panel', 'triggered') %}Alarm triggered
           {% elif smoke > 0 %}Smoke detected
           {% elif leak > 0 %}Water leak
+          {% elif (expand('group.safety_smoke_detectors') | count == 0
+          or expand('group.safety_water_leak_sensors') | count == 0
+          or expand('group.safety_doors_and_windows') | count == 0) %}Safety groups missing
           {% elif open > 0 %}{{ open }} door/window open
           {% else %}All clear{% endif %}
     - unique_id: 2cff670b-7153-4bfe-94b7-70fec563ff31
