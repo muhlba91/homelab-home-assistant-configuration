@@ -62,11 +62,6 @@ sections:
           color: var(--divider-color)
         secondary:
           entity: sensor.ecowitt_humidity1
-          show_gauge: outer
-          min: 20
-          max: 80
-          gauge_foreground_style:
-            color: 'var(--green-color)'
         grid_options:
           columns: 12
           rows: 3
@@ -82,11 +77,6 @@ sections:
           color: var(--divider-color)
         secondary:
           entity: sensor.ecowitt_humidity2
-          show_gauge: outer
-          min: 20
-          max: 80
-          gauge_foreground_style:
-            color: 'var(--green-color)'
         grid_options:
           columns: 12
           rows: 3

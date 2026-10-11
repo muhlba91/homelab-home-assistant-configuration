@@ -183,7 +183,7 @@ files in sync.
 | Card                                                                     | Used for                                           | Why not native                                          |
 | ------------------------------------------------------------------------ | -------------------------------------------------- | ------------------------------------------------------- |
 | Mushroom (`custom:mushroom-template-card`, `custom:mushroom-chips-card`) | Status pills, Overview summary rows, forecast rows | Native cards cannot template text, icon and icon colour |
-| Modern Circular Gauge (`custom:modern-circular-gauge`)                   | Temperature rings with humidity dot                | Native gauge has no secondary value                     |
+| Modern Circular Gauge (`custom:modern-circular-gauge`)                   | Temperature rings with humidity text               | Native gauge has no secondary value                     |
 | HA Sankey Chart (`custom:sankey-chart`)                                  | Energy Flow                                        | No native equivalent                                    |
 
 Everything else is native: `sections` views, `grid` sections, `heading` cards,
@@ -554,11 +554,6 @@ contrast on the pill background (green 3.1:1, blue 4.2:1; 4.5:1 is needed).
           color: var(--divider-color)
         secondary:
           entity: sensor.office_office_temperature_humidity_humidity
-          show_gauge: outer
-          min: 30
-          max: 70
-          gauge_foreground_style:
-            color: 'var(--green-color)'
         grid_options:
           columns: 6
           rows: 3
@@ -569,8 +564,14 @@ conditioner is off, "Office · Cooling" while it runs. Because it is part of
 the ring, it can never detach from it. Rooms without an air conditioner use a
 plain `name: Tea Room`.
 
-Ranges: indoor 15 to 28 °C and 30 to 70 %; outdoor 5 to 35 °C and 20 to 80 %.
-The solar gauge uses `var(--amber-color)`, 0 to 5000 W, and no secondary.
+Ranges: indoor 15 to 28 °C, outdoor 5 to 35 °C. The solar gauge uses
+`var(--amber-color)`, 0 to 5000 W, and no secondary.
+
+Humidity is shown **as text only** (the `secondary` entity, under the
+temperature). Do not add `show_gauge: outer`: that mode draws the dot on the
+temperature ring **using the temperature's `min` and `max`** and ignores the
+secondary `min` and `max`, so every humidity value lands at the end of the
+ring. Only `show_gauge: inner` has its own scale (a second, inner ring).
 
 ### A/C summary pill (Indoor climate)
 
@@ -1281,29 +1282,30 @@ Before committing:
 Each of these happened during development. Check here first when something
 looks wrong.
 
-| Symptom                                                               | Cause                                                                          | Fix                                                                                                                  |
-| --------------------------------------------------------------------- | ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
-| No dashboard loads at all, not even the default                       | A custom card registers a frontend element twice (`vacuum-card`)               | Remove it from `extra_module_url.yaml`; add custom cards one at a time                                               |
-| New template entities never appear                                    | `template:` included with `!include_dir_merge_named`, which ignores list files | Use `!include_dir_merge_list`                                                                                        |
-| `lovelace: mode: yaml` has no effect                                  | Removed in Home Assistant 2026.8                                               | Register the dashboard under `dashboards:` with the key `lovelace`                                                   |
-| Dashboard edits do not show                                           | Included view files are cached, or an old copy is deployed                     | Dashboard menu, Refresh; compare checksums of the deployed files                                                     |
-| Cards scattered in odd positions                                      | Masonry view reorders by height                                                | Use `type: sections`                                                                                                 |
-| "Template loop detected" in the log, state and attributes disagree    | A template sensor iterates its own domain (`states.sensor`)                    | Make it trigger-based                                                                                                |
-| A value lags one update behind                                        | Template reads `this`                                                          | Compute every field from live states                                                                                 |
-| Pills float or rows look ragged on phones                             | Widths below 12 keep their size on the phone's 12-unit grid                    | Use only 6, 12 or `full`                                                                                             |
-| Info under rings detaches from its ring on phones                     | Grid order pairs cards by position, which changes when wrapping                | Put the info into the ring (templated `name`) or into one stacked card                                               |
-| Gauge huge inside a stack                                             | The gauge sizes itself by width                                                | Put it between invisible spacer cards                                                                                |
-| Pill background invisible                                             | Chip background equals card background                                         | Set `mush-chip-background` in the theme                                                                              |
-| Panels blend into the page                                            | Section background equals page background                                      | Set `ha-section-background-color`                                                                                    |
-| Heading badge cannot show three states                                | Badges have no templates or visibility                                         | Use a Mushroom template chip in a pill row                                                                           |
-| Sankey shows only one branch                                          | `remaining_parent_state` misbehaves                                            | Give the node explicit `add_entities` and `subtract_entities`                                                        |
-| Today values `unknown` after deploying                                | New utility meters have no reading yet                                         | Display sensors treat unknown as 0; `utility_meter.calibrate` once                                                   |
-| Daily solar value lost at night                                       | The inverter's day counter is unavailable while it sleeps                      | Use a daily utility meter on the inverter's total                                                                    |
-| `as_timestamp got invalid input 'None'`                               | A sun attribute is missing at startup                                          | Pass a default: `as_timestamp(value, none)`                                                                          |
-| A notification is sent twice (after pause, error, restart or dropout) | A state trigger fires on every transition into the state                       | Use `to` plus `not_from` with the states that must not count; make a template sensor unavailable while its source is |
-| The weather entity has no forecast attribute                          | Forecasts are requested, not stored on the entity                              | Call `weather.get_forecasts` in a trigger-based template sensor                                                      |
-| Overview pill says "Safety groups missing", summaries show (0)        | A safety group is empty or not loaded                                          | Deploy `group/safety.yaml` and reload Groups                                                                         |
-| Coloured text hard to read                                            | Palette colours on the pill background stay below 4.5:1                        | Keep text neutral; colour only icons                                                                                 |
+| Symptom                                                               | Cause                                                                                    | Fix                                                                                                                  |
+| --------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| No dashboard loads at all, not even the default                       | A custom card registers a frontend element twice (`vacuum-card`)                         | Remove it from `extra_module_url.yaml`; add custom cards one at a time                                               |
+| New template entities never appear                                    | `template:` included with `!include_dir_merge_named`, which ignores list files           | Use `!include_dir_merge_list`                                                                                        |
+| `lovelace: mode: yaml` has no effect                                  | Removed in Home Assistant 2026.8                                                         | Register the dashboard under `dashboards:` with the key `lovelace`                                                   |
+| Dashboard edits do not show                                           | Included view files are cached, or an old copy is deployed                               | Dashboard menu, Refresh; compare checksums of the deployed files                                                     |
+| Cards scattered in odd positions                                      | Masonry view reorders by height                                                          | Use `type: sections`                                                                                                 |
+| "Template loop detected" in the log, state and attributes disagree    | A template sensor iterates its own domain (`states.sensor`)                              | Make it trigger-based                                                                                                |
+| A value lags one update behind                                        | Template reads `this`                                                                    | Compute every field from live states                                                                                 |
+| Pills float or rows look ragged on phones                             | Widths below 12 keep their size on the phone's 12-unit grid                              | Use only 6, 12 or `full`                                                                                             |
+| Info under rings detaches from its ring on phones                     | Grid order pairs cards by position, which changes when wrapping                          | Put the info into the ring (templated `name`) or into one stacked card                                               |
+| Gauge huge inside a stack                                             | The gauge sizes itself by width                                                          | Put it between invisible spacer cards                                                                                |
+| Pill background invisible                                             | Chip background equals card background                                                   | Set `mush-chip-background` in the theme                                                                              |
+| Panels blend into the page                                            | Section background equals page background                                                | Set `ha-section-background-color`                                                                                    |
+| Heading badge cannot show three states                                | Badges have no templates or visibility                                                   | Use a Mushroom template chip in a pill row                                                                           |
+| Sankey shows only one branch                                          | `remaining_parent_state` misbehaves                                                      | Give the node explicit `add_entities` and `subtract_entities`                                                        |
+| Today values `unknown` after deploying                                | New utility meters have no reading yet                                                   | Display sensors treat unknown as 0; `utility_meter.calibrate` once                                                   |
+| Daily solar value lost at night                                       | The inverter's day counter is unavailable while it sleeps                                | Use a daily utility meter on the inverter's total                                                                    |
+| `as_timestamp got invalid input 'None'`                               | A sun attribute is missing at startup                                                    | Pass a default: `as_timestamp(value, none)`                                                                          |
+| A notification is sent twice (after pause, error, restart or dropout) | A state trigger fires on every transition into the state                                 | Use `to` plus `not_from` with the states that must not count; make a template sensor unavailable while its source is |
+| The weather entity has no forecast attribute                          | Forecasts are requested, not stored on the entity                                        | Call `weather.get_forecasts` in a trigger-based template sensor                                                      |
+| Overview pill says "Safety groups missing", summaries show (0)        | A safety group is empty or not loaded                                                    | Deploy `group/safety.yaml` and reload Groups                                                                         |
+| Coloured text hard to read                                            | Palette colours on the pill background stay below 4.5:1                                  | Keep text neutral; colour only icons                                                                                 |
+| Humidity dot always at the end of the ring                            | `show_gauge: outer` uses the temperature scale and ignores the secondary `min` and `max` | Show humidity as text (no `show_gauge`); for a real scale use `inner`                                                |
 
 ## Decision log
 
@@ -1324,6 +1326,7 @@ looks wrong.
 | Theme               | Dark mode uses its own desaturated palette                     | Saturated colours glare on dark surfaces                                                                                                                        |
 | Components          | Native `tile` cards                                            | Consistent shape, real toggles and cover controls                                                                                                               |
 | Components          | Gauge icons hidden                                             | The gauge offers no palette-safe icon colour; the mockups had no icon                                                                                           |
+| Components          | Humidity as text, no dot on the ring                           | The outer dot used the temperature scale and was always at the end; an inner ring would add a second arc to eight rings                                         |
 | Components          | A/C shown as ring label plus summary pill                      | Pills under rings detached from their rings on phones; the label is part of the ring, the pill carries counts per mode                                          |
 | Components          | Shutter position and tilt only in the dialog                   | Keeps rows compact; sliders are rarely needed                                                                                                                   |
 | Components          | Gauge between invisible spacer cards (one third)               | The gauge has no size option and would fill its stack; one fifth was too small on phones; spacers use only native cards                                         |

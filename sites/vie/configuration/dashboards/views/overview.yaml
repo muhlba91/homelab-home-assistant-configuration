@@ -253,11 +253,6 @@ sections:
           color: var(--divider-color)
         secondary:
           entity: sensor.living_room_living_room_temperature_humidity_humidity
-          show_gauge: outer
-          min: 30
-          max: 70
-          gauge_foreground_style:
-            color: 'var(--green-color)'
         grid_options:
           columns: 6
           rows: 3
@@ -277,11 +272,6 @@ sections:
           color: var(--divider-color)
         secondary:
           entity: sensor.bedroom_bedroom_temperature_humidity_humidity
-          show_gauge: outer
-          min: 30
-          max: 70
-          gauge_foreground_style:
-            color: 'var(--green-color)'
         grid_options:
           columns: 6
           rows: 3
@@ -301,11 +291,6 @@ sections:
           color: var(--divider-color)
         secondary:
           entity: sensor.office_office_temperature_humidity_humidity
-          show_gauge: outer
-          min: 30
-          max: 70
-          gauge_foreground_style:
-            color: 'var(--green-color)'
         grid_options:
           columns: 6
           rows: 3
@@ -321,11 +306,6 @@ sections:
           color: var(--divider-color)
         secondary:
           entity: sensor.tea_room_tea_room_temperature_humidity_humidity
-          show_gauge: outer
-          min: 30
-          max: 70
-          gauge_foreground_style:
-            color: 'var(--green-color)'
         grid_options:
           columns: 6
           rows: 3
@@ -364,11 +344,6 @@ sections:
           color: var(--divider-color)
         secondary:
           entity: sensor.ecowitt_humidity1
-          show_gauge: outer
-          min: 20
-          max: 80
-          gauge_foreground_style:
-            color: 'var(--green-color)'
         grid_options:
           columns: 6
           rows: 3
@@ -384,11 +359,6 @@ sections:
           color: var(--divider-color)
         secondary:
           entity: sensor.ecowitt_humidity2
-          show_gauge: outer
-          min: 20
-          max: 80
-          gauge_foreground_style:
-            color: 'var(--green-color)'
         grid_options:
           columns: 6
           rows: 3
