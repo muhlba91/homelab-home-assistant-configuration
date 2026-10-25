@@ -175,4 +175,8 @@ Neither file needs to hold real values — only enough shape for Home Assistant 
 
 Tool versions (Python, sops, jq, shellcheck) are managed with [mise](https://mise.jdx.dev): run `mise trust` and `mise install` once, then use the usual commands (`python3 scripts/...`, `sops`, `shellcheck`). mise also creates the Python virtualenv in `.venv` on first use, so `python` inside the repository resolves to it.
 
-When the Python version in `mise.toml` changes (e.g. a Renovate update), mise does not rebuild the existing `.venv`. Recreate it with `rm -rf .venv && mise install` and reinstall any packages you had installed into it.
+When the Python version in `mise.toml` changes (e.g. a Renovate update), mise does not rebuild the existing `.venv`. Recreate it (and reinstall `requirements-test.txt` if you use the tests):
+
+```bash
+rm -rf .venv && mise install && mise exec -- pip install -r requirements-test.txt
+```
