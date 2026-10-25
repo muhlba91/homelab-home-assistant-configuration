@@ -170,3 +170,7 @@ Since the real configuration references site secrets and integrations that don't
 - [`.ci/env`](.ci/env): stand-in environment variables referenced from configuration via `!env_var`, e.g. `POSTGRESQL_URI`, `OIDC_CLIENT_ID`/`OIDC_CLIENT_SECRET`/`OIDC_WELL_KNOWN_URL`, `NTFY_AUTH_TOKEN`.
 
 Neither file needs to hold real values — only enough shape for Home Assistant to load the configuration and pass `hass --script check_config`. Add a new fixture entry whenever the configuration starts referencing a secret or env var that isn't already covered.
+
+## Development
+
+Tool versions (Python, sops, jq, shellcheck) are managed with [mise](https://mise.jdx.dev): run `mise trust` and `mise install` once, then use the usual commands (`python3 scripts/...`, `sops`, `shellcheck`). mise also creates the Python virtualenv in `.venv` on first use, so `python` inside the repository resolves to it.

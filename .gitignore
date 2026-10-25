@@ -396,3 +396,6 @@ share/
 .python-version
 !cover/
 entities.json
+
+# mise
+mise.local.toml

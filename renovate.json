@@ -9,7 +9,8 @@
         "github-actions",
         "pre-commit",
         "pip_requirements",
-        "custom.regex"
+        "custom.regex",
+        "mise"
     ],
     "customManagers": [
         {
