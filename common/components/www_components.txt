@@ -17,4 +17,4 @@ https://raw.githubusercontent.com/Clooos/Bubble-Card@v3.4.3@dist/bubble-pop-up-f
 # renovate: datasource=github-tags packageName=selvalt7/modern-circular-gauge
 https://github.com/selvalt7/modern-circular-gauge/releases/download@v0.15.0@modern-circular-gauge.js@community/modern-circular-gauge@file
 # renovate: datasource=github-tags packageName=dermotduffy/advanced-camera-card
-https://github.com/dermotduffy/advanced-camera-card/releases/download@v8.1.0@advanced-camera-card.zip@community/advanced-camera-card@zip
+https://github.com/dermotduffy/advanced-camera-card/releases/download@v8.2.0@advanced-camera-card.zip@community/advanced-camera-card@zip

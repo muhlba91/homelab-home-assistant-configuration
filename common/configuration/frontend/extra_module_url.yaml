@@ -17,4 +17,4 @@ extra_module_url:
   # renovate: datasource=github-tags packageName=selvalt7/modern-circular-gauge
   - /local/community/modern-circular-gauge/modern-circular-gauge.js?v=v0.15.0
   # renovate: datasource=github-tags packageName=dermotduffy/advanced-camera-card
-  - /local/community/advanced-camera-card/dist/advanced-camera-card.js?v=v8.1.0
+  - /local/community/advanced-camera-card/dist/advanced-camera-card.js?v=v8.2.0
