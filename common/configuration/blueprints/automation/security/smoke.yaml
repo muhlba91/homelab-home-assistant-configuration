@@ -61,6 +61,14 @@ blueprint:
             - high
             - max
 
+variables:
+  # Device name + entity name; falls back for entities without a device.
+  display_name: >-
+    {%- set e = trigger.entity_id -%}
+    {%- set d = device_name(e) -%}
+    {%- set n = entity_name(e) -%}
+    {{ ((d ~ ' ' ~ n) | trim) if d else (n or state_attr(e, 'friendly_name') or e) }}
+
 trigger:
   - trigger: air_quality.smoke_detected
     target: !input sensor_target
@@ -87,7 +95,7 @@ action:
               priority: !input alert_priority
               markdown: false
               message: |-
-                Name: {{ trigger.to_state.attributes.friendly_name }}
+                Name: {{ display_name }}
                 Started: {{ as_local(trigger.to_state.last_changed).strftime('%Y-%m-%d %H:%M:%S') }}
                 Entity ID: {{ trigger.entity_id }}
       - conditions:
@@ -102,7 +110,7 @@ action:
               priority: !input cleared_priority
               markdown: false
               message: |-
-                Name: {{ trigger.to_state.attributes.friendly_name }}
+                Name: {{ display_name }}
                 Started: {{ as_local(trigger.from_state.last_changed).strftime('%Y-%m-%d %H:%M:%S') }}
                 Ended: {{ as_local(trigger.to_state.last_changed).strftime('%Y-%m-%d %H:%M:%S') }}
                 Entity ID: {{ trigger.entity_id }}

@@ -21,6 +21,12 @@ blueprint:
 
 variables:
   battery_threshold: !input battery_threshold
+  # Device name + entity name; falls back for entities without a device.
+  display_name: >-
+    {%- set e = trigger.entity_id -%}
+    {%- set d = device_name(e) -%}
+    {%- set n = entity_name(e) -%}
+    {{ ((d ~ ' ' ~ n) | trim) if d else (n or state_attr(e, 'friendly_name') or e) }}
 
 trigger:
   - trigger: battery.level_crossed_threshold
@@ -51,7 +57,7 @@ action:
               notification_id: "battery_low_{{ trigger.entity_id }}"
               title: Battery Low
               message: >-
-                {{ trigger.to_state.attributes.friendly_name }} is at
+                {{ display_name }} is at
                 {{ trigger.to_state.state }}% (threshold: {{ battery_threshold }}%).
       - conditions:
           - condition: trigger
