@@ -5,17 +5,71 @@
       entity_id: alarm_control_panel.ring_control_panel
       to: "armed_home"
   conditions: []
+  variables:
+    lock_entity: lock.entrance_door_lock
+    cover_entities:
+      - cover.bedroom
+      - cover.office
+      - cover.tea_room
+      - cover.living_room_tv
+      - cover.garden_door
+      - cover.living_room_kitchen
   actions:
-    - action: lock.lock
-      target:
-        entity_id: lock.entrance_door_lock
-    - action: cover.close_cover
-      target:
-        entity_id:
-          - cover.bedroom
-          - cover.office
-          - cover.tea_room
-          - cover.living_room_tv
-          - cover.garden_door
-          - cover.living_room_kitchen
+    # Lock and covers are independent: one failing must not skip the other.
+    - parallel:
+        - sequence:
+            - action: lock.lock
+              target:
+                entity_id: "{{ lock_entity }}"
+              continue_on_error: true
+            - wait_template: "{{ is_state(lock_entity, 'locked') }}"
+              timeout: "00:00:20"
+              continue_on_timeout: true
+            # Retry once if the lock did not end up locked (Tedee is flaky),
+            # but not if the alarm was disarmed in the meantime.
+            - if:
+                - condition: template
+                  value_template: >-
+                    {{ not is_state(lock_entity, 'locked')
+                    and is_state('alarm_control_panel.ring_control_panel', 'armed_home') }}
+              then:
+                - action: lock.lock
+                  target:
+                    entity_id: "{{ lock_entity }}"
+                  continue_on_error: true
+                - wait_template: "{{ is_state(lock_entity, 'locked') }}"
+                  timeout: "00:00:30"
+                  continue_on_timeout: true
+        # The integration retries a failed command once by itself. All
+        # covers are commanded even if one of them fails.
+        - action: cover.close_cover
+          target:
+            entity_id: "{{ cover_entities }}"
+          continue_on_error: true
+    # Final check: lock must be locked, covers closed or closing.
+    - variables:
+        failed_entities: >-
+          {{ ([lock_entity] if not is_state(lock_entity, 'locked') else [])
+          + (cover_entities | reject('is_state', 'closed') | reject('is_state', 'closing') | list) }}
+        failed_description: >-
+          {% for entity in failed_entities -%}
+          {{ entity }} ({{ states(entity) }}){{ ', ' if not loop.last }}
+          {%- endfor %}
+    - if:
+        - condition: state
+          entity_id: alarm_control_panel.ring_control_panel
+          state: "armed_home"
+        - condition: template
+          value_template: "{{ failed_entities | length > 0 }}"
+      then:
+        - action: persistent_notification.create
+          data:
+            notification_id: alarm_armed_home_failed
+            title: "Alarm Armed Home FAILED"
+            message: "Not locked/closed after retry: {{ failed_description }}"
+      else:
+        - action: persistent_notification.dismiss
+          data:
+            notification_id: alarm_armed_home_failed
   mode: single
+  max_exceeded: silent
