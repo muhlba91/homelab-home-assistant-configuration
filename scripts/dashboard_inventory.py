@@ -8,7 +8,12 @@ Usage (from the repository root):
 Run it after any change to views or template files, then lint with
 markdownlint -c .markdownlint.yaml DASHBOARD.md. Requires PyYAML.
 """
-import yaml, re, unicodedata
+import re
+import unicodedata
+from pathlib import Path
+
+import yaml
+
 IMPL = ""
 class L(yaml.SafeLoader): pass
 L.add_constructor('!include', lambda l, n: n.value)
@@ -43,11 +48,11 @@ def entities_of(card):
     return [(bt([card['entity']]), card.get('name', ''))] if 'entity' in card else []
 
 def inventory():
-    root = yaml.load(open(IMPL + 'sites/vie/configuration/ui-lovelace.yaml'), Loader=L)
+    root = yaml.load(Path(IMPL + 'sites/vie/configuration/ui-lovelace.yaml').read_text(encoding="utf-8"), Loader=L)
     lines = ["", "## Entity inventory", "", "Generated from the view and template files at the time of writing. Regenerate",
              "or update it when views change.", ""]
     for inc in root['views']:
-        v = yaml.load(open(IMPL + 'sites/vie/configuration/' + inc), Loader=L)
+        v = yaml.load(Path(IMPL + 'sites/vie/configuration/' + inc).read_text(encoding="utf-8"), Loader=L)
         lines += [f"### {v['title']} (`{inc.split('/')[-1]}`)", "", "| Section | Span | Name | Entities |", "| --- | --- | --- | --- |"]
         for s in v['sections']:
             head = s['cards'][0].get('heading', '').title().replace(' & ', ' and ').replace('(Forecast)', '(forecast)')
@@ -56,7 +61,7 @@ def inventory():
                 for e, n in entities_of(c):
                     lines.append(f"| {head}{chips} | {s.get('column_span', 1)} | {n} | {e} |")
         lines.append("")
-    t = yaml.safe_load(open(IMPL + 'sites/vie/configuration/template/safety_status.yaml'))[0]['binary_sensor']
+    t = yaml.safe_load(Path(IMPL + 'sites/vie/configuration/template/safety_status.yaml').read_text(encoding="utf-8"))[0]['binary_sensor']
     lines += ["### Safety status sensors (`template/safety_status.yaml`)", "",
               "| Entity | Alarm entities (red) | Attention entities (orange) |", "| --- | --- | --- |"]
     for b in t:
@@ -80,7 +85,7 @@ def fmt(rows):
     w = [max(3, *(width(r[i]) for j, r in enumerate(P) if j != 1)) for i in range(n)]
     return ["| " + " | ".join(("-" * w[i]) if j == 1 else r[i] + " " * (w[i] - width(r[i])) for i in range(n)) + " |" for j, r in enumerate(P)]
 
-doc = open(IMPL + "DASHBOARD.md").read()
+doc = Path(IMPL + "DASHBOARD.md").read_text(encoding="utf-8")
 if "## Entity inventory\n" in doc:
     doc = doc[: doc.index("## Entity inventory\n")]
 doc = doc.rstrip("\n") + "\n" + "\n".join(inventory()) + "\n"
@@ -93,5 +98,5 @@ while i < len(src):
         while i < len(src) and src[i].startswith("|"): blk.append(src[i]); i += 1
         out += fmt(blk); continue
     out.append(l); i += 1
-open(IMPL + "DASHBOARD.md", "w").write("\n".join(out))
+Path(IMPL + "DASHBOARD.md").write_text("\n".join(out), encoding="utf-8")
 print("inventory regenerated, tables aligned")
