@@ -243,7 +243,7 @@ sections:
           action: navigate
           navigation_path: /lovelace/living_room
         grid_options:
-          columns: 3
+          columns: 9
       - &room_office
         type: custom:mushroom-template-card
         entity: binary_sensor.office_safety_status
@@ -255,7 +255,7 @@ sections:
           action: navigate
           navigation_path: /lovelace/office
         grid_options:
-          columns: 3
+          columns: 9
       - &room_tea_room
         type: custom:mushroom-template-card
         entity: binary_sensor.tea_room_safety_status
@@ -267,7 +267,7 @@ sections:
           action: navigate
           navigation_path: /lovelace/tea_room
         grid_options:
-          columns: 3
+          columns: 9
       - &room_bedroom
         type: custom:mushroom-template-card
         entity: binary_sensor.bedroom_safety_status
@@ -279,7 +279,7 @@ sections:
           action: navigate
           navigation_path: /lovelace/bedroom
         grid_options:
-          columns: 3
+          columns: 9
       - &room_bathrooms
         type: custom:mushroom-template-card
         entity: binary_sensor.bathrooms_safety_status
@@ -291,7 +291,7 @@ sections:
           action: navigate
           navigation_path: /lovelace/bathrooms
         grid_options:
-          columns: 3
+          columns: 9
       - &room_hallways
         type: custom:mushroom-template-card
         entity: binary_sensor.hallways_safety_status
@@ -303,7 +303,7 @@ sections:
           action: navigate
           navigation_path: /lovelace/hallways
         grid_options:
-          columns: 3
+          columns: 9
       - &room_garden
         type: custom:mushroom-template-card
         entity: binary_sensor.garden_safety_status
@@ -315,7 +315,7 @@ sections:
           action: navigate
           navigation_path: /lovelace/garden
         grid_options:
-          columns: 3
+          columns: 9
       - &room_utility
         type: custom:mushroom-template-card
         entity: binary_sensor.utility_safety_status
@@ -327,7 +327,7 @@ sections:
           action: navigate
           navigation_path: /lovelace/utility
         grid_options:
-          columns: 3
+          columns: 9
 
   - type: grid
     background:
@@ -545,8 +545,8 @@ sections:
             heading_style: subtitle
           - type: horizontal-stack
             cards:
-              - type: markdown
-                content: " "
+              - type: heading
+                heading: " "
               - type: custom:modern-circular-gauge
                 entity: sensor.pv_power_photovoltaics_fronius_power_flow
                 name: Solar
@@ -557,8 +557,8 @@ sections:
                   color: 'var(--amber-color)'
                 gauge_background_style:
                   color: var(--divider-color)
-              - type: markdown
-                content: " "
+              - type: heading
+                heading: " "
           - type: horizontal-stack
             cards:
               - type: tile
@@ -588,8 +588,8 @@ sections:
             heading_style: subtitle
           - type: horizontal-stack
             cards:
-              - type: markdown
-                content: " "
+              - type: heading
+                heading: " "
               - type: custom:modern-circular-gauge
                 entity: sensor.solar_produced_today
                 name: Produced
@@ -600,8 +600,8 @@ sections:
                   color: 'var(--amber-color)'
                 gauge_background_style:
                   color: var(--divider-color)
-              - type: markdown
-                content: " "
+              - type: heading
+                heading: " "
           - type: horizontal-stack
             cards:
               - type: tile
