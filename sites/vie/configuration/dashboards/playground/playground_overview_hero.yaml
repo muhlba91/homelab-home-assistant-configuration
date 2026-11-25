@@ -630,7 +630,7 @@ sections:
         gauge_background_style:
           color: var(--divider-color)
         grid_options:
-          columns: 6
+          columns: 9
           rows: 3
       - &sol_n1
         type: tile
@@ -639,7 +639,7 @@ sections:
         icon: mdi:home-lightning-bolt
         color: amber
         grid_options:
-          columns: 12
+          columns: 9
       - &sol_g_today
         type: custom:modern-circular-gauge
         entity: sensor.solar_produced_today
@@ -652,7 +652,7 @@ sections:
         gauge_background_style:
           color: var(--divider-color)
         grid_options:
-          columns: 6
+          columns: 9
           rows: 3
       - &sol_t1
         type: tile
@@ -661,7 +661,7 @@ sections:
         icon: mdi:home-lightning-bolt
         color: amber
         grid_options:
-          columns: 12
+          columns: 9
       - &sol_n2
         type: tile
         entity: sensor.energy_meter_po
@@ -669,7 +669,7 @@ sections:
         icon: mdi:transmission-tower-export
         color: green
         grid_options:
-          columns: 12
+          columns: 9
       - &sol_t2
         type: tile
         entity: sensor.grid_exported_today
@@ -677,7 +677,7 @@ sections:
         icon: mdi:transmission-tower-export
         color: green
         grid_options:
-          columns: 12
+          columns: 9
       - &sol_n3
         type: tile
         entity: sensor.energy_meter_p
@@ -685,7 +685,7 @@ sections:
         icon: mdi:transmission-tower-import
         color: red
         grid_options:
-          columns: 12
+          columns: 9
       - &sol_t3
         type: tile
         entity: sensor.grid_imported_today
@@ -693,7 +693,7 @@ sections:
         icon: mdi:transmission-tower-import
         color: red
         grid_options:
-          columns: 12
+          columns: 9
 
   - type: grid
     background:
@@ -711,33 +711,33 @@ sections:
           columns: 12
       - <<: *sol_g_now
         grid_options:
-          columns: 4
+          columns: 6
           rows: 3
       - <<: *sol_n1
         grid_options:
-          columns: 8
+          columns: 6
       - <<: *sol_n2
         grid_options:
-          columns: 8
+          columns: 6
       - <<: *sol_n3
         grid_options:
-          columns: 8
+          columns: 6
       - <<: *sol_h_today
         grid_options:
           columns: 12
       - <<: *sol_g_today
         grid_options:
-          columns: 4
+          columns: 6
           rows: 3
       - <<: *sol_t1
         grid_options:
-          columns: 8
+          columns: 6
       - <<: *sol_t2
         grid_options:
-          columns: 8
+          columns: 6
       - <<: *sol_t3
         grid_options:
-          columns: 8
+          columns: 6
 
   - type: grid
     background:
