@@ -1,5 +1,6 @@
 ---
-- alias: "Home: Alarm: Disarmed"
+- id: fb348c43-a978-4d1c-abd6-462484ca14a4
+  alias: "Home: Alarm: Disarmed"
   triggers:
     - trigger: state
       entity_id: alarm_control_panel.ring_control_panel

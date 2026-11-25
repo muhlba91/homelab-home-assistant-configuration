@@ -1,5 +1,6 @@
 ---
-- alias: "Security: Plug Temperature"
+- id: dfc77738-ec23-46d5-8ea9-ba026781d597
+  alias: "Security: Plug Temperature"
   use_blueprint:
     path: security/plug_temperature.yaml
     input:

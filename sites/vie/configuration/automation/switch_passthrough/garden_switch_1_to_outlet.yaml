@@ -1,5 +1,6 @@
 ---
-- alias: "Garden: Switch Passthrough: Garden Switch 1 to Outlet"
+- id: 986c3663-2b1f-4553-b104-fe58ded6cb4b
+  alias: "Garden: Switch Passthrough: Garden Switch 1 to Outlet"
   triggers:
     - trigger: state
       entity_id: switch.fds3_2

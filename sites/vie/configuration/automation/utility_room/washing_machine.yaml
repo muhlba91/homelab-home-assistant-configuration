@@ -6,7 +6,8 @@
 # notification.
 # Icons: first tag = device, second tag = state. Times are local.
 
-- alias: "Utility Room: Washing Machine: Started"
+- id: 632bef03-9a3a-4f65-8207-4a07ef1f5f25
+  alias: "Utility Room: Washing Machine: Started"
   triggers:
     - trigger: state
       entity_id: sensor.washing_machine_phase
@@ -22,8 +23,8 @@
     # settles on the real one. Wait until the settings are there, then let the
     # estimate settle before notifying.
     - wait_template: >-
-        {{ states('sensor.lg_washer_temperature') | is_number
-        and states('sensor.lg_washer_spin') | is_number
+        {{ states('sensor.lg_washer_temperature') not in ['Not selected', 'unknown', 'unavailable']
+        and states('sensor.lg_washer_spin') not in ['Not selected', 'unknown', 'unavailable']
         and states('sensor.lg_washer_remaining_time') | float(0) > 0 }}
       timeout: "00:03:00"
       continue_on_timeout: true
@@ -45,11 +46,12 @@
           {%- set spin = states('sensor.lg_washer_spin') -%}
           Started: {{ as_local(trigger.to_state.last_changed).strftime('%Y-%m-%d %H:%M:%S') }}
           Done at: {{ (as_local(end).strftime('%H:%M') ~ (' (' ~ left ~ ' min left)' if left > 0 else '')) if end is not none else 'unknown' }}
-          Temperature: {{ (temp | int(0) ~ ' °C') if temp | is_number else 'unknown' }}
-          Spin: {{ (spin | int(0) ~ ' rpm') if spin | is_number else 'unknown' }}
+          Temperature: {{ temp if temp not in ['Not selected', 'unknown', 'unavailable'] else 'unknown' }}
+          Spin: {{ spin if spin not in ['Not selected', 'unknown', 'unavailable'] else 'unknown' }}
   mode: single
 
-- alias: "Utility Room: Washing Machine: Completed"
+- id: ca742704-ad38-4174-b33a-5982ebfdc2ce
+  alias: "Utility Room: Washing Machine: Completed"
   triggers:
     - trigger: state
       entity_id: sensor.washing_machine_phase
@@ -71,7 +73,8 @@
           Completed: {{ as_local(trigger.to_state.last_changed).strftime('%Y-%m-%d %H:%M:%S') }}
   mode: single
 
-- alias: "Utility Room: Washing Machine: Error"
+- id: 382b37b4-ec25-4b25-8e43-0d7c877c7964
+  alias: "Utility Room: Washing Machine: Error"
   triggers:
     - trigger: state
       entity_id: sensor.washing_machine_phase

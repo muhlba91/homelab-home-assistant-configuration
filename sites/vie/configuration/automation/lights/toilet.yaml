@@ -1,5 +1,6 @@
 ---
-- alias: "Toilet: Lights"
+- id: db8f0c1a-7890-41e0-8a9b-51fd0cb0c344
+  alias: "Toilet: Lights"
   use_blueprint:
     path: lights/motion_lux.yaml
     input:

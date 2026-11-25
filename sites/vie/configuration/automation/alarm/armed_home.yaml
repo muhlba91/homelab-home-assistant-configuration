@@ -1,5 +1,6 @@
 ---
-- alias: "House: Alarm: Armed Home"
+- id: 65855278-403b-411d-98bf-831f0e9ea266
+  alias: "House: Alarm: Armed Home"
   triggers:
     - trigger: state
       entity_id: alarm_control_panel.ring_control_panel

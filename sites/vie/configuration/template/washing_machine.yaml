@@ -17,9 +17,9 @@
       state: >-
         {%- set s = states('sensor.lg_washer_status') -%}
         {%- if is_state('binary_sensor.lg_washer_error', 'on') or s == 'Error' -%}error
-        {%- elif s in ['Measuring', 'Pre-wash', 'Washing', 'Rinsing', 'Spinning', 'Drying', 'Cooling',
+        {%- elif s in ['Detecting', 'Washing', 'Rinsing', 'Spinning', 'Drying', 'Cool down',
         'Rinse hold', 'Refreshing', 'Steam softening'] -%}running
-        {%- elif s in ['Paused', 'Auto DT Open Pause'] -%}paused
+        {%- elif s == 'Paused' -%}paused
         {%- elif s == 'Delayed' -%}scheduled
         {%- elif s == 'End' -%}finished
         {%- else -%}idle{%- endif -%}
@@ -65,8 +65,8 @@
           {%- set parts = parts + [states('sensor.lg_washer_status')] -%}
           {%- if end is not none -%}{%- set parts = parts + ['done at ' ~ (end | timestamp_custom('%H:%M'))] -%}{%- endif -%}
           {%- endif -%}
-          {%- if t | is_number -%}{%- set parts = parts + [(t | int) ~ ' °C'] -%}{%- endif -%}
-          {%- if spin | is_number -%}{%- set parts = parts + [(spin | int) ~ ' rpm'] -%}{%- endif -%}
+          {%- if t not in ['Not selected', 'unknown', 'unavailable'] -%}{%- set parts = parts + [t] -%}{%- endif -%}
+          {%- if spin not in ['Not selected', 'unknown', 'unavailable'] -%}{%- set parts = parts + [spin] -%}{%- endif -%}
           {{ parts | join(' · ') }}
 
 - binary_sensor:

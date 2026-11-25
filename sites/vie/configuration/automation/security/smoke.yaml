@@ -1,5 +1,6 @@
 ---
-- alias: "Security: Smoke Detection"
+- id: 32c457eb-cabc-4b3f-a93e-279d6851d3d6
+  alias: "Security: Smoke Detection"
   use_blueprint:
     path: security/smoke.yaml
     input:

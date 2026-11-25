@@ -1,5 +1,6 @@
 ---
-- alias: "Kitchen: Switch Passthrough: Kitchen Switch to Light"
+- id: 90f39b91-a3e5-487f-9996-8a7173f613ba
+  alias: "Kitchen: Switch Passthrough: Kitchen Switch to Light"
   triggers:
     - trigger: state
       entity_id: switch.fs9_1

@@ -1,5 +1,6 @@
 ---
-- alias: "Storage Room: Lights"
+- id: 231437bb-ee59-4620-938e-eaf9d23e85d4
+  alias: "Storage Room: Lights"
   use_blueprint:
     path: lights/motion_lux.yaml
     input:

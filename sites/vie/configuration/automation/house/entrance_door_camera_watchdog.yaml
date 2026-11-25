@@ -1,5 +1,6 @@
 ---
-- alias: "House: Keep The Entrance Door Camera On"
+- id: b43c69f3-6bcb-440f-b5f6-4b1e94b3187f
+  alias: "House: Keep The Entrance Door Camera On"
   triggers:
     - trigger: state
       entity_id: switch.fs11_1

@@ -396,6 +396,7 @@ share/
 .python-version
 !cover/
 entities.json
+work/
 
 # mise
 mise.local.toml

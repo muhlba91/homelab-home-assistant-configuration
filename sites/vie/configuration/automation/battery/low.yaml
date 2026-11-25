@@ -1,5 +1,6 @@
 ---
-- alias: "Battery: Security-Related Devices"
+- id: 239d2eea-b9ae-4b87-b4d1-d2a64400648e
+  alias: "Battery: Security-Related Devices"
   use_blueprint:
     path: battery/low.yaml
     input:
@@ -21,7 +22,8 @@
           - sensor.ring_rcs3_garden_door_battery
       battery_threshold: 30
 
-- alias: "Battery: Other Devices"
+- id: 9107dbf9-a5f2-47c4-b5ff-518750be5471
+  alias: "Battery: Other Devices"
   use_blueprint:
     path: battery/low.yaml
     input:

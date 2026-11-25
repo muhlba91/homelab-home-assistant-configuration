@@ -1,5 +1,6 @@
 ---
-- alias: "Security: Flood Detection"
+- id: c34604a4-5181-4956-88ba-971685958cab
+  alias: "Security: Flood Detection"
   use_blueprint:
     path: security/flood.yaml
     input:
