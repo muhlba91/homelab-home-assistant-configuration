@@ -1,10 +1,10 @@
-# Playground variant "tinted": the Office copy rendered with the playground_tinted
+# Playground variant "lift_glass": the Office copy rendered with the playground_lift_glass
 # themes (themes.yaml). Not validated by scripts/validate_dashboard.py. See
 # DASHBOARD.md, "Playground dashboard".
-title: Tinted
-path: tinted
-icon: mdi:palette-swatch
-theme: playground_tinted
+title: Lift Glass
+path: lift_glass
+icon: mdi:blur
+theme: playground_lift_glass
 type: sections
 max_columns: 3
 sections:
@@ -79,7 +79,7 @@ sections:
           columns: full
 
   - type: grid
-    theme: playground_tinted_chips
+    theme: playground_lift_glass_chips
     background:
       opacity: 100
     column_span: 1
@@ -98,7 +98,7 @@ sections:
           columns: 12
 
   - type: grid
-    theme: playground_tinted_chips
+    theme: playground_lift_glass_chips
     background:
       opacity: 100
     column_span: 2
@@ -128,7 +128,7 @@ sections:
           columns: 12
 
   - type: grid
-    theme: playground_tinted_chips
+    theme: playground_lift_glass_chips
     background:
       opacity: 100
     column_span: 3
