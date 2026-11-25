@@ -7,5 +7,5 @@ views:
   - !include dashboards/playground/playground_tinted.yaml
   - !include dashboards/playground/playground_glass.yaml
   - !include dashboards/playground/playground_pop.yaml
-  - !include dashboards/playground/playground_pop_glass.yaml
   - !include dashboards/playground/playground_bold.yaml
+  - !include dashboards/playground/playground_lift.yaml
