@@ -1,0 +1,1592 @@
+# Playground variant "pe_bubble": the Bubble Overview with a picture-elements weather card as the focal point (built by splicing
+# playground_bubble_overview.yaml). Not validated by scripts/validate_dashboard.py. See DASHBOARD.md, "Playground dashboard".
+# theme variables only: no styles key, no modules). Not validated by scripts/validate_dashboard.py.
+# Needs the theme entries playground_bubble and playground_bubble_focus. See DASHBOARD.md, "Playground dashboard".
+title: PE Bubble
+path: pe_bubble
+icon: mdi:creation
+theme: playground_bubble
+type: sections
+max_columns: 3
+sections:
+  - type: grid
+    background:
+      color: red
+      opacity: 18
+    column_span: 3
+    visibility:
+      - condition: state
+        entity: binary_sensor.house_safety_status
+        state_not: "off"
+    cards:
+      - type: heading
+        heading: NEEDS ATTENTION
+        heading_style: subtitle
+      - type: custom:mushroom-template-card
+        entity: binary_sensor.house_safety_status
+        primary: "{{ state_attr('binary_sensor.house_safety_status', 'summary') }}"
+        secondary: Tap for details
+        icon: "{{ state_attr('binary_sensor.house_safety_status', 'icon') }}"
+        icon_color: "{{ 'red' if is_state('binary_sensor.house_safety_status', 'on') else 'orange' }}"
+        tap_action:
+          action: more-info
+        grid_options:
+          columns: full
+
+  - type: grid
+    background:
+      color: purple
+      opacity: 25
+    column_span: 3
+    visibility:
+      - condition: state
+        entity: switch.presence_simulation
+        state: "on"
+    cards:
+      - type: heading
+        heading: PRESENCE SIMULATION
+        heading_style: subtitle
+      - type: tile
+        entity: switch.presence_simulation
+        name: Presence simulation is on
+        icon: mdi:account-clock
+        color: purple
+        state_content:
+          - state
+          - last_changed
+        features_position: inline
+        features:
+          - type: toggle
+        grid_options:
+          columns: full
+
+  - type: grid
+    background:
+      opacity: 100
+    column_span: 3
+    visibility:
+      - condition: screen
+        media_query: "(min-width: 900px)"
+    cards:
+      - &bub_status
+        type: custom:bubble-card
+        card_type: button
+        button_type: switch
+        entity: binary_sensor.house_safety_status
+        name: >-
+          {{ 'Everything is fine' if state_attr('binary_sensor.house_safety_status', 'summary') == 'All clear'
+          else state_attr('binary_sensor.house_safety_status', 'summary') }}
+        icon: >-
+          {{ 'mdi:shield-check' if state_attr('binary_sensor.house_safety_status', 'summary') == 'All clear'
+          else state_attr('binary_sensor.house_safety_status', 'icon') }}
+        state_content: >-
+          Alarm {{ states('alarm_control_panel.ring_control_panel') | replace('_', ' ') }}
+          · Front door {{ states('lock.entrance_door_lock') }}
+        button_action:
+          tap_action:
+            action: more-info
+        tap_action:
+          action: more-info
+        sub_button:
+          main:
+            - entity: lock.entrance_door_lock
+              name: Front door unlocked
+              icon: mdi:lock-open-variant
+              show_name: true
+              visibility:
+                - condition: state
+                  entity: lock.entrance_door_lock
+                  state: unlocked
+          bottom: []
+        grid_options:
+          columns: 24
+          rows: 1
+      - type: clock
+        clock_style: digital
+        clock_size: small
+        no_background: true
+        date_format:
+          - weekday-long
+          - day-numeric
+          - month-long
+        grid_options:
+          columns: 12
+          rows: 1
+      - type: picture-elements
+        aspect_ratio: "3.4:1"
+        entity: weather.home
+        state_image:
+          sunny: &pe_d_sun "data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%20100%2029.41%27%20preserveAspectRatio=%27none%27%3E%3Cdefs%3E%3CradialGradient%20id=%27a%27%20cx=%27.16%27%20cy=%27.38%27%20r=%27.55%27%3E%3Cstop%20offset=%270%27%20stop-color=%27rgb%28245,166,35%29%27%20stop-opacity=%270.3%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27rgb%28245,166,35%29%27%20stop-opacity=%270%27/%3E%3C/radialGradient%3E%3CradialGradient%20id=%27b%27%20cx=%27.9%27%20cy=%271%27%20r=%27.5%27%3E%3Cstop%20offset=%270%27%20stop-color=%27rgb%28245,166,35%29%27%20stop-opacity=%270.12%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27rgb%28245,166,35%29%27%20stop-opacity=%270%27/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect%20width=%27100%27%20height=%2729.41%27%20fill=%27url%28%23a%29%27/%3E%3Crect%20width=%27100%27%20height=%2729.41%27%20fill=%27url%28%23b%29%27/%3E%3C/svg%3E"
+          clear-night: &pe_d_night "data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%20100%2029.41%27%20preserveAspectRatio=%27none%27%3E%3Cdefs%3E%3CradialGradient%20id=%27a%27%20cx=%27.16%27%20cy=%27.38%27%20r=%27.55%27%3E%3Cstop%20offset=%270%27%20stop-color=%27rgb%2899,102,241%29%27%20stop-opacity=%270.28%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27rgb%2899,102,241%29%27%20stop-opacity=%270%27/%3E%3C/radialGradient%3E%3CradialGradient%20id=%27b%27%20cx=%27.9%27%20cy=%271%27%20r=%27.5%27%3E%3Cstop%20offset=%270%27%20stop-color=%27rgb%2899,102,241%29%27%20stop-opacity=%270.112%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27rgb%2899,102,241%29%27%20stop-opacity=%270%27/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect%20width=%27100%27%20height=%2729.41%27%20fill=%27url%28%23a%29%27/%3E%3Crect%20width=%27100%27%20height=%2729.41%27%20fill=%27url%28%23b%29%27/%3E%3C/svg%3E"
+          partlycloudy: &pe_d_pcloud "data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%20100%2029.41%27%20preserveAspectRatio=%27none%27%3E%3Cdefs%3E%3CradialGradient%20id=%27a%27%20cx=%27.16%27%20cy=%27.38%27%20r=%27.55%27%3E%3Cstop%20offset=%270%27%20stop-color=%27rgb%28232,170,70%29%27%20stop-opacity=%270.2%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27rgb%28232,170,70%29%27%20stop-opacity=%270%27/%3E%3C/radialGradient%3E%3CradialGradient%20id=%27b%27%20cx=%27.9%27%20cy=%271%27%20r=%27.5%27%3E%3Cstop%20offset=%270%27%20stop-color=%27rgb%28232,170,70%29%27%20stop-opacity=%270.08%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27rgb%28232,170,70%29%27%20stop-opacity=%270%27/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect%20width=%27100%27%20height=%2729.41%27%20fill=%27url%28%23a%29%27/%3E%3Crect%20width=%27100%27%20height=%2729.41%27%20fill=%27url%28%23b%29%27/%3E%3C/svg%3E"
+          cloudy: &pe_d_cloud "data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%20100%2029.41%27%20preserveAspectRatio=%27none%27%3E%3Cdefs%3E%3CradialGradient%20id=%27a%27%20cx=%27.16%27%20cy=%27.38%27%20r=%27.55%27%3E%3Cstop%20offset=%270%27%20stop-color=%27rgb%28110,140,175%29%27%20stop-opacity=%270.26%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27rgb%28110,140,175%29%27%20stop-opacity=%270%27/%3E%3C/radialGradient%3E%3CradialGradient%20id=%27b%27%20cx=%27.9%27%20cy=%271%27%20r=%27.5%27%3E%3Cstop%20offset=%270%27%20stop-color=%27rgb%28110,140,175%29%27%20stop-opacity=%270.104%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27rgb%28110,140,175%29%27%20stop-opacity=%270%27/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect%20width=%27100%27%20height=%2729.41%27%20fill=%27url%28%23a%29%27/%3E%3Crect%20width=%27100%27%20height=%2729.41%27%20fill=%27url%28%23b%29%27/%3E%3C/svg%3E"
+          fog: *pe_d_cloud
+          rainy: &pe_d_rain "data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%20100%2029.41%27%20preserveAspectRatio=%27none%27%3E%3Cdefs%3E%3CradialGradient%20id=%27a%27%20cx=%27.16%27%20cy=%27.38%27%20r=%27.55%27%3E%3Cstop%20offset=%270%27%20stop-color=%27rgb%2847,111,214%29%27%20stop-opacity=%270.28%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27rgb%2847,111,214%29%27%20stop-opacity=%270%27/%3E%3C/radialGradient%3E%3CradialGradient%20id=%27b%27%20cx=%27.9%27%20cy=%271%27%20r=%27.5%27%3E%3Cstop%20offset=%270%27%20stop-color=%27rgb%2847,111,214%29%27%20stop-opacity=%270.112%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27rgb%2847,111,214%29%27%20stop-opacity=%270%27/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect%20width=%27100%27%20height=%2729.41%27%20fill=%27url%28%23a%29%27/%3E%3Crect%20width=%27100%27%20height=%2729.41%27%20fill=%27url%28%23b%29%27/%3E%3C/svg%3E"
+          pouring: *pe_d_rain
+          hail: *pe_d_rain
+          snowy: &pe_d_snow "data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%20100%2029.41%27%20preserveAspectRatio=%27none%27%3E%3Cdefs%3E%3CradialGradient%20id=%27a%27%20cx=%27.16%27%20cy=%27.38%27%20r=%27.55%27%3E%3Cstop%20offset=%270%27%20stop-color=%27rgb%28110,195,230%29%27%20stop-opacity=%270.3%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27rgb%28110,195,230%29%27%20stop-opacity=%270%27/%3E%3C/radialGradient%3E%3CradialGradient%20id=%27b%27%20cx=%27.9%27%20cy=%271%27%20r=%27.5%27%3E%3Cstop%20offset=%270%27%20stop-color=%27rgb%28110,195,230%29%27%20stop-opacity=%270.12%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27rgb%28110,195,230%29%27%20stop-opacity=%270%27/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect%20width=%27100%27%20height=%2729.41%27%20fill=%27url%28%23a%29%27/%3E%3Crect%20width=%27100%27%20height=%2729.41%27%20fill=%27url%28%23b%29%27/%3E%3C/svg%3E"
+          snowy-rainy: *pe_d_snow
+          lightning: &pe_d_storm "data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%20100%2029.41%27%20preserveAspectRatio=%27none%27%3E%3Cdefs%3E%3CradialGradient%20id=%27a%27%20cx=%27.16%27%20cy=%27.38%27%20r=%27.55%27%3E%3Cstop%20offset=%270%27%20stop-color=%27rgb%28118,88,224%29%27%20stop-opacity=%270.28%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27rgb%28118,88,224%29%27%20stop-opacity=%270%27/%3E%3C/radialGradient%3E%3CradialGradient%20id=%27b%27%20cx=%27.9%27%20cy=%271%27%20r=%27.5%27%3E%3Cstop%20offset=%270%27%20stop-color=%27rgb%28118,88,224%29%27%20stop-opacity=%270.112%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27rgb%28118,88,224%29%27%20stop-opacity=%270%27/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect%20width=%27100%27%20height=%2729.41%27%20fill=%27url%28%23a%29%27/%3E%3Crect%20width=%27100%27%20height=%2729.41%27%20fill=%27url%28%23b%29%27/%3E%3C/svg%3E"
+          lightning-rainy: *pe_d_storm
+          windy: &pe_d_wind "data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%20100%2029.41%27%20preserveAspectRatio=%27none%27%3E%3Cdefs%3E%3CradialGradient%20id=%27a%27%20cx=%27.16%27%20cy=%27.38%27%20r=%27.55%27%3E%3Cstop%20offset=%270%27%20stop-color=%27rgb%2830,170,160%29%27%20stop-opacity=%270.26%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27rgb%2830,170,160%29%27%20stop-opacity=%270%27/%3E%3C/radialGradient%3E%3CradialGradient%20id=%27b%27%20cx=%27.9%27%20cy=%271%27%20r=%27.5%27%3E%3Cstop%20offset=%270%27%20stop-color=%27rgb%2830,170,160%29%27%20stop-opacity=%270.104%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27rgb%2830,170,160%29%27%20stop-opacity=%270%27/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect%20width=%27100%27%20height=%2729.41%27%20fill=%27url%28%23a%29%27/%3E%3Crect%20width=%27100%27%20height=%2729.41%27%20fill=%27url%28%23b%29%27/%3E%3C/svg%3E"
+          windy-variant: *pe_d_wind
+          exceptional: &pe_d_exc "data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%20100%2029.41%27%20preserveAspectRatio=%27none%27%3E%3Cdefs%3E%3CradialGradient%20id=%27a%27%20cx=%27.16%27%20cy=%27.38%27%20r=%27.55%27%3E%3Cstop%20offset=%270%27%20stop-color=%27rgb%28209,64,75%29%27%20stop-opacity=%270.24%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27rgb%28209,64,75%29%27%20stop-opacity=%270%27/%3E%3C/radialGradient%3E%3CradialGradient%20id=%27b%27%20cx=%27.9%27%20cy=%271%27%20r=%27.5%27%3E%3Cstop%20offset=%270%27%20stop-color=%27rgb%28209,64,75%29%27%20stop-opacity=%270.096%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27rgb%28209,64,75%29%27%20stop-opacity=%270%27/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect%20width=%27100%27%20height=%2729.41%27%20fill=%27url%28%23a%29%27/%3E%3Crect%20width=%27100%27%20height=%2729.41%27%20fill=%27url%28%23b%29%27/%3E%3C/svg%3E"
+        image: *pe_d_cloud
+        elements:
+          - type: conditional
+            conditions:
+              - condition: state
+                entity: weather.home
+                state_not: not-a-weather-state
+            style:
+              position: absolute
+              inset: "0"
+              container-type: inline-size
+            elements:
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: weather.home
+                    state: sunny
+                elements:
+                  - type: icon
+                    entity: weather.home
+                    icon: mdi:weather-sunny
+                    style:
+                      left: 8.5%
+                      top: 37.4%
+                      "--mdc-icon-size": "clamp(40px, 11cqw, 200px)"
+                      color: var(--blue-color)
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: weather.home
+                    state: clear-night
+                elements:
+                  - type: icon
+                    entity: weather.home
+                    icon: mdi:weather-night
+                    style:
+                      left: 8.5%
+                      top: 37.4%
+                      "--mdc-icon-size": "clamp(40px, 11cqw, 200px)"
+                      color: var(--blue-color)
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: weather.home
+                    state: partlycloudy
+                elements:
+                  - type: icon
+                    entity: weather.home
+                    icon: mdi:weather-partly-cloudy
+                    style:
+                      left: 8.5%
+                      top: 37.4%
+                      "--mdc-icon-size": "clamp(40px, 11cqw, 200px)"
+                      color: var(--blue-color)
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: weather.home
+                    state: cloudy
+                elements:
+                  - type: icon
+                    entity: weather.home
+                    icon: mdi:weather-cloudy
+                    style:
+                      left: 8.5%
+                      top: 37.4%
+                      "--mdc-icon-size": "clamp(40px, 11cqw, 200px)"
+                      color: var(--blue-color)
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: weather.home
+                    state: fog
+                elements:
+                  - type: icon
+                    entity: weather.home
+                    icon: mdi:weather-fog
+                    style:
+                      left: 8.5%
+                      top: 37.4%
+                      "--mdc-icon-size": "clamp(40px, 11cqw, 200px)"
+                      color: var(--blue-color)
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: weather.home
+                    state: rainy
+                elements:
+                  - type: icon
+                    entity: weather.home
+                    icon: mdi:weather-rainy
+                    style:
+                      left: 8.5%
+                      top: 37.4%
+                      "--mdc-icon-size": "clamp(40px, 11cqw, 200px)"
+                      color: var(--blue-color)
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: weather.home
+                    state: pouring
+                elements:
+                  - type: icon
+                    entity: weather.home
+                    icon: mdi:weather-pouring
+                    style:
+                      left: 8.5%
+                      top: 37.4%
+                      "--mdc-icon-size": "clamp(40px, 11cqw, 200px)"
+                      color: var(--blue-color)
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: weather.home
+                    state: hail
+                elements:
+                  - type: icon
+                    entity: weather.home
+                    icon: mdi:weather-hail
+                    style:
+                      left: 8.5%
+                      top: 37.4%
+                      "--mdc-icon-size": "clamp(40px, 11cqw, 200px)"
+                      color: var(--blue-color)
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: weather.home
+                    state: snowy
+                elements:
+                  - type: icon
+                    entity: weather.home
+                    icon: mdi:weather-snowy
+                    style:
+                      left: 8.5%
+                      top: 37.4%
+                      "--mdc-icon-size": "clamp(40px, 11cqw, 200px)"
+                      color: var(--blue-color)
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: weather.home
+                    state: snowy-rainy
+                elements:
+                  - type: icon
+                    entity: weather.home
+                    icon: mdi:weather-snowy-rainy
+                    style:
+                      left: 8.5%
+                      top: 37.4%
+                      "--mdc-icon-size": "clamp(40px, 11cqw, 200px)"
+                      color: var(--blue-color)
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: weather.home
+                    state: lightning
+                elements:
+                  - type: icon
+                    entity: weather.home
+                    icon: mdi:weather-lightning
+                    style:
+                      left: 8.5%
+                      top: 37.4%
+                      "--mdc-icon-size": "clamp(40px, 11cqw, 200px)"
+                      color: var(--blue-color)
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: weather.home
+                    state: lightning-rainy
+                elements:
+                  - type: icon
+                    entity: weather.home
+                    icon: mdi:weather-lightning-rainy
+                    style:
+                      left: 8.5%
+                      top: 37.4%
+                      "--mdc-icon-size": "clamp(40px, 11cqw, 200px)"
+                      color: var(--blue-color)
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: weather.home
+                    state: windy
+                elements:
+                  - type: icon
+                    entity: weather.home
+                    icon: mdi:weather-windy
+                    style:
+                      left: 8.5%
+                      top: 37.4%
+                      "--mdc-icon-size": "clamp(40px, 11cqw, 200px)"
+                      color: var(--blue-color)
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: weather.home
+                    state: windy-variant
+                elements:
+                  - type: icon
+                    entity: weather.home
+                    icon: mdi:weather-windy-variant
+                    style:
+                      left: 8.5%
+                      top: 37.4%
+                      "--mdc-icon-size": "clamp(40px, 11cqw, 200px)"
+                      color: var(--blue-color)
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: weather.home
+                    state: exceptional
+                elements:
+                  - type: icon
+                    entity: weather.home
+                    icon: mdi:alert-circle-outline
+                    style:
+                      left: 8.5%
+                      top: 37.4%
+                      "--mdc-icon-size": "clamp(40px, 11cqw, 200px)"
+                      color: var(--blue-color)
+              - type: state-label
+                entity: weather.home
+                attribute: temperature
+                suffix: "°"
+                style:
+                  left: 16%
+                  top: 37.4%
+                  transform: "translate(0, -50%)"
+                  font-size: "clamp(72px, 12cqw, 220px)"
+                  font-weight: 700
+                  line-height: 1
+                  letter-spacing: -0.02em
+                  color: var(--primary-text-color)
+              - type: state-label
+                entity: weather.home
+                style:
+                  left: 4.5%
+                  top: 74.12%
+                  transform: "translate(0, -50%)"
+                  font-size: "clamp(16px, 2.9cqw, 44px)"
+                  font-weight: 600
+                  color: var(--primary-text-color)
+              - type: state-label
+                entity: sensor.weather_today_low
+                prefix: "Low "
+                style:
+                  left: 4.5%
+                  top: 89.42%
+                  transform: "translate(0, -50%)"
+                  font-size: "clamp(14px, 2.1cqw, 34px)"
+                  color: var(--secondary-text-color)
+              - type: state-label
+                entity: sensor.weather_today_high
+                prefix: "High "
+                style:
+                  left: 21%
+                  top: 89.42%
+                  transform: "translate(0, -50%)"
+                  font-size: "clamp(14px, 2.1cqw, 34px)"
+                  color: var(--secondary-text-color)
+              - type: state-label
+                entity: weather.home
+                attribute: humidity
+                prefix: "Humidity "
+                suffix: " %"
+                style:
+                  left: 67%
+                  top: 22.1%
+                  transform: "translate(0, -50%)"
+                  font-size: "clamp(14px, 2.7cqw, 40px)"
+                  font-weight: 600
+                  color: var(--primary-text-color)
+              - type: state-label
+                entity: weather.home
+                attribute: pressure
+                prefix: "Pressure "
+                suffix: " hPa"
+                style:
+                  left: 67%
+                  top: 49.98%
+                  transform: "translate(0, -50%)"
+                  font-size: "clamp(14px, 2.7cqw, 40px)"
+                  font-weight: 600
+                  color: var(--primary-text-color)
+              - type: state-label
+                entity: weather.home
+                attribute: wind_speed
+                prefix: "Wind "
+                suffix: " km/h"
+                style:
+                  left: 67%
+                  top: 77.86%
+                  transform: "translate(0, -50%)"
+                  font-size: "clamp(14px, 2.7cqw, 40px)"
+                  font-weight: 600
+                  color: var(--primary-text-color)
+              - type: icon
+                entity: weather.home
+                icon: mdi:water-percent
+                style:
+                  left: 63%
+                  top: 22.1%
+                  "--mdc-icon-size": "clamp(18px, 3.4cqw, 48px)"
+                  color: var(--secondary-text-color)
+              - type: icon
+                entity: weather.home
+                icon: mdi:gauge
+                style:
+                  left: 63%
+                  top: 49.98%
+                  "--mdc-icon-size": "clamp(18px, 3.4cqw, 48px)"
+                  color: var(--secondary-text-color)
+              - type: icon
+                entity: weather.home
+                icon: mdi:weather-windy
+                style:
+                  left: 63%
+                  top: 77.86%
+                  "--mdc-icon-size": "clamp(18px, 3.4cqw, 48px)"
+                  color: var(--secondary-text-color)
+        grid_options:
+          columns: full
+      - &pe_pills
+        type: custom:bubble-card
+        card_type: sub-buttons
+        hide_main_background: true
+        sub_button:
+          main: []
+          bottom:
+            - group:
+                - &pill_sun
+                  entity: sun.sun
+                  icon: "{{ 'mdi:weather-sunset-down' if is_state('sun.sun', 'above_horizon') else 'mdi:weather-sunset-up' }}"
+                  state_content: >-
+                    {% set next = state_attr('sun.sun', 'next_setting') if
+                    is_state('sun.sun', 'above_horizon') else
+                    state_attr('sun.sun', 'next_rising') %}
+                    {% set ts = as_timestamp(next, none) %}
+                    {% if ts is none %}Sun times unavailable
+                    {% elif is_state('sun.sun', 'above_horizon') %}Sunset {{ ts | timestamp_custom('%H:%M') }}
+                    {% else %}Sunrise {{ ts | timestamp_custom('%H:%M') }}{% endif %}
+                  state_background: false
+                  tap_action:
+                    action: more-info
+                - &pill_updated
+                  entity: binary_sensor.weather_data_stale
+                  icon: >-
+                    {{ 'mdi:clock-alert-outline' if is_state('binary_sensor.weather_data_stale', 'on') else 'mdi:clock-outline' }}
+                  state_content: >-
+                    {% set u = states('sensor.weather_updated') %}
+                    {% if u in ['unknown', 'unavailable'] %}Weather unavailable
+                    {% else %}{% set d = as_local(as_datetime(u)) %}Updated {{ d.strftime('%H:%M') if d.date() == now().date() else d.strftime('%a %H:%M') }}{% endif %}
+                  tap_action:
+                    action: more-info
+                    entity: weather.home
+              buttons_layout: inline
+              justify_content: start
+        grid_options:
+          columns: full
+          rows: 1
+
+  - type: grid
+    background:
+      opacity: 100
+    column_span: 3
+    visibility:
+      - condition: screen
+        media_query: "(max-width: 899px)"
+    cards:
+      - <<: *bub_status
+        grid_options:
+          columns: 12
+          rows: 1
+      - type: picture-elements
+        aspect_ratio: "1.3:1"
+        entity: weather.home
+        state_image:
+          sunny: &pe_p_sun "data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%20100%2076.92%27%20preserveAspectRatio=%27none%27%3E%3Cdefs%3E%3CradialGradient%20id=%27a%27%20cx=%27.16%27%20cy=%27.38%27%20r=%27.55%27%3E%3Cstop%20offset=%270%27%20stop-color=%27rgb%28245,166,35%29%27%20stop-opacity=%270.3%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27rgb%28245,166,35%29%27%20stop-opacity=%270%27/%3E%3C/radialGradient%3E%3CradialGradient%20id=%27b%27%20cx=%27.9%27%20cy=%271%27%20r=%27.5%27%3E%3Cstop%20offset=%270%27%20stop-color=%27rgb%28245,166,35%29%27%20stop-opacity=%270.12%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27rgb%28245,166,35%29%27%20stop-opacity=%270%27/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect%20width=%27100%27%20height=%2776.92%27%20fill=%27url%28%23a%29%27/%3E%3Crect%20width=%27100%27%20height=%2776.92%27%20fill=%27url%28%23b%29%27/%3E%3C/svg%3E"
+          clear-night: &pe_p_night "data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%20100%2076.92%27%20preserveAspectRatio=%27none%27%3E%3Cdefs%3E%3CradialGradient%20id=%27a%27%20cx=%27.16%27%20cy=%27.38%27%20r=%27.55%27%3E%3Cstop%20offset=%270%27%20stop-color=%27rgb%2899,102,241%29%27%20stop-opacity=%270.28%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27rgb%2899,102,241%29%27%20stop-opacity=%270%27/%3E%3C/radialGradient%3E%3CradialGradient%20id=%27b%27%20cx=%27.9%27%20cy=%271%27%20r=%27.5%27%3E%3Cstop%20offset=%270%27%20stop-color=%27rgb%2899,102,241%29%27%20stop-opacity=%270.112%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27rgb%2899,102,241%29%27%20stop-opacity=%270%27/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect%20width=%27100%27%20height=%2776.92%27%20fill=%27url%28%23a%29%27/%3E%3Crect%20width=%27100%27%20height=%2776.92%27%20fill=%27url%28%23b%29%27/%3E%3C/svg%3E"
+          partlycloudy: &pe_p_pcloud "data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%20100%2076.92%27%20preserveAspectRatio=%27none%27%3E%3Cdefs%3E%3CradialGradient%20id=%27a%27%20cx=%27.16%27%20cy=%27.38%27%20r=%27.55%27%3E%3Cstop%20offset=%270%27%20stop-color=%27rgb%28232,170,70%29%27%20stop-opacity=%270.2%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27rgb%28232,170,70%29%27%20stop-opacity=%270%27/%3E%3C/radialGradient%3E%3CradialGradient%20id=%27b%27%20cx=%27.9%27%20cy=%271%27%20r=%27.5%27%3E%3Cstop%20offset=%270%27%20stop-color=%27rgb%28232,170,70%29%27%20stop-opacity=%270.08%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27rgb%28232,170,70%29%27%20stop-opacity=%270%27/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect%20width=%27100%27%20height=%2776.92%27%20fill=%27url%28%23a%29%27/%3E%3Crect%20width=%27100%27%20height=%2776.92%27%20fill=%27url%28%23b%29%27/%3E%3C/svg%3E"
+          cloudy: &pe_p_cloud "data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%20100%2076.92%27%20preserveAspectRatio=%27none%27%3E%3Cdefs%3E%3CradialGradient%20id=%27a%27%20cx=%27.16%27%20cy=%27.38%27%20r=%27.55%27%3E%3Cstop%20offset=%270%27%20stop-color=%27rgb%28110,140,175%29%27%20stop-opacity=%270.26%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27rgb%28110,140,175%29%27%20stop-opacity=%270%27/%3E%3C/radialGradient%3E%3CradialGradient%20id=%27b%27%20cx=%27.9%27%20cy=%271%27%20r=%27.5%27%3E%3Cstop%20offset=%270%27%20stop-color=%27rgb%28110,140,175%29%27%20stop-opacity=%270.104%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27rgb%28110,140,175%29%27%20stop-opacity=%270%27/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect%20width=%27100%27%20height=%2776.92%27%20fill=%27url%28%23a%29%27/%3E%3Crect%20width=%27100%27%20height=%2776.92%27%20fill=%27url%28%23b%29%27/%3E%3C/svg%3E"
+          fog: *pe_p_cloud
+          rainy: &pe_p_rain "data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%20100%2076.92%27%20preserveAspectRatio=%27none%27%3E%3Cdefs%3E%3CradialGradient%20id=%27a%27%20cx=%27.16%27%20cy=%27.38%27%20r=%27.55%27%3E%3Cstop%20offset=%270%27%20stop-color=%27rgb%2847,111,214%29%27%20stop-opacity=%270.28%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27rgb%2847,111,214%29%27%20stop-opacity=%270%27/%3E%3C/radialGradient%3E%3CradialGradient%20id=%27b%27%20cx=%27.9%27%20cy=%271%27%20r=%27.5%27%3E%3Cstop%20offset=%270%27%20stop-color=%27rgb%2847,111,214%29%27%20stop-opacity=%270.112%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27rgb%2847,111,214%29%27%20stop-opacity=%270%27/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect%20width=%27100%27%20height=%2776.92%27%20fill=%27url%28%23a%29%27/%3E%3Crect%20width=%27100%27%20height=%2776.92%27%20fill=%27url%28%23b%29%27/%3E%3C/svg%3E"
+          pouring: *pe_p_rain
+          hail: *pe_p_rain
+          snowy: &pe_p_snow "data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%20100%2076.92%27%20preserveAspectRatio=%27none%27%3E%3Cdefs%3E%3CradialGradient%20id=%27a%27%20cx=%27.16%27%20cy=%27.38%27%20r=%27.55%27%3E%3Cstop%20offset=%270%27%20stop-color=%27rgb%28110,195,230%29%27%20stop-opacity=%270.3%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27rgb%28110,195,230%29%27%20stop-opacity=%270%27/%3E%3C/radialGradient%3E%3CradialGradient%20id=%27b%27%20cx=%27.9%27%20cy=%271%27%20r=%27.5%27%3E%3Cstop%20offset=%270%27%20stop-color=%27rgb%28110,195,230%29%27%20stop-opacity=%270.12%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27rgb%28110,195,230%29%27%20stop-opacity=%270%27/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect%20width=%27100%27%20height=%2776.92%27%20fill=%27url%28%23a%29%27/%3E%3Crect%20width=%27100%27%20height=%2776.92%27%20fill=%27url%28%23b%29%27/%3E%3C/svg%3E"
+          snowy-rainy: *pe_p_snow
+          lightning: &pe_p_storm "data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%20100%2076.92%27%20preserveAspectRatio=%27none%27%3E%3Cdefs%3E%3CradialGradient%20id=%27a%27%20cx=%27.16%27%20cy=%27.38%27%20r=%27.55%27%3E%3Cstop%20offset=%270%27%20stop-color=%27rgb%28118,88,224%29%27%20stop-opacity=%270.28%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27rgb%28118,88,224%29%27%20stop-opacity=%270%27/%3E%3C/radialGradient%3E%3CradialGradient%20id=%27b%27%20cx=%27.9%27%20cy=%271%27%20r=%27.5%27%3E%3Cstop%20offset=%270%27%20stop-color=%27rgb%28118,88,224%29%27%20stop-opacity=%270.112%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27rgb%28118,88,224%29%27%20stop-opacity=%270%27/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect%20width=%27100%27%20height=%2776.92%27%20fill=%27url%28%23a%29%27/%3E%3Crect%20width=%27100%27%20height=%2776.92%27%20fill=%27url%28%23b%29%27/%3E%3C/svg%3E"
+          lightning-rainy: *pe_p_storm
+          windy: &pe_p_wind "data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%20100%2076.92%27%20preserveAspectRatio=%27none%27%3E%3Cdefs%3E%3CradialGradient%20id=%27a%27%20cx=%27.16%27%20cy=%27.38%27%20r=%27.55%27%3E%3Cstop%20offset=%270%27%20stop-color=%27rgb%2830,170,160%29%27%20stop-opacity=%270.26%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27rgb%2830,170,160%29%27%20stop-opacity=%270%27/%3E%3C/radialGradient%3E%3CradialGradient%20id=%27b%27%20cx=%27.9%27%20cy=%271%27%20r=%27.5%27%3E%3Cstop%20offset=%270%27%20stop-color=%27rgb%2830,170,160%29%27%20stop-opacity=%270.104%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27rgb%2830,170,160%29%27%20stop-opacity=%270%27/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect%20width=%27100%27%20height=%2776.92%27%20fill=%27url%28%23a%29%27/%3E%3Crect%20width=%27100%27%20height=%2776.92%27%20fill=%27url%28%23b%29%27/%3E%3C/svg%3E"
+          windy-variant: *pe_p_wind
+          exceptional: &pe_p_exc "data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%20100%2076.92%27%20preserveAspectRatio=%27none%27%3E%3Cdefs%3E%3CradialGradient%20id=%27a%27%20cx=%27.16%27%20cy=%27.38%27%20r=%27.55%27%3E%3Cstop%20offset=%270%27%20stop-color=%27rgb%28209,64,75%29%27%20stop-opacity=%270.24%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27rgb%28209,64,75%29%27%20stop-opacity=%270%27/%3E%3C/radialGradient%3E%3CradialGradient%20id=%27b%27%20cx=%27.9%27%20cy=%271%27%20r=%27.5%27%3E%3Cstop%20offset=%270%27%20stop-color=%27rgb%28209,64,75%29%27%20stop-opacity=%270.096%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27rgb%28209,64,75%29%27%20stop-opacity=%270%27/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect%20width=%27100%27%20height=%2776.92%27%20fill=%27url%28%23a%29%27/%3E%3Crect%20width=%27100%27%20height=%2776.92%27%20fill=%27url%28%23b%29%27/%3E%3C/svg%3E"
+        image: *pe_p_cloud
+        elements:
+          - type: conditional
+            conditions:
+              - condition: state
+                entity: weather.home
+                state_not: not-a-weather-state
+            style:
+              position: absolute
+              inset: "0"
+              container-type: inline-size
+            elements:
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: weather.home
+                    state: sunny
+                elements:
+                  - type: icon
+                    entity: weather.home
+                    icon: mdi:weather-sunny
+                    style:
+                      left: 14%
+                      top: 18.2%
+                      "--mdc-icon-size": "clamp(40px, 18cqw, 200px)"
+                      color: var(--blue-color)
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: weather.home
+                    state: clear-night
+                elements:
+                  - type: icon
+                    entity: weather.home
+                    icon: mdi:weather-night
+                    style:
+                      left: 14%
+                      top: 18.2%
+                      "--mdc-icon-size": "clamp(40px, 18cqw, 200px)"
+                      color: var(--blue-color)
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: weather.home
+                    state: partlycloudy
+                elements:
+                  - type: icon
+                    entity: weather.home
+                    icon: mdi:weather-partly-cloudy
+                    style:
+                      left: 14%
+                      top: 18.2%
+                      "--mdc-icon-size": "clamp(40px, 18cqw, 200px)"
+                      color: var(--blue-color)
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: weather.home
+                    state: cloudy
+                elements:
+                  - type: icon
+                    entity: weather.home
+                    icon: mdi:weather-cloudy
+                    style:
+                      left: 14%
+                      top: 18.2%
+                      "--mdc-icon-size": "clamp(40px, 18cqw, 200px)"
+                      color: var(--blue-color)
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: weather.home
+                    state: fog
+                elements:
+                  - type: icon
+                    entity: weather.home
+                    icon: mdi:weather-fog
+                    style:
+                      left: 14%
+                      top: 18.2%
+                      "--mdc-icon-size": "clamp(40px, 18cqw, 200px)"
+                      color: var(--blue-color)
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: weather.home
+                    state: rainy
+                elements:
+                  - type: icon
+                    entity: weather.home
+                    icon: mdi:weather-rainy
+                    style:
+                      left: 14%
+                      top: 18.2%
+                      "--mdc-icon-size": "clamp(40px, 18cqw, 200px)"
+                      color: var(--blue-color)
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: weather.home
+                    state: pouring
+                elements:
+                  - type: icon
+                    entity: weather.home
+                    icon: mdi:weather-pouring
+                    style:
+                      left: 14%
+                      top: 18.2%
+                      "--mdc-icon-size": "clamp(40px, 18cqw, 200px)"
+                      color: var(--blue-color)
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: weather.home
+                    state: hail
+                elements:
+                  - type: icon
+                    entity: weather.home
+                    icon: mdi:weather-hail
+                    style:
+                      left: 14%
+                      top: 18.2%
+                      "--mdc-icon-size": "clamp(40px, 18cqw, 200px)"
+                      color: var(--blue-color)
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: weather.home
+                    state: snowy
+                elements:
+                  - type: icon
+                    entity: weather.home
+                    icon: mdi:weather-snowy
+                    style:
+                      left: 14%
+                      top: 18.2%
+                      "--mdc-icon-size": "clamp(40px, 18cqw, 200px)"
+                      color: var(--blue-color)
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: weather.home
+                    state: snowy-rainy
+                elements:
+                  - type: icon
+                    entity: weather.home
+                    icon: mdi:weather-snowy-rainy
+                    style:
+                      left: 14%
+                      top: 18.2%
+                      "--mdc-icon-size": "clamp(40px, 18cqw, 200px)"
+                      color: var(--blue-color)
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: weather.home
+                    state: lightning
+                elements:
+                  - type: icon
+                    entity: weather.home
+                    icon: mdi:weather-lightning
+                    style:
+                      left: 14%
+                      top: 18.2%
+                      "--mdc-icon-size": "clamp(40px, 18cqw, 200px)"
+                      color: var(--blue-color)
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: weather.home
+                    state: lightning-rainy
+                elements:
+                  - type: icon
+                    entity: weather.home
+                    icon: mdi:weather-lightning-rainy
+                    style:
+                      left: 14%
+                      top: 18.2%
+                      "--mdc-icon-size": "clamp(40px, 18cqw, 200px)"
+                      color: var(--blue-color)
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: weather.home
+                    state: windy
+                elements:
+                  - type: icon
+                    entity: weather.home
+                    icon: mdi:weather-windy
+                    style:
+                      left: 14%
+                      top: 18.2%
+                      "--mdc-icon-size": "clamp(40px, 18cqw, 200px)"
+                      color: var(--blue-color)
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: weather.home
+                    state: windy-variant
+                elements:
+                  - type: icon
+                    entity: weather.home
+                    icon: mdi:weather-windy-variant
+                    style:
+                      left: 14%
+                      top: 18.2%
+                      "--mdc-icon-size": "clamp(40px, 18cqw, 200px)"
+                      color: var(--blue-color)
+              - type: conditional
+                conditions:
+                  - condition: state
+                    entity: weather.home
+                    state: exceptional
+                elements:
+                  - type: icon
+                    entity: weather.home
+                    icon: mdi:alert-circle-outline
+                    style:
+                      left: 14%
+                      top: 18.2%
+                      "--mdc-icon-size": "clamp(40px, 18cqw, 200px)"
+                      color: var(--blue-color)
+              - type: state-label
+                entity: weather.home
+                attribute: temperature
+                suffix: "°"
+                style:
+                  left: 28%
+                  top: 18.2%
+                  transform: "translate(0, -50%)"
+                  font-size: "clamp(56px, 20cqw, 150px)"
+                  font-weight: 700
+                  line-height: 1
+                  letter-spacing: -0.02em
+                  color: var(--primary-text-color)
+              - type: state-label
+                entity: weather.home
+                style:
+                  left: 6%
+                  top: 41.6%
+                  transform: "translate(0, -50%)"
+                  font-size: "clamp(16px, 6.2cqw, 30px)"
+                  font-weight: 600
+                  color: var(--primary-text-color)
+              - type: state-label
+                entity: sensor.weather_today_low
+                prefix: "Low "
+                style:
+                  left: 6%
+                  top: 54.6%
+                  transform: "translate(0, -50%)"
+                  font-size: "clamp(14px, 4.8cqw, 24px)"
+                  color: var(--secondary-text-color)
+              - type: state-label
+                entity: sensor.weather_today_high
+                prefix: "High "
+                style:
+                  left: 52%
+                  top: 54.6%
+                  transform: "translate(0, -50%)"
+                  font-size: "clamp(14px, 4.8cqw, 24px)"
+                  color: var(--secondary-text-color)
+              - type: state-label
+                entity: weather.home
+                attribute: humidity
+                prefix: "Humidity "
+                suffix: " %"
+                style:
+                  left: 6%
+                  top: 71.5%
+                  transform: "translate(0, -50%)"
+                  font-size: "clamp(14px, 4.6cqw, 24px)"
+                  font-weight: 600
+                  color: var(--primary-text-color)
+              - type: state-label
+                entity: weather.home
+                attribute: pressure
+                prefix: "Pressure "
+                suffix: " hPa"
+                style:
+                  left: 6%
+                  top: 85.8%
+                  transform: "translate(0, -50%)"
+                  font-size: "clamp(14px, 4.6cqw, 24px)"
+                  font-weight: 600
+                  color: var(--primary-text-color)
+              - type: state-label
+                entity: weather.home
+                attribute: wind_speed
+                prefix: "Wind "
+                suffix: " km/h"
+                style:
+                  left: 52%
+                  top: 71.5%
+                  transform: "translate(0, -50%)"
+                  font-size: "clamp(14px, 4.6cqw, 24px)"
+                  font-weight: 600
+                  color: var(--primary-text-color)
+        grid_options:
+          columns: full
+      - <<: *pe_pills
+        grid_options:
+          columns: 12
+          rows: 1
+
+  - type: grid
+    background:
+      opacity: 100
+    column_span: 2
+    cards:
+      - type: custom:bubble-card
+        card_type: separator
+        name: Indoor Climate
+        icon: mdi:home-thermometer-outline
+        grid_options:
+          columns: full
+      - type: custom:bubble-card
+        card_type: sub-buttons
+        hide_main_background: true
+        sub_button:
+          main: []
+          bottom:
+            - group:
+                - entity: sensor.house_ac_status
+                  name: "{{ state_attr('sensor.house_ac_status', 'summary') }}"
+                  icon: "{{ state_attr('sensor.house_ac_status', 'icon') }}"
+                  show_name: true
+                  fill_width: false
+                  state_background: false
+                  tap_action:
+                    action: more-info
+              buttons_layout: inline
+              justify_content: start
+        grid_options:
+          columns: full
+          rows: 1
+      - type: custom:modern-circular-gauge
+        entity: sensor.living_room_living_room_temperature_humidity_temperature
+        name: >-
+          {%- set m = states('climate.living_room_air_conditioner') -%}
+          {%- set w = {'cool': 'Cooling', 'heat': 'Heating', 'dry': 'Drying',
+          'fan_only': 'Fan only', 'heat_cool': 'Auto', 'auto': 'Auto'} -%}
+          Living Room{{ ' · ' ~ w[m] if m in w else '' }}
+        min: 15
+        max: 28
+        show_icon: false
+        gauge_foreground_style:
+          color: 'var(--blue-color)'
+        gauge_background_style:
+          color: var(--divider-color)
+        secondary:
+          entity: sensor.living_room_living_room_temperature_humidity_humidity
+        grid_options:
+          columns: 6
+          rows: 3
+      - type: custom:modern-circular-gauge
+        entity: sensor.bedroom_bedroom_temperature_humidity_temperature
+        name: >-
+          {%- set m = states('climate.bedroom_air_conditioner') -%}
+          {%- set w = {'cool': 'Cooling', 'heat': 'Heating', 'dry': 'Drying',
+          'fan_only': 'Fan only', 'heat_cool': 'Auto', 'auto': 'Auto'} -%}
+          Bedroom{{ ' · ' ~ w[m] if m in w else '' }}
+        min: 15
+        max: 28
+        show_icon: false
+        gauge_foreground_style:
+          color: 'var(--blue-color)'
+        gauge_background_style:
+          color: var(--divider-color)
+        secondary:
+          entity: sensor.bedroom_bedroom_temperature_humidity_humidity
+        grid_options:
+          columns: 6
+          rows: 3
+      - type: custom:modern-circular-gauge
+        entity: sensor.office_office_temperature_humidity_temperature
+        name: >-
+          {%- set m = states('climate.office_air_conditioner') -%}
+          {%- set w = {'cool': 'Cooling', 'heat': 'Heating', 'dry': 'Drying',
+          'fan_only': 'Fan only', 'heat_cool': 'Auto', 'auto': 'Auto'} -%}
+          Office{{ ' · ' ~ w[m] if m in w else '' }}
+        min: 15
+        max: 28
+        show_icon: false
+        gauge_foreground_style:
+          color: 'var(--blue-color)'
+        gauge_background_style:
+          color: var(--divider-color)
+        secondary:
+          entity: sensor.office_office_temperature_humidity_humidity
+        grid_options:
+          columns: 6
+          rows: 3
+      - type: custom:modern-circular-gauge
+        entity: sensor.tea_room_tea_room_temperature_humidity_temperature
+        name: Tea Room
+        min: 15
+        max: 28
+        show_icon: false
+        gauge_foreground_style:
+          color: 'var(--blue-color)'
+        gauge_background_style:
+          color: var(--divider-color)
+        secondary:
+          entity: sensor.tea_room_tea_room_temperature_humidity_humidity
+        grid_options:
+          columns: 6
+          rows: 3
+
+  - type: grid
+    background:
+      opacity: 100
+    column_span: 1
+    cards:
+      - type: custom:bubble-card
+        card_type: separator
+        name: Weather Station
+        icon: mdi:thermometer-lines
+        grid_options:
+          columns: full
+      - type: custom:bubble-card
+        card_type: sub-buttons
+        hide_main_background: true
+        sub_button:
+          main: []
+          bottom:
+            - group:
+                - entity: sensor.ecowitt_temp1
+                  icon: mdi:thermometer-lines
+                  state_content: >-
+                    {% set s = states('sensor.ecowitt_temp1') %}
+                    {% set n = states('sensor.ecowitt_temp2') %}
+                    {% if not (s | is_number and n | is_number) %}Sensors unavailable
+                    {% elif s | float >= n | float %}South +{{ (s | float - n | float) | round(1) }} °C
+                    {% else %}North +{{ (n | float - s | float) | round(1) }} °C{% endif %}
+                  fill_width: false
+                  state_background: false
+                  tap_action:
+                    action: more-info
+              buttons_layout: inline
+              justify_content: start
+        grid_options:
+          columns: full
+          rows: 1
+      - type: custom:modern-circular-gauge
+        entity: sensor.ecowitt_temp1
+        name: South
+        min: 5
+        max: 35
+        show_icon: false
+        gauge_foreground_style:
+          color: 'var(--blue-color)'
+        gauge_background_style:
+          color: var(--divider-color)
+        secondary:
+          entity: sensor.ecowitt_humidity1
+        grid_options:
+          columns: 6
+          rows: 3
+      - type: custom:modern-circular-gauge
+        entity: sensor.ecowitt_temp2
+        name: North
+        min: 5
+        max: 35
+        show_icon: false
+        gauge_foreground_style:
+          color: 'var(--blue-color)'
+        gauge_background_style:
+          color: var(--divider-color)
+        secondary:
+          entity: sensor.ecowitt_humidity2
+        grid_options:
+          columns: 6
+          rows: 3
+
+  - type: grid
+    background:
+      opacity: 100
+    column_span: 3
+    visibility:
+      - condition: screen
+        media_query: "(min-width: 900px)"
+    cards:
+      - type: custom:bubble-card
+        card_type: separator
+        name: Rooms
+        icon: mdi:floor-plan
+        grid_options:
+          columns: full
+      - &room_living_room
+        type: custom:bubble-card
+        card_type: button
+        button_type: switch
+        entity: binary_sensor.living_room_safety_status
+        name: Living Room
+        icon: mdi:sofa
+        state_content: >-
+          {%- set t = states('sensor.living_room_living_room_temperature_humidity_temperature') -%}
+          {%- set s = state_attr('binary_sensor.living_room_safety_status', 'summary') -%}
+          {{ (t | float | round(1) ~ ' °C') if t | is_number else 'No reading' }}{{ ' · ' ~ s if s != 'All clear' else '' }}
+        button_action:
+          tap_action:
+            action: navigate
+            navigation_path: /lovelace/living_room
+        tap_action:
+          action: navigate
+          navigation_path: /lovelace/living_room
+        grid_options:
+          columns: 9
+          rows: 2
+      - &room_office
+        type: custom:bubble-card
+        card_type: button
+        button_type: switch
+        entity: binary_sensor.office_safety_status
+        name: Office
+        icon: mdi:desk
+        state_content: >-
+          {%- set t = states('sensor.office_office_temperature_humidity_temperature') -%}
+          {%- set s = state_attr('binary_sensor.office_safety_status', 'summary') -%}
+          {{ (t | float | round(1) ~ ' °C') if t | is_number else 'No reading' }}{{ ' · ' ~ s if s != 'All clear' else '' }}
+        button_action:
+          tap_action:
+            action: navigate
+            navigation_path: /lovelace/office
+        tap_action:
+          action: navigate
+          navigation_path: /lovelace/office
+        grid_options:
+          columns: 9
+          rows: 2
+      - &room_tea_room
+        type: custom:bubble-card
+        card_type: button
+        button_type: switch
+        entity: binary_sensor.tea_room_safety_status
+        name: Tea Room
+        icon: mdi:tea
+        state_content: >-
+          {%- set t = states('sensor.tea_room_tea_room_temperature_humidity_temperature') -%}
+          {%- set s = state_attr('binary_sensor.tea_room_safety_status', 'summary') -%}
+          {{ (t | float | round(1) ~ ' °C') if t | is_number else 'No reading' }}{{ ' · ' ~ s if s != 'All clear' else '' }}
+        button_action:
+          tap_action:
+            action: navigate
+            navigation_path: /lovelace/tea_room
+        tap_action:
+          action: navigate
+          navigation_path: /lovelace/tea_room
+        grid_options:
+          columns: 9
+          rows: 2
+      - &room_bedroom
+        type: custom:bubble-card
+        card_type: button
+        button_type: switch
+        entity: binary_sensor.bedroom_safety_status
+        name: Bedroom
+        icon: mdi:bed
+        state_content: >-
+          {%- set t = states('sensor.bedroom_bedroom_temperature_humidity_temperature') -%}
+          {%- set s = state_attr('binary_sensor.bedroom_safety_status', 'summary') -%}
+          {{ (t | float | round(1) ~ ' °C') if t | is_number else 'No reading' }}{{ ' · ' ~ s if s != 'All clear' else '' }}
+        button_action:
+          tap_action:
+            action: navigate
+            navigation_path: /lovelace/bedroom
+        tap_action:
+          action: navigate
+          navigation_path: /lovelace/bedroom
+        grid_options:
+          columns: 9
+          rows: 2
+      - &room_bathrooms
+        type: custom:bubble-card
+        card_type: button
+        button_type: switch
+        entity: binary_sensor.bathrooms_safety_status
+        name: Bathrooms
+        icon: mdi:shower
+        state_content: >-
+          {{ state_attr('binary_sensor.bathrooms_safety_status', 'summary') }}
+        button_action:
+          tap_action:
+            action: navigate
+            navigation_path: /lovelace/bathrooms
+        tap_action:
+          action: navigate
+          navigation_path: /lovelace/bathrooms
+        grid_options:
+          columns: 9
+          rows: 2
+      - &room_hallways
+        type: custom:bubble-card
+        card_type: button
+        button_type: switch
+        entity: binary_sensor.hallways_safety_status
+        name: Hallways
+        icon: mdi:door
+        state_content: >-
+          {{ state_attr('binary_sensor.hallways_safety_status', 'summary') }}
+        button_action:
+          tap_action:
+            action: navigate
+            navigation_path: /lovelace/hallways
+        tap_action:
+          action: navigate
+          navigation_path: /lovelace/hallways
+        grid_options:
+          columns: 9
+          rows: 2
+      - &room_garden
+        type: custom:bubble-card
+        card_type: button
+        button_type: switch
+        entity: binary_sensor.garden_safety_status
+        name: Garden
+        icon: mdi:tree
+        state_content: >-
+          {%- set t = states('sensor.ecowitt_temp2') -%}
+          {%- set s = state_attr('binary_sensor.garden_safety_status', 'summary') -%}
+          {{ (t | float | round(1) ~ ' °C') if t | is_number else 'No reading' }}{{ ' · ' ~ s if s != 'All clear' else '' }}
+        button_action:
+          tap_action:
+            action: navigate
+            navigation_path: /lovelace/garden
+        tap_action:
+          action: navigate
+          navigation_path: /lovelace/garden
+        grid_options:
+          columns: 9
+          rows: 2
+      - &room_utility
+        type: custom:bubble-card
+        card_type: button
+        button_type: switch
+        entity: binary_sensor.utility_safety_status
+        name: Utility
+        icon: mdi:washing-machine
+        state_content: >-
+          {{ state_attr('binary_sensor.utility_safety_status', 'summary') }}
+        button_action:
+          tap_action:
+            action: navigate
+            navigation_path: /lovelace/utility
+        tap_action:
+          action: navigate
+          navigation_path: /lovelace/utility
+        grid_options:
+          columns: 9
+          rows: 2
+
+  - type: grid
+    background:
+      opacity: 100
+    column_span: 3
+    visibility:
+      - condition: screen
+        media_query: "(max-width: 899px)"
+    cards:
+      - type: custom:bubble-card
+        card_type: separator
+        name: Rooms
+        icon: mdi:floor-plan
+        grid_options:
+          columns: full
+      - <<: *room_living_room
+        grid_options:
+          columns: 6
+          rows: 2
+      - <<: *room_office
+        grid_options:
+          columns: 6
+          rows: 2
+      - <<: *room_tea_room
+        grid_options:
+          columns: 6
+          rows: 2
+      - <<: *room_bedroom
+        grid_options:
+          columns: 6
+          rows: 2
+      - <<: *room_bathrooms
+        grid_options:
+          columns: 6
+          rows: 2
+      - <<: *room_hallways
+        grid_options:
+          columns: 6
+          rows: 2
+      - <<: *room_garden
+        grid_options:
+          columns: 6
+          rows: 2
+      - <<: *room_utility
+        grid_options:
+          columns: 6
+          rows: 2
+
+  - type: grid
+    background:
+      opacity: 100
+    column_span: 3
+    visibility:
+      - condition: state
+        entity: binary_sensor.washing_machine_active
+        state: "on"
+    cards:
+      - type: custom:bubble-card
+        card_type: separator
+        name: Washing Machine
+        icon: mdi:washing-machine
+        grid_options:
+          columns: full
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: sensor.washing_machine_status
+        name: Washing machine
+        icon: "{{ state_attr('sensor.washing_machine_status', 'icon') }}"
+        state_content: "{{ state_attr('sensor.washing_machine_status', 'overview') }}"
+        button_action:
+          tap_action:
+            action: navigate
+            navigation_path: /lovelace/utility
+        tap_action:
+          action: navigate
+          navigation_path: /lovelace/utility
+        grid_options:
+          columns: full
+          rows: 1
+
+  - type: grid
+    background:
+      opacity: 100
+    column_span: 3
+    cards:
+      - type: custom:bubble-card
+        card_type: separator
+        name: Security & Safety
+        icon: mdi:shield-home-outline
+        grid_options:
+          columns: full
+      - <<: *bub_status
+        grid_options:
+          columns: full
+          rows: 1
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: alarm_control_panel.ring_control_panel
+        name: Alarm
+        state_content: state
+        button_action:
+          tap_action:
+            action: more-info
+        tap_action:
+          action: more-info
+        grid_options:
+          columns: 12
+          rows: 1
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: lock.entrance_door_lock
+        name: Front Door
+        state_content: state
+        button_action:
+          tap_action:
+            action: more-info
+        tap_action:
+          action: more-info
+        visibility:
+          - condition: state
+            entity: lock.entrance_door_lock
+            state: locked
+        grid_options:
+          columns: 12
+          rows: 1
+      - type: custom:bubble-card
+        card_type: button
+        button_type: switch
+        entity: lock.entrance_door_lock
+        name: Front Door
+        state_content: state
+        button_action:
+          tap_action:
+            action: more-info
+        tap_action:
+          action: more-info
+        visibility:
+          - condition: state
+            entity: lock.entrance_door_lock
+            state_not: locked
+        grid_options:
+          columns: 12
+          rows: 1
+      - type: custom:bubble-card
+        card_type: button
+        button_type: switch
+        entity: group.safety_smoke_detectors
+        name: Smoke
+        icon: mdi:smoke-detector
+        state_content: >-
+          {% set members = expand('group.safety_smoke_detectors') %}
+          {% set on = members | selectattr('state', 'eq', 'on') | list | count %}
+          {{ 'All clear (' ~ members | count ~ ')' if on == 0 else on ~ ' triggered!' }}
+        button_action:
+          tap_action:
+            action: more-info
+        tap_action:
+          action: more-info
+        grid_options:
+          columns: 12
+          rows: 1
+      - type: custom:bubble-card
+        card_type: button
+        button_type: switch
+        entity: group.safety_water_leak_sensors
+        name: Water leaks
+        icon: mdi:water-alert
+        state_content: >-
+          {% set members = expand('group.safety_water_leak_sensors') %}
+          {% set on = members | selectattr('state', 'eq', 'on') | list | count %}
+          {{ 'Dry (' ~ members | count ~ ')' if on == 0 else on ~ ' wet!' }}
+        button_action:
+          tap_action:
+            action: more-info
+        tap_action:
+          action: more-info
+        grid_options:
+          columns: 12
+          rows: 1
+      - type: custom:bubble-card
+        card_type: button
+        button_type: switch
+        entity: group.safety_doors_and_windows
+        name: Doors & windows
+        icon: mdi:door-open
+        state_content: >-
+          {% set members = expand('group.safety_doors_and_windows') %}
+          {% set on = members | selectattr('state', 'eq', 'on') | list | count %}
+          {{ 'All closed (' ~ members | count ~ ')' if on == 0 else on ~ ' open' }}
+        button_action:
+          tap_action:
+            action: more-info
+        tap_action:
+          action: more-info
+        grid_options:
+          columns: 12
+          rows: 1
+      - type: custom:bubble-card
+        card_type: button
+        button_type: state
+        entity: sensor.house_battery_status
+        name: Batteries
+        icon: "{{ 'mdi:battery-alert' if states('sensor.house_battery_status') | int(0) > 0 else 'mdi:battery' }}"
+        state_content: "{{ state_attr('sensor.house_battery_status', 'summary') }}"
+        button_action:
+          tap_action:
+            action: more-info
+        tap_action:
+          action: more-info
+        grid_options:
+          columns: 12
+          rows: 1
+
+  - type: grid
+    background:
+      opacity: 100
+    column_span: 3
+    visibility:
+      - condition: screen
+        media_query: "(min-width: 900px)"
+    cards:
+      - type: custom:bubble-card
+        card_type: separator
+        name: Solar & Energy
+        icon: mdi:solar-power-variant
+        grid_options:
+          columns: full
+      - &sol_h_now
+        type: custom:bubble-card
+        card_type: separator
+        name: Now
+        icon: mdi:flash
+        grid_options:
+          columns: 18
+      - &sol_h_today
+        type: custom:bubble-card
+        card_type: separator
+        name: Today
+        icon: mdi:calendar-today
+        grid_options:
+          columns: 18
+      - &sol_g_now
+        type: custom:modern-circular-gauge
+        entity: sensor.pv_power_photovoltaics_fronius_power_flow
+        name: Solar
+        min: 0
+        max: 5000
+        show_icon: false
+        gauge_foreground_style:
+          color: 'var(--amber-color)'
+        gauge_background_style:
+          color: var(--divider-color)
+        grid_options:
+          columns: 9
+          rows: 3
+      - &sol_n1
+        type: tile
+        entity: sensor.solar_own_use_power
+        name: Own use
+        icon: mdi:home-lightning-bolt
+        color: amber
+        grid_options:
+          columns: 9
+      - &sol_g_today
+        type: custom:modern-circular-gauge
+        entity: sensor.solar_produced_today
+        name: Produced
+        min: 0
+        max: 35
+        show_icon: false
+        gauge_foreground_style:
+          color: 'var(--amber-color)'
+        gauge_background_style:
+          color: var(--divider-color)
+        grid_options:
+          columns: 9
+          rows: 3
+      - &sol_t1
+        type: tile
+        entity: sensor.solar_own_use_today
+        name: Own use
+        icon: mdi:home-lightning-bolt
+        color: amber
+        grid_options:
+          columns: 9
+      - &sol_n2
+        type: tile
+        entity: sensor.energy_meter_po
+        name: Exporting
+        icon: mdi:transmission-tower-export
+        color: green
+        grid_options:
+          columns: 9
+      - &sol_t2
+        type: tile
+        entity: sensor.grid_exported_today
+        name: Exported
+        icon: mdi:transmission-tower-export
+        color: green
+        grid_options:
+          columns: 9
+      - &sol_n3
+        type: tile
+        entity: sensor.energy_meter_p
+        name: Importing
+        icon: mdi:transmission-tower-import
+        color: red
+        grid_options:
+          columns: 9
+      - &sol_t3
+        type: tile
+        entity: sensor.grid_imported_today
+        name: Imported
+        icon: mdi:transmission-tower-import
+        color: red
+        grid_options:
+          columns: 9
+
+  - type: grid
+    background:
+      opacity: 100
+    column_span: 3
+    visibility:
+      - condition: screen
+        media_query: "(max-width: 899px)"
+    cards:
+      - type: custom:bubble-card
+        card_type: separator
+        name: Solar & Energy
+        icon: mdi:solar-power-variant
+        grid_options:
+          columns: full
+      - <<: *sol_h_now
+        grid_options:
+          columns: 12
+      - <<: *sol_g_now
+        grid_options:
+          columns: 6
+          rows: 3
+      - <<: *sol_n1
+        grid_options:
+          columns: 6
+      - <<: *sol_n2
+        grid_options:
+          columns: 6
+      - <<: *sol_n3
+        grid_options:
+          columns: 6
+      - <<: *sol_h_today
+        grid_options:
+          columns: 12
+      - <<: *sol_g_today
+        grid_options:
+          columns: 6
+          rows: 3
+      - <<: *sol_t1
+        grid_options:
+          columns: 6
+      - <<: *sol_t2
+        grid_options:
+          columns: 6
+      - <<: *sol_t3
+        grid_options:
+          columns: 6
+
+
+  - type: grid
+    background:
+      opacity: 100
+    column_span: 3
+    cards:
+      - type: custom:bubble-card
+        card_type: separator
+        name: Energy Flow
+        icon: mdi:transmission-tower
+        grid_options:
+          columns: full
+      - type: custom:sankey-chart
+        show_names: true
+        height: 160
+        nodes:
+          - id: sensor.pv_power_photovoltaics_fronius_power_flow
+            section: 0
+            name: Solar
+            color: var(--amber-color)
+          - id: sensor.energy_meter_p
+            section: 0
+            name: Grid import
+            color: var(--red-color)
+          - id: sensor.energy_meter_po
+            section: 1
+            name: Grid export
+            color: var(--green-color)
+          - id: house_consumption
+            entity_id: sensor.pv_power_photovoltaics_fronius_power_flow
+            section: 1
+            name: House
+            color: var(--blue-color)
+            add_entities:
+              - sensor.energy_meter_p
+            subtract_entities:
+              - sensor.energy_meter_po
+        links:
+          - source: sensor.pv_power_photovoltaics_fronius_power_flow
+            target: sensor.energy_meter_po
+          - source: sensor.pv_power_photovoltaics_fronius_power_flow
+            target: house_consumption
+          - source: sensor.energy_meter_p
+            target: house_consumption
+        grid_options:
+          columns: full

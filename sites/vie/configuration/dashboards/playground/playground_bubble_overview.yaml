@@ -416,6 +416,7 @@ sections:
           entity: sensor.ecowitt_humidity2
         grid_options:
           columns: 6
+          rows: 3
 
   - type: grid
     background:

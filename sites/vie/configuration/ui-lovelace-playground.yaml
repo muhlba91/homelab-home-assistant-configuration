@@ -11,6 +11,6 @@ views:
   - !include dashboards/playground/playground_office_accent.yaml
   - !include dashboards/playground/playground_pe_overview.yaml
   - !include dashboards/playground/playground_bubble_overview.yaml
-  - !include dashboards/playground/playground_daylight.yaml
   - !include dashboards/playground/playground_worlds.yaml
-  - !include dashboards/playground/playground_mix.yaml
+  - !include dashboards/playground/playground_pe_bubble.yaml
+  - !include dashboards/playground/playground_pe_worlds.yaml
