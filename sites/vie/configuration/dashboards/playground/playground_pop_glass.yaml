@@ -1,10 +1,10 @@
-# Playground variant "soft": the Office copy rendered with the playground_soft
+# Playground variant "pop_glass": the Office copy rendered with the playground_pop_glass
 # themes (themes.yaml). Not validated by scripts/validate_dashboard.py. See
 # DASHBOARD.md, "Playground dashboard".
-title: Soft
-path: soft
-icon: mdi:weather-cloudy
-theme: playground_soft
+title: Pop Glass
+path: pop_glass
+icon: mdi:blur-linear
+theme: playground_pop_glass
 type: sections
 max_columns: 3
 sections:
@@ -79,7 +79,7 @@ sections:
           columns: full
 
   - type: grid
-    theme: playground_soft_chips
+    theme: playground_pop_glass_chips
     background:
       opacity: 100
     column_span: 1
@@ -98,7 +98,7 @@ sections:
           columns: 12
 
   - type: grid
-    theme: playground_soft_chips
+    theme: playground_pop_glass_chips
     background:
       opacity: 100
     column_span: 2
@@ -128,7 +128,7 @@ sections:
           columns: 12
 
   - type: grid
-    theme: playground_soft_chips
+    theme: playground_pop_glass_chips
     background:
       opacity: 100
     column_span: 3

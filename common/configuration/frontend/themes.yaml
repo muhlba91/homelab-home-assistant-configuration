@@ -168,44 +168,18 @@ themes:
 
   # Playground themes (not used by the Home Dashboard). Each variant has a panel
   # theme and a chip theme and only lists what differs from the main themes.
-  # Whether a variable takes effect in the frontend is judged on the playground.
+  # Section panels have no shadow or blur variable in the frontend; only cards
+  # (tiles, chips) do. Heading, tile icon and tile text variables are real
+  # (checked against the frontend source).
 
-  # Soft: gradient page, rounder panels, a light shadow under panels.
-  playground_soft:
-    ha-section-border-radius: "28px"
-    ha-card-border-width: "0px"
-    ha-card-box-shadow: "none"
-    modes:
-      light:
-        <<: *fd_light
-        lovelace-background: "linear-gradient(160deg, #eef1f7 0%, #dbe3f0 100%)"
-        ha-section-box-shadow: "0 8px 28px rgba(40, 60, 100, 0.10)"
-      dark:
-        <<: *fd_dark
-        lovelace-background: "linear-gradient(160deg, #171b24 0%, #0e1014 100%)"
-        ha-section-box-shadow: "0 8px 28px rgba(0, 0, 0, 0.35)"
-  playground_soft_chips:
-    ha-section-border-radius: "28px"
-    ha-card-border-width: "0px"
-    ha-card-box-shadow: "none"
-    modes:
-      light:
-        <<: *fc_light
-        lovelace-background: "linear-gradient(160deg, #eef1f7 0%, #dbe3f0 100%)"
-        ha-section-box-shadow: "0 8px 28px rgba(40, 60, 100, 0.10)"
-      dark:
-        <<: *fc_dark
-        lovelace-background: "linear-gradient(160deg, #171b24 0%, #0e1014 100%)"
-        ha-section-box-shadow: "0 8px 28px rgba(0, 0, 0, 0.35)"
-
-  # Tinted: faint blue panels, richer blue, rounder tiles.
+  # Tinted: faint blue panels, richer blue, rounder panels and tiles.
   playground_tinted:
     ha-section-border-radius: "24px"
     ha-card-border-radius: "16px"
     ha-card-border-width: "0px"
     ha-card-box-shadow: "none"
     modes:
-      light:
+      light: &t_light
         <<: *fd_light
         primary-color: "#2f6fd6"
         blue-color: "#2f6fd6"
@@ -217,7 +191,7 @@ themes:
         card-background-color: "#f8faff"
         app-header-background-color: "#f8faff"
         mush-chip-background: "#eaf0fb"
-      dark:
+      dark: &t_dark
         <<: *fd_dark
         primary-background-color: "#10131a"
         secondary-background-color: "#10131a"
@@ -231,26 +205,12 @@ themes:
     ha-card-border-width: "0px"
     ha-card-box-shadow: "none"
     modes:
-      light:
-        <<: *fc_light
-        primary-color: "#2f6fd6"
-        blue-color: "#2f6fd6"
-        rgb-primary-color: "47, 111, 214"
-        rgb-blue: "47, 111, 214"
-        primary-background-color: "#dce5f3"
-        secondary-background-color: "#dce5f3"
-        ha-section-background-color: "#f8faff"
+      light: &tc_light
+        <<: *t_light
         card-background-color: "#eaf0fb"
-        app-header-background-color: "#f8faff"
-        mush-chip-background: "#eaf0fb"
-      dark:
-        <<: *fc_dark
-        primary-background-color: "#10131a"
-        secondary-background-color: "#10131a"
-        ha-section-background-color: "#1d2230"
+      dark: &tc_dark
+        <<: *t_dark
         card-background-color: "#283044"
-        app-header-background-color: "#1d2230"
-        mush-chip-background: "#283044"
 
   # Glass: colourful gradient page, translucent panels over it.
   playground_glass:
@@ -258,18 +218,16 @@ themes:
     ha-card-border-width: "0px"
     ha-card-box-shadow: "none"
     modes:
-      light:
+      light: &g_light
         <<: *fd_light
         lovelace-background: "linear-gradient(135deg, #cfdcf5 0%, #e6dcf3 50%, #f6e7d8 100%)"
         ha-section-background-color: "rgba(255, 255, 255, 0.72)"
-        ha-section-backdrop-filter: "blur(14px)"
         card-background-color: "transparent"
         app-header-background-color: "rgba(255, 255, 255, 0.72)"
-      dark:
+      dark: &g_dark
         <<: *fd_dark
         lovelace-background: "linear-gradient(135deg, #141a2b 0%, #1c1626 50%, #1f1a17 100%)"
         ha-section-background-color: "rgba(35, 38, 44, 0.72)"
-        ha-section-backdrop-filter: "blur(14px)"
         card-background-color: "transparent"
         app-header-background-color: "rgba(35, 38, 44, 0.72)"
   playground_glass_chips:
@@ -281,13 +239,131 @@ themes:
         <<: *fc_light
         lovelace-background: "linear-gradient(135deg, #cfdcf5 0%, #e6dcf3 50%, #f6e7d8 100%)"
         ha-section-background-color: "rgba(255, 255, 255, 0.72)"
-        ha-section-backdrop-filter: "blur(14px)"
         card-background-color: "rgba(241, 243, 246, 0.65)"
         app-header-background-color: "rgba(255, 255, 255, 0.72)"
       dark:
         <<: *fc_dark
         lovelace-background: "linear-gradient(135deg, #141a2b 0%, #1c1626 50%, #1f1a17 100%)"
         ha-section-background-color: "rgba(35, 38, 44, 0.72)"
-        ha-section-backdrop-filter: "blur(14px)"
         card-background-color: "rgba(48, 51, 59, 0.65)"
         app-header-background-color: "rgba(35, 38, 44, 0.72)"
+
+  # Pop: the Tinted shape plus accent-coloured bold headings, squarer tile
+  # icons, bolder tile names and a soft gradient page.
+  playground_pop:
+    ha-section-border-radius: "24px"
+    ha-card-border-radius: "16px"
+    ha-card-border-width: "0px"
+    ha-card-box-shadow: "none"
+    ha-tile-icon-border-radius: "14px"
+    ha-tile-info-primary-font-weight: "600"
+    ha-heading-card-subtitle-font-weight: "700"
+    modes:
+      light: &p_light
+        <<: *t_light
+        lovelace-background: "linear-gradient(160deg, #e6edf9 0%, #d2def1 100%)"
+        ha-heading-card-subtitle-color: "#2f6fd6"
+      dark: &p_dark
+        <<: *t_dark
+        lovelace-background: "linear-gradient(160deg, #161b27 0%, #0d1016 100%)"
+        ha-heading-card-subtitle-color: "#78a0dc"
+  playground_pop_chips:
+    ha-section-border-radius: "24px"
+    ha-card-border-radius: "16px"
+    ha-card-border-width: "0px"
+    ha-card-box-shadow: "none"
+    ha-tile-icon-border-radius: "14px"
+    ha-tile-info-primary-font-weight: "600"
+    ha-heading-card-subtitle-font-weight: "700"
+    modes:
+      light: &pc_light
+        <<: *p_light
+        card-background-color: "#eaf0fb"
+      dark: &pc_dark
+        <<: *p_dark
+        card-background-color: "#283044"
+
+  # Pop glass: Pop with firmer glass. Panels are less see-through, chips get
+  # a fill and a fine light edge so they stay visible.
+  playground_pop_glass:
+    ha-section-border-radius: "24px"
+    ha-card-border-radius: "16px"
+    ha-card-border-width: "0px"
+    ha-card-box-shadow: "none"
+    ha-tile-icon-border-radius: "14px"
+    ha-tile-info-primary-font-weight: "600"
+    ha-heading-card-subtitle-font-weight: "700"
+    modes:
+      light:
+        <<: *p_light
+        lovelace-background: "linear-gradient(135deg, #c3d4f3 0%, #e0d3f2 50%, #f6e2d0 100%)"
+        ha-section-background-color: "rgba(255, 255, 255, 0.80)"
+        card-background-color: "transparent"
+        app-header-background-color: "rgba(255, 255, 255, 0.80)"
+      dark:
+        <<: *p_dark
+        lovelace-background: "linear-gradient(135deg, #121a30 0%, #1d1530 50%, #231a14 100%)"
+        ha-section-background-color: "rgba(35, 38, 44, 0.80)"
+        card-background-color: "transparent"
+        app-header-background-color: "rgba(35, 38, 44, 0.80)"
+  playground_pop_glass_chips:
+    ha-section-border-radius: "24px"
+    ha-card-border-radius: "16px"
+    ha-card-border-width: "1px"
+    ha-card-border-color: "rgba(255, 255, 255, 0.85)"
+    ha-card-box-shadow: "none"
+    ha-tile-icon-border-radius: "14px"
+    ha-tile-info-primary-font-weight: "600"
+    ha-heading-card-subtitle-font-weight: "700"
+    modes:
+      light:
+        <<: *p_light
+        lovelace-background: "linear-gradient(135deg, #c3d4f3 0%, #e0d3f2 50%, #f6e2d0 100%)"
+        ha-section-background-color: "rgba(255, 255, 255, 0.80)"
+        card-background-color: "rgba(214, 224, 244, 0.60)"
+        app-header-background-color: "rgba(255, 255, 255, 0.80)"
+      dark:
+        <<: *p_dark
+        lovelace-background: "linear-gradient(135deg, #121a30 0%, #1d1530 50%, #231a14 100%)"
+        ha-section-background-color: "rgba(35, 38, 44, 0.80)"
+        card-background-color: "rgba(60, 68, 92, 0.55)"
+        app-header-background-color: "rgba(35, 38, 44, 0.80)"
+        ha-card-border-color: "rgba(255, 255, 255, 0.14)"
+
+  # Bold: Pop with a coloured top bar and raised chips (a soft card shadow).
+  playground_bold:
+    ha-section-border-radius: "24px"
+    ha-card-border-radius: "16px"
+    ha-card-border-width: "0px"
+    ha-card-box-shadow: "none"
+    ha-tile-icon-border-radius: "14px"
+    ha-tile-info-primary-font-weight: "600"
+    ha-heading-card-subtitle-font-weight: "700"
+    modes:
+      light:
+        <<: *p_light
+        app-header-background-color: "#2f6fd6"
+        app-header-text-color: "#ffffff"
+      dark:
+        <<: *p_dark
+        app-header-background-color: "#2c4a80"
+        app-header-text-color: "#ffffff"
+  playground_bold_chips:
+    ha-section-border-radius: "24px"
+    ha-card-border-radius: "16px"
+    ha-card-border-width: "0px"
+    ha-card-box-shadow: "0 3px 10px rgba(30, 60, 120, 0.14)"
+    ha-tile-icon-border-radius: "14px"
+    ha-tile-info-primary-font-weight: "600"
+    ha-heading-card-subtitle-font-weight: "700"
+    modes:
+      light:
+        <<: *pc_light
+        app-header-background-color: "#2f6fd6"
+        app-header-text-color: "#ffffff"
+        card-background-color: "#ffffff"
+      dark:
+        <<: *pc_dark
+        app-header-background-color: "#2c4a80"
+        app-header-text-color: "#ffffff"
+        ha-card-box-shadow: "0 3px 10px rgba(0, 0, 0, 0.4)"
