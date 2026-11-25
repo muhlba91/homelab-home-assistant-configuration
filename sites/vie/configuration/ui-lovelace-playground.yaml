@@ -13,3 +13,5 @@ views:
   - !include dashboards/playground/playground_aurora_rail.yaml
   - !include dashboards/playground/playground_rail.yaml
   - !include dashboards/playground/playground_family.yaml
+  - !include dashboards/playground/playground_pe_overview.yaml
+  - !include dashboards/playground/playground_bubble_overview.yaml

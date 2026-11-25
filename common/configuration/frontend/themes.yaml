@@ -286,3 +286,63 @@ themes:
     ha-tile-info-secondary-font-size: "56px"
     ha-tile-info-secondary-font-weight: "700"
     ha-tile-info-secondary-line-height: "1.1"
+
+  # Bubble: Lift plus Bubble Card theme variables (names verified at v3.4.3).
+  # Bubble Card ignores --ha-card-background, --ha-card-box-shadow and
+  # --ha-card-border-radius, so the first four bubble-* keys copy them.
+  # The modes repeat the Lift overrides because that theme's modes carry no
+  # anchor; re-sync them when Lift changes. Needs the anchors *lift, *fd_light
+  # and *fd_dark from this file.
+  playground_bubble: &bubble
+    <<: *lift
+    bubble-border-radius: "16px"
+    bubble-icon-border-radius: "14px"
+    bubble-sub-button-border-radius: "12px"
+    bubble-main-background-color: "var(--card-background-color)"
+    bubble-box-shadow: "var(--ha-card-box-shadow)"
+    bubble-line-background-color: "var(--divider-color)"
+    ha-tile-info-primary-font-size: "13px"
+    ha-tile-info-secondary-font-size: "12px"
+    mush-card-primary-font-size: "13px"
+    mush-card-secondary-font-size: "12px"
+    modes:
+      light:
+        <<: *fd_light
+        primary-color: "#2f6fd6"
+        blue-color: "#2f6fd6"
+        rgb-primary-color: "47, 111, 214"
+        rgb-blue: "47, 111, 214"
+        lovelace-background: "linear-gradient(160deg, #e6edf9 0%, #d2def1 100%)"
+        primary-background-color: "#dce5f3"
+        secondary-background-color: "#dce5f3"
+        ha-section-background-color: "#f4f7fd"
+        card-background-color: "#ffffff"
+        app-header-background-color: "#2f6fd6"
+        app-header-text-color: "#ffffff"
+        ha-heading-card-subtitle-color: "#2f6fd6"
+        ha-card-box-shadow: "0 2px 8px rgba(30, 60, 120, 0.12)"
+        bubble-secondary-background-color: "rgba(47, 111, 214, 0.10)"
+        bubble-accent-color: "#d97a2b"
+      dark:
+        <<: *fd_dark
+        lovelace-background: "linear-gradient(160deg, #161b27 0%, #0d1016 100%)"
+        primary-background-color: "#10131a"
+        secondary-background-color: "#10131a"
+        ha-section-background-color: "#1d2230"
+        card-background-color: "#2a3245"
+        app-header-background-color: "#2c4a80"
+        app-header-text-color: "#ffffff"
+        ha-heading-card-subtitle-color: "#78a0dc"
+        ha-card-box-shadow: "0 2px 8px rgba(0, 0, 0, 0.40)"
+        bubble-secondary-background-color: "rgba(120, 160, 220, 0.16)"
+        bubble-accent-color: "#9c4a1a"
+
+  # Bubble focus: Bubble with a number-first tile, for the one section that
+  # holds the large outside temperature tile (a section theme applies to every
+  # card in the section; Bubble Card ignores the tile font variables).
+  playground_bubble_focus:
+    <<: *bubble
+    ha-tile-info-primary-font-size: "15px"
+    ha-tile-info-secondary-font-size: "56px"
+    ha-tile-info-secondary-font-weight: "700"
+    ha-tile-info-secondary-line-height: "1.1"
