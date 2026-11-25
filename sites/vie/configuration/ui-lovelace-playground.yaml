@@ -6,3 +6,6 @@ views:
   - !include dashboards/playground/playground.yaml
   - !include dashboards/playground/playground_lift.yaml
   - !include dashboards/playground/playground_lift_glass.yaml
+  - !include dashboards/playground/playground_overview_hero.yaml
+  - !include dashboards/playground/playground_overview_calm.yaml
+  - !include dashboards/playground/playground_office_accent.yaml
