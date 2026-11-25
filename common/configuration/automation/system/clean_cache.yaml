@@ -1,5 +1,6 @@
 ---
-- alias: "System: Clear TTS Cache"
+- id: 4d4eaa61-b95f-4247-a888-8ce15deed54f
+  alias: "System: Clear TTS Cache"
   triggers:
     - trigger: time
       at: "00:00:10"

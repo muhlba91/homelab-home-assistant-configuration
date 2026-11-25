@@ -9,7 +9,7 @@ ntfy_notify:
   payload: >-
     {
       "topic": "{{ topic | default('tuxnet-test') }}",
-      "title": "{{ title }}",
+      "title": {{ title | tojson }},
       "message": {{ message | tojson }},
       "tags": {{ tags | default([]) | tojson }},
       "priority": {{ ({'min': 1, 'low': 2, 'default': 3, 'high': 4, 'max': 5}[priority | default('default')]) }},

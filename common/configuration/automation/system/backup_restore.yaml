@@ -1,8 +1,9 @@
 ---
-- alias: "System: Backup and Restore"
+- id: a61335cb-a018-4aeb-836d-6027cd031ca9
+  alias: "System: Backup and Restore"
   triggers:
     - trigger: time
-      at: "00:02:10"
+      at: "00:10:10"
   conditions: []
   actions:
     - action: shell_command.backup_restore

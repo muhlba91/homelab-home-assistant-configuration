@@ -1,5 +1,6 @@
 ---
-- alias: "System: Sync Configuration"
+- id: d3c989df-5806-4400-85d2-032325438909
+  alias: "System: Sync Configuration"
   triggers:
     - trigger: time
       at: "00:01:10"
