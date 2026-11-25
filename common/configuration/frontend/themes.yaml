@@ -245,3 +245,14 @@ themes:
         ha-heading-card-subtitle-color: "#78a0dc"
         ha-card-box-shadow: "0 2px 8px rgba(0, 0, 0, 0.40)"
   playground_lift_glass_chips: *lift_glass
+
+  # Focus: Lift plus a number-first type scale for tiles. Applied to the hero
+  # section only (a section-level theme), so the large temperature tile reads
+  # from across the room while every other tile stays the same.
+  playground_focus:
+    <<: *lift
+    ha-tile-info-primary-font-size: "15px"
+    ha-tile-info-primary-font-weight: "600"
+    ha-tile-info-secondary-font-size: "52px"
+    ha-tile-info-secondary-font-weight: "700"
+    ha-tile-info-secondary-line-height: "1.1"
