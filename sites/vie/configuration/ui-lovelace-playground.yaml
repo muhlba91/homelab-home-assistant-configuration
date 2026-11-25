@@ -9,9 +9,8 @@ views:
   - !include dashboards/playground/playground_overview_hero.yaml
   - !include dashboards/playground/playground_overview_calm.yaml
   - !include dashboards/playground/playground_office_accent.yaml
-  - !include dashboards/playground/playground_aurora.yaml
-  - !include dashboards/playground/playground_aurora_rail.yaml
-  - !include dashboards/playground/playground_rail.yaml
-  - !include dashboards/playground/playground_family.yaml
   - !include dashboards/playground/playground_pe_overview.yaml
   - !include dashboards/playground/playground_bubble_overview.yaml
+  - !include dashboards/playground/playground_daylight.yaml
+  - !include dashboards/playground/playground_worlds.yaml
+  - !include dashboards/playground/playground_mix.yaml
