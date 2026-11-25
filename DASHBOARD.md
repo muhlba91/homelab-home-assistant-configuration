@@ -167,6 +167,24 @@ that account.
 The built-in Home dashboard only appears in the sidebar while it is the
 default, so it disappears once this dashboard is set as default.
 
+### Playground dashboard
+
+A second YAML dashboard, key `home-playground` (URL `/home-playground`), is
+for trying cards, themes and layouts without touching the Home Dashboard. It
+is visible to administrators only. Its root is
+`ui-lovelace-playground.yaml`; its views live in `dashboards/playground/`
+(never below `lovelace/`, see above). The validator does not check it.
+
+- Dashboard keys must be lowercase slugs and contain a hyphen; only
+  `lovelace` is exempt (Home Assistant's `lovelace` integration checks this).
+- The starting view is a copy of the Office tab. To test against a real view,
+  copy it into `dashboards/playground/` and add it to the root.
+- Test cards are loaded through `extra_module_url.yaml` like any other card;
+  remove the line again when the experiment ends.
+- A new dashboard key is registered at startup, so it most likely needs a
+  Home Assistant restart (not verified); later view edits only need the
+  dashboard menu, then Refresh.
+
 ### Template include format
 
 Every file in `template/` is a YAML **list** (it starts with `- sensor:`,

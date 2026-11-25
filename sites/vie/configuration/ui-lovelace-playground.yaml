@@ -1,0 +1,6 @@
+---
+# Playground dashboard root: a private place to try cards, themes and layouts
+# without touching the Home Dashboard. See DASHBOARD.md, "Playground dashboard".
+title: Playground
+views:
+  - !include dashboards/playground/playground.yaml

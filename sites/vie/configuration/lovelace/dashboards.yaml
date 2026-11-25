@@ -10,3 +10,13 @@ dashboards:
     title: Home
     icon: mdi:home-heart
     show_in_sidebar: true
+
+  # Private test dashboard (URL /home-playground), administrators only.
+  # The key must contain a hyphen and be a lowercase slug.
+  home-playground:
+    mode: yaml
+    filename: ui-lovelace-playground.yaml
+    title: Playground
+    icon: mdi:flask
+    show_in_sidebar: true
+    require_admin: true
