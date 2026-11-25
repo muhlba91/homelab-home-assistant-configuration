@@ -10,7 +10,7 @@ themes:
     ha-card-border-width: "0px"
     ha-card-box-shadow: "none"
     modes:
-      light:
+      light: &fd_light
         primary-color: "#3b73c4"
         accent-color: "#c98a1d"
         rgb-primary-color: "59, 115, 196"
@@ -47,7 +47,7 @@ themes:
         rgb-yellow: "201, 138, 29"
         deep-orange-color: "#d97a2b"
         rgb-deep-orange: "217, 122, 43"
-      dark:
+      dark: &fd_dark
         primary-color: "#78a0dc"
         accent-color: "#c29a5e"
         rgb-primary-color: "120, 160, 220"
@@ -91,7 +91,7 @@ themes:
     ha-card-border-width: "0px"
     ha-card-box-shadow: "none"
     modes:
-      light:
+      light: &fc_light
         primary-color: "#3b73c4"
         accent-color: "#c98a1d"
         rgb-primary-color: "59, 115, 196"
@@ -128,7 +128,7 @@ themes:
         rgb-yellow: "201, 138, 29"
         deep-orange-color: "#d97a2b"
         rgb-deep-orange: "217, 122, 43"
-      dark:
+      dark: &fc_dark
         primary-color: "#78a0dc"
         accent-color: "#c29a5e"
         rgb-primary-color: "120, 160, 220"
@@ -165,3 +165,129 @@ themes:
         rgb-yellow: "194, 154, 94"
         deep-orange-color: "#d98c5f"
         rgb-deep-orange: "217, 140, 95"
+
+  # Playground themes (not used by the Home Dashboard). Each variant has a panel
+  # theme and a chip theme and only lists what differs from the main themes.
+  # Whether a variable takes effect in the frontend is judged on the playground.
+
+  # Soft: gradient page, rounder panels, a light shadow under panels.
+  playground_soft:
+    ha-section-border-radius: "28px"
+    ha-card-border-width: "0px"
+    ha-card-box-shadow: "none"
+    modes:
+      light:
+        <<: *fd_light
+        lovelace-background: "linear-gradient(160deg, #eef1f7 0%, #dbe3f0 100%)"
+        ha-section-box-shadow: "0 8px 28px rgba(40, 60, 100, 0.10)"
+      dark:
+        <<: *fd_dark
+        lovelace-background: "linear-gradient(160deg, #171b24 0%, #0e1014 100%)"
+        ha-section-box-shadow: "0 8px 28px rgba(0, 0, 0, 0.35)"
+  playground_soft_chips:
+    ha-section-border-radius: "28px"
+    ha-card-border-width: "0px"
+    ha-card-box-shadow: "none"
+    modes:
+      light:
+        <<: *fc_light
+        lovelace-background: "linear-gradient(160deg, #eef1f7 0%, #dbe3f0 100%)"
+        ha-section-box-shadow: "0 8px 28px rgba(40, 60, 100, 0.10)"
+      dark:
+        <<: *fc_dark
+        lovelace-background: "linear-gradient(160deg, #171b24 0%, #0e1014 100%)"
+        ha-section-box-shadow: "0 8px 28px rgba(0, 0, 0, 0.35)"
+
+  # Tinted: faint blue panels, richer blue, rounder tiles.
+  playground_tinted:
+    ha-section-border-radius: "24px"
+    ha-card-border-radius: "16px"
+    ha-card-border-width: "0px"
+    ha-card-box-shadow: "none"
+    modes:
+      light:
+        <<: *fd_light
+        primary-color: "#2f6fd6"
+        blue-color: "#2f6fd6"
+        rgb-primary-color: "47, 111, 214"
+        rgb-blue: "47, 111, 214"
+        primary-background-color: "#dce5f3"
+        secondary-background-color: "#dce5f3"
+        ha-section-background-color: "#f8faff"
+        card-background-color: "#f8faff"
+        app-header-background-color: "#f8faff"
+        mush-chip-background: "#eaf0fb"
+      dark:
+        <<: *fd_dark
+        primary-background-color: "#10131a"
+        secondary-background-color: "#10131a"
+        ha-section-background-color: "#1d2230"
+        card-background-color: "#1d2230"
+        app-header-background-color: "#1d2230"
+        mush-chip-background: "#283044"
+  playground_tinted_chips:
+    ha-section-border-radius: "24px"
+    ha-card-border-radius: "16px"
+    ha-card-border-width: "0px"
+    ha-card-box-shadow: "none"
+    modes:
+      light:
+        <<: *fc_light
+        primary-color: "#2f6fd6"
+        blue-color: "#2f6fd6"
+        rgb-primary-color: "47, 111, 214"
+        rgb-blue: "47, 111, 214"
+        primary-background-color: "#dce5f3"
+        secondary-background-color: "#dce5f3"
+        ha-section-background-color: "#f8faff"
+        card-background-color: "#eaf0fb"
+        app-header-background-color: "#f8faff"
+        mush-chip-background: "#eaf0fb"
+      dark:
+        <<: *fc_dark
+        primary-background-color: "#10131a"
+        secondary-background-color: "#10131a"
+        ha-section-background-color: "#1d2230"
+        card-background-color: "#283044"
+        app-header-background-color: "#1d2230"
+        mush-chip-background: "#283044"
+
+  # Glass: colourful gradient page, translucent panels over it.
+  playground_glass:
+    ha-section-border-radius: "26px"
+    ha-card-border-width: "0px"
+    ha-card-box-shadow: "none"
+    modes:
+      light:
+        <<: *fd_light
+        lovelace-background: "linear-gradient(135deg, #cfdcf5 0%, #e6dcf3 50%, #f6e7d8 100%)"
+        ha-section-background-color: "rgba(255, 255, 255, 0.72)"
+        ha-section-backdrop-filter: "blur(14px)"
+        card-background-color: "transparent"
+        app-header-background-color: "rgba(255, 255, 255, 0.72)"
+      dark:
+        <<: *fd_dark
+        lovelace-background: "linear-gradient(135deg, #141a2b 0%, #1c1626 50%, #1f1a17 100%)"
+        ha-section-background-color: "rgba(35, 38, 44, 0.72)"
+        ha-section-backdrop-filter: "blur(14px)"
+        card-background-color: "transparent"
+        app-header-background-color: "rgba(35, 38, 44, 0.72)"
+  playground_glass_chips:
+    ha-section-border-radius: "26px"
+    ha-card-border-width: "0px"
+    ha-card-box-shadow: "none"
+    modes:
+      light:
+        <<: *fc_light
+        lovelace-background: "linear-gradient(135deg, #cfdcf5 0%, #e6dcf3 50%, #f6e7d8 100%)"
+        ha-section-background-color: "rgba(255, 255, 255, 0.72)"
+        ha-section-backdrop-filter: "blur(14px)"
+        card-background-color: "rgba(241, 243, 246, 0.65)"
+        app-header-background-color: "rgba(255, 255, 255, 0.72)"
+      dark:
+        <<: *fc_dark
+        lovelace-background: "linear-gradient(135deg, #141a2b 0%, #1c1626 50%, #1f1a17 100%)"
+        ha-section-background-color: "rgba(35, 38, 44, 0.72)"
+        ha-section-backdrop-filter: "blur(14px)"
+        card-background-color: "rgba(48, 51, 59, 0.65)"
+        app-header-background-color: "rgba(35, 38, 44, 0.72)"

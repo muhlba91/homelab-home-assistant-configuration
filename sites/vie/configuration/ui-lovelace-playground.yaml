@@ -4,3 +4,6 @@
 title: Playground
 views:
   - !include dashboards/playground/playground.yaml
+  - !include dashboards/playground/playground_soft.yaml
+  - !include dashboards/playground/playground_tinted.yaml
+  - !include dashboards/playground/playground_glass.yaml
